@@ -19,7 +19,7 @@ Agenda Médica Distribuída – Sistema que permite o agendamento de consultas m
 
 ## Orientador
 
-* Nome completo do professor 1
+* Kleber Jacques Ferreira de Souza
 
 # Planejamento
 
