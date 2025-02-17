@@ -1,6 +1,7 @@
 # Introdução
 
-Texto descritivo com a visão geral do projeto abordado. Inclui o contexto, o problema, os objetivos, a justificativa e o público-alvo do projeto.
+ A transformação digital tem impactado diversos setores, incluindo a área da saúde. Com a crescente demanda por atendimentos médicos e a necessidade de otimizar o tempo de pacientes e profissionais, soluções tecnológicas tornam-se essenciais para garantir um fluxo eficiente de agendamentos.
+ Este projeto visa desenvolver uma Agenda Médica Distribuída, um sistema inovador que facilita a marcação, o gerenciamento e a organização de consultas médicas de forma descentralizada, criando uma plataforma integrada e acessível para pacientes e profissionais de saúde.
 
 ## Problema
 Nesse momento você deve apresentar o problema que a sua aplicação deve  resolver. No entanto, não é a hora de comentar sobre a aplicação.
