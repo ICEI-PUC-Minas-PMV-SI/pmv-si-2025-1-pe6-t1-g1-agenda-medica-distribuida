@@ -56,6 +56,10 @@ As tabelas que se seguem apresentam os requisitos funcionais e não funcionais q
 
 |ID    | Descrição do Requisito  | Prioridade |
 |------|-----------------------------------------|----|
+|RF-001| Permitir que usuários (pacientes e médicos) realizem cadastro e login | ALTA |
+|RF-002| Permitir que médicos cadastrem suas agendas | ALTA |
+|RF-003| Possibilitar que o paciente agende consultas | ALTA |
+|RF-004| 	Gerar relatórios de consultas agendadas | BAIXA |
 |RF-001| Permitir que o usuário cadastre tarefas | ALTA | 
 |RF-002| Emitir um relatório de tarefas no mês   | MÉDIA |
 
@@ -63,6 +67,9 @@ As tabelas que se seguem apresentam os requisitos funcionais e não funcionais q
 
 |ID     | Descrição do Requisito  |Prioridade |
 |-------|-------------------------|----|
+|RNF-001| Deve suportar múltiplos usuários simultâneos | MÉDIA |
+|RNF-002| O tempo de resposta para qualquer requisição não deve exceder 3s | BAIXA |
+|RNF-003| Deve garantir segurança e criptografia de dados (LGPD) | MÉDIA |
 |RNF-001| O sistema deve ser responsivo para rodar em um dispositivos móvel | MÉDIA | 
 |RNF-002| Deve processar requisições do usuário em no máximo 3s |  BAIXA | 
 
