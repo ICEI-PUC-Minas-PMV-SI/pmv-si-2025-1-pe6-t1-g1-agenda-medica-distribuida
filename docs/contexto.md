@@ -59,7 +59,7 @@ As tabelas que se seguem apresentam os requisitos funcionais e não funcionais q
 |RF-001| Permitir que usuários (pacientes e médicos) realizem cadastro e login | ALTA |
 |RF-002| Permitir que médicos cadastrem suas agendas | ALTA |
 |RF-003| Possibilitar que o paciente agende consultas | ALTA |
-|RF-004| 	Gerar relatórios de consultas agendadas | BAIXA |
+|RF-004| Gerar relatórios de consultas agendadas | BAIXA |
 |RF-001| Permitir que o usuário cadastre tarefas | ALTA | 
 |RF-002| Emitir um relatório de tarefas no mês   | MÉDIA |
 
