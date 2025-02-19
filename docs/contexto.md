@@ -1,42 +1,76 @@
 # Introdução
 
  A transformação digital tem impactado diversos setores, incluindo a área da saúde. Com a crescente demanda por atendimentos médicos e a necessidade de otimizar o tempo de pacientes e profissionais, soluções tecnológicas tornam-se essenciais para garantir um fluxo eficiente de agendamentos.
- Este projeto visa desenvolver uma Agenda Médica Distribuída, um sistema inovador que facilita a marcação, o gerenciamento e a organização de consultas médicas de forma descentralizada, criando uma plataforma integrada e acessível para pacientes e profissionais de saúde.
+ Este projeto visa desenvolver uma Agenda Médica Distribuída - a MedAgenda, um sistema inovador que facilita a marcação, o gerenciamento e a organização de consultas médicas de forma descentralizada, criando uma plataforma integrada e acessível para pacientes e profissionais de saúde.
 
 ## Problema
-Nesse momento você deve apresentar o problema que a sua aplicação deve  resolver. No entanto, não é a hora de comentar sobre a aplicação.
 
-Descreva também o contexto em que essa aplicação será usada, se  houver: empresa, tecnologias, etc. Novamente, descreva apenas o que de  fato existir, pois ainda não é a hora de apresentar requisitos  detalhados ou projetos.
+Nos últimos anos, a transformação digital tem provocado mudanças significativas em diversos setores, e a área da saúde não é exceção. O aumento constante da demanda por atendimentos médicos tem gerado desafios para a gestão eficiente do tempo de pacientes e profissionais da saúde. Agendamentos médicos, muitas vezes, são feitos de maneira desorganizada e centralizada, o que resulta em longas esperas, sobrecarga de trabalho para as secretárias, e frustração para os pacientes.
 
-Nesse momento, o grupo pode optar por fazer uso  de ferramentas como Design Thinking, que permite um olhar de ponta a ponta para o problema.
-
-> **Links Úteis**:
-> - [Objetivos, Problema de pesquisa e Justificativa](https://medium.com/@versioparole/objetivos-problema-de-pesquisa-e-justificativa-c98c8233b9c3)
-> - [Matriz Certezas, Suposições e Dúvidas](https://medium.com/educa%C3%A7%C3%A3o-fora-da-caixa/matriz-certezas-suposi%C3%A7%C3%B5es-e-d%C3%BAvidas-fa2263633655)
-> - [Brainstorming](https://www.euax.com.br/2018/09/brainstorming/)
+A falta de uma solução tecnológica eficaz para gerenciamento de consultas torna o fluxo de agendamentos ineficiente e propenso a erros. A inexistência de uma plataforma integrada dificulta a comunicação entre diferentes partes envolvidas no processo, como médicos, secretários e pacientes. Além disso, a descentralização da informação pode resultar em perda de dados, agendamentos duplicados ou esquecidos, e dificuldades na organização de horários e recursos.
 
 ## Objetivos
 
-Aqui você deve descrever os objetivos do trabalho indicando que o objetivo geral é desenvolver um software para solucionar o problema apresentado acima. 
+### Objetivo Geral
 
-Apresente também alguns (pelo menos 2) objetivos específicos dependendo de onde você vai querer concentrar a sua prática investigativa, ou como você vai aprofundar no seu trabalho.
- 
-> **Links Úteis**:
-> - [Objetivo geral e objetivo específico: como fazer e quais verbos utilizar](https://blog.mettzer.com/diferenca-entre-objetivo-geral-e-objetivo-especifico/)
+Desenvolver um software inovador que solucione os problemas associados ao agendamento de consultas médicas, promovendo um sistema de Agenda Médica Distribuída que otimiza o tempo e os recursos de pacientes e profissionais da saúde, garantindo um fluxo eficiente, organizado e acessível.
+
+### Objetivos Específicos
+
+**Facilitar a Marcação de Consultas:**
+
+- Criar uma interface intuitiva que permita aos pacientes agendarem consultas de forma rápida e prática, acessível por diferentes dispositivos.
+
+- Implementar um sistema de verificação de disponibilidade em tempo real para evitar conflitos e sobreposições de horários.
+
+**Melhorar a Comunicação:**
+
+- Desenvolver funcionalidades que permitam uma comunicação eficaz entre pacientes, médicos e secretárias, como notificações e lembretes automáticos.
+
+- Integrar ferramentas de mensageria para resolver dúvidas e confirmar detalhes de consultas diretamente pelo aplicativo.
+
+**Otimizar a Gestão de Agendamentos:**
+
+- Implementar um sistema de gerenciamento de horários e recursos que auxilie secretários e profissionais de saúde na organização de suas agendas.
+
+- Desenvolver relatórios e dashboards que permitam acompanhar o fluxo de consultas e identificar possíveis gargalos ou áreas de melhoria.
+
+**Garantir a Segurança e Privacidade dos Dados:**
+
+- Assegurar que o software esteja em conformidade com as regulamentações de proteção de dados, garantindo a privacidade e segurança das informações dos pacientes.
+
+- Implementar mecanismos de autenticação e autorização para proteger o acesso às informações sensíveis.
+
+**Oferecer Suporte e Acompanhamento Contínuo:**
+
+- Disponibilizar um canal de suporte técnico para resolver dúvidas e problemas relacionados ao uso do software.
+
+- Coletar feedback dos usuários regularmente para realizar melhorias contínuas no sistema.
 
 ## Justificativa
 
-Descreva a importância ou a motivação para trabalhar com esta aplicação que você escolheu. Indique as razões pelas quais você escolheu seus objetivos específicos ou as razões para aprofundar em certos aspectos do software.
+A necessidade de um sistema eficaz de agendamento de consultas médicas se tornou evidente diante dos desafios enfrentados pela área da saúde na era digital. A transformação digital não apenas trouxe novas tecnologias, mas também aumentou as expectativas dos pacientes e profissionais de saúde em relação à eficiência, acessibilidade e qualidade dos serviços prestados. A seguir, enunciamos as principais razões que justificam a implementação uma Agenda Médica Distribuída - MedAgenda:
 
-O grupo de trabalho pode fazer uso de questionários, entrevistas e dados estatísticos, que podem ser apresentados, com o objetivo de esclarecer detalhes do problema que será abordado pelo grupo.
+A população global está envelhecendo, e com isso, há um aumento significativo na demanda por serviços médicos. Essa pressão adicional sobre os sistemas de saúde resulta em um aumento no número de consultas, sobrecarregando os métodos tradicionais de agendamento e gerenciamento. Um sistema automatizado e distribuído é essencial para lidar com esse volume crescente de consultas de maneira eficiente.
 
-> **Links Úteis**:
-> - [Como montar a justificativa](https://guiadamonografia.com.br/como-montar-justificativa-do-tcc/)
+Além disso, os métodos tradicionais de agendamento de consultas frequentemente envolvem processos manuais, centralizados e suscetíveis a erros humanos. Esses métodos podem resultar em agendamentos duplicados, conflitos de horário e falhas na comunicação. Além disso, a falta de uma integração eficaz entre diferentes partes envolvidas torna o processo ainda mais complexo e propenso a erros, afetando a qualidade do atendimento ao paciente.
+
+Por sua vez, o tempo é um recurso valioso tanto para pacientes quanto para profissionais de saúde. Um sistema de agendamento distribuído otimiza o tempo ao proporcionar uma organização clara e acessível dos horários, reduzindo esperas e melhorando a gestão dos recursos disponíveis. Uma vez que, com o avanço das tecnologias de informação e comunicação, os pacientes esperam poder acessar serviços de saúde de maneira rápida e conveniente por meio de dispositivos móveis e plataformas digitais. 
+
+Portanto, o desenvolvimento da MedAgenda não é apenas uma resposta aos desafios atuais, mas uma oportunidade de revolucionar a forma como os agendamentos médicos são gerenciados, proporcionando benefícios significativos para todos os envolvidos. 
 
 ## Público-Alvo
 
-Descreva quem serão as pessoas que usarão a sua aplicação indicando os diferentes perfis. O objetivo aqui não é definir quem serão os clientes ou quais serão os papéis dos usuários na aplicação. A ideia é, dentro do possível, conhecer um pouco mais sobre o perfil dos usuários: conhecimentos prévios, relação com a tecnologia, relações
-hierárquicas, etc.
+O público-alvo do projeto MedAgenda inclui:
+
+- Pacientes: usuários que têm acesso a dispositivos digitais, como smartphones, tablets e computadores, e que se sentem confortáveis em utilizar tecnologia para gerir suas consultas médicas.
+  
+- Profissionais da Saúde: profissionais que atendem em diversas clínicas e hospitais e precisam de um sistema centralizado para gerenciar seus horários de consulta e otimizar o atendimento aos pacientes.
+
+- Secretárias e Administrativos: funcionários responsáveis pela gestão de agendamentos, que buscam uma ferramenta eficiente para organizar as consultas, evitar conflitos de horário e melhorar a comunicação com os pacientes.
+
+Instituições de Saúde: Clínicas e Consultórios Médicos, de pequeno e médio porte que necessitam de uma solução prática e acessível para gerenciar seus agendamentos e melhorar a experiência dos pacientes.
+
 
 Adicione informações sobre o público-alvo por meio de uma descrição textual, diagramas de personas e mapa de stakeholders.
 
@@ -56,7 +90,7 @@ As tabelas que se seguem apresentam os requisitos funcionais e não funcionais q
 
 |ID    | Descrição do Requisito  | Prioridade |
 |------|-----------------------------------------|----|
-|RF-001| Permitir que usuários (pacientes, médicos e funcionários) realizem cadastro e login | ALTA |
+|RF-001| Permitir que usuários (pacientes e médicos) realizem cadastro e login | ALTA |
 |RF-002| Permitir que médicos cadastrem suas agendas | ALTA |
 |RF-003| Possibilitar que o paciente agende consultas | ALTA |
 |RF-004| Gerar relatórios de consultas agendadas | BAIXA |
