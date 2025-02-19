@@ -69,16 +69,21 @@ O público-alvo do projeto MedAgenda inclui:
 
 - Secretárias e Administrativos: funcionários responsáveis pela gestão de agendamentos, que buscam uma ferramenta eficiente para organizar as consultas, evitar conflitos de horário e melhorar a comunicação com os pacientes.
 
-Instituições de Saúde: Clínicas e Consultórios Médicos, de pequeno e médio porte que necessitam de uma solução prática e acessível para gerenciar seus agendamentos e melhorar a experiência dos pacientes.
+- Instituições de Saúde: Clínicas e Consultórios Médicos, de pequeno e médio porte que necessitam de uma solução prática e acessível para gerenciar seus agendamentos e melhorar a experiência dos pacientes.
 
+**Personas**
 
-Adicione informações sobre o público-alvo por meio de uma descrição textual, diagramas de personas e mapa de stakeholders.
+Persona 1:
+Mariana Souza tem 34 anos e trabalha como analista de marketing em uma agência de publicidade. Sua rotina é extremamente corrida, com reuniões frequentes e prazos apertados, o que torna difícil encontrar tempo para cuidar da própria saúde. Quando precisa agendar uma consulta médica, Mariana enfrenta dificuldades para ligar para consultórios durante o horário comercial e, muitas vezes, esquece seus compromissos por falta de lembretes eficazes. Com a MedAgenda, ela consegue visualizar rapidamente a disponibilidade dos médicos e marcar um horário que se encaixe em sua agenda. Além disso, recebe notificações automáticas para não esquecer seus compromissos e pode se comunicar diretamente com a clínica pelo aplicativo para esclarecer dúvidas sem precisar telefonar.
 
-> **Links Úteis**:
-> - [Público-alvo](https://blog.hotmart.com/pt-br/publico-alvo/)
-> - [Como definir o público alvo](https://exame.com/pme/5-dicas-essenciais-para-definir-o-publico-alvo-do-seu-negocio/)
-> - [Público-alvo: o que é, tipos, como definir seu público e exemplos](https://klickpages.com.br/blog/publico-alvo-o-que-e/)
-> - [Qual a diferença entre público-alvo e persona?](https://rockcontent.com/blog/diferenca-publico-alvo-e-persona/)
+Persona 2:
+O Dr. Ricardo Mendes, um cardiologista de 45 anos, atende em diferentes clínicas e hospitais ao longo da semana. Manter o controle de sua agenda sempre foi um grande desafio, pois ele precisa garantir que seus horários não se sobreponham e que todas as consultas sejam bem distribuídas. Além disso, a alta taxa de faltas dos pacientes compromete sua produtividade. Com a MedAgenda, Ricardo consegue visualizar e gerenciar todos os seus compromissos de maneira centralizada, ajustando sua agenda conforme necessário. As notificações automáticas enviadas aos pacientes também reduzem significativamente as ausências, otimizando seu tempo e garantindo um atendimento mais eficiente.
+
+Persona 3:
+Ana Cláudia Ferreira, de 39 anos, trabalha como recepcionista em uma clínica geral. Sua principal função é organizar a agenda dos médicos e lidar com a marcação de consultas, o que envolve atender inúmeras ligações e remarcações diariamente. Muitas vezes, a sobrecarga de trabalho e a falta de um sistema eficiente resultam em conflitos de horários e atrasos no atendimento. Com a implementação da MedAgenda, grande parte desse trabalho se torna automatizada, reduzindo o número de ligações e permitindo que os próprios pacientes façam seus agendamentos online. O painel de controle do sistema facilita a organização dos horários, evitando sobrecargas e conflitos, além de enviar lembretes automáticos para os pacientes, diminuindo a taxa de faltas e remarcações.
+
+Persona 4:
+João Batista, um aposentado de 67 anos, precisa de acompanhamento médico frequente, mas enfrenta dificuldades com tecnologia. Sempre que precisa marcar uma consulta, ele depende da ajuda de sua filha, Camila, para entrar em contato com os consultórios e organizar seus horários. Além disso, João tem dificuldades em lembrar as datas e horários de seus compromissos médicos, o que já resultou em consultas perdidas. A MedAgenda facilita sua vida ao oferecer uma interface simples e intuitiva, permitindo que ele ou sua filha façam os agendamentos de forma prática. Além disso, o sistema envia lembretes via SMS ou chamadas automatizadas, garantindo que João nunca mais perca uma consulta importante.
 
 # Especificações do Projeto
 
@@ -94,8 +99,8 @@ As tabelas que se seguem apresentam os requisitos funcionais e não funcionais q
 |RF-002| Permitir que médicos cadastrem suas agendas | ALTA |
 |RF-003| Possibilitar que o paciente agende consultas | ALTA |
 |RF-004| Gerar relatórios de consultas agendadas | BAIXA |
-|RF-001| Permitir que o usuário cadastre tarefas | ALTA | 
-|RF-002| Emitir um relatório de tarefas no mês   | MÉDIA |
+|RF-005| Permitir que o usuário cadastre tarefas | ALTA | 
+|RF-006| Emitir um relatório de tarefas no mês   | MÉDIA |
 
 ### Requisitos não Funcionais
 
@@ -129,7 +134,8 @@ O projeto está restrito pelos itens apresentados na tabela a seguir.
 |ID| Restrição                                             |
 |--|-------------------------------------------------------|
 |01| O projeto deverá ser entregue até o final do semestre |
-|02| Não pode ser desenvolvido um módulo de backend        |
+|02| O projeto deverá ter uma versão desktop.              |
+|03| O projeto deverá ter uma versão mobile.               |
 
 Enumere as restrições à sua solução. Lembre-se de que as restrições geralmente limitam a solução candidata.
 
