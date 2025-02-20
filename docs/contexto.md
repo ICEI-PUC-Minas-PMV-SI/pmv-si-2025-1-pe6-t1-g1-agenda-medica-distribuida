@@ -145,7 +145,26 @@ Enumere as restrições à sua solução. Lembre-se de que as restrições geral
 
 # Catálogo de Serviços
 
-Descreva aqui todos os serviços que serão disponibilizados pelo seu projeto, detalhando suas características e funcionalidades.
+1. Agendamento de Consultas
+- Marcação de Consultas: Permite que os pacientes marquem consultas com seus médicos diretamente pelo aplicativo ou site.
+- Lembretes Automáticos: Envio de lembretes automáticos para consultas agendadas, via SMS, e-mail ou notificações push.
+2. Histórico de Consultas
+- Registro de Consultas: Manutenção de um histórico completo das consultas anteriores dos pacientes.
+- Acesso ao Histórico: Pacientes e médicos podem acessar o histórico de consultas a qualquer momento.
+3. Notificações e Avisos
+- Notificações Personalizadas: Envio de notificações personalizadas sobre consultas, exames e resultados.
+4. Gerenciamento de Exames
+- Agendamento de Exames: Facilita o agendamento de exames laboratoriais e de imagem.
+- Resultado de Exames: Disponibilização dos resultados de exames diretamente na plataforma.
+5. Atendimento ao Cliente
+- Suporte ao Paciente: Suporte online e via telefone para resolver dúvidas e problemas.
+- Feedback e Avaliações: Sistema para os pacientes deixarem feedback e avaliações sobre os serviços prestados.
+6. Relatórios e Análises
+- Relatórios Médicos: Geração de relatórios médicos detalhados para os profissionais de saúde.
+- Análise de Dados: Ferramentas de análise de dados para acompanhar a saúde dos pacientes e melhorar os serviços oferecidos.
+7. Educação e Informações de Saúde
+- Conteúdo Educacional: Disponibilização de artigos, vídeos e webinars sobre saúde e bem-estar.
+- Consultas de Segunda Opinião
 
 # Arquitetura da Solução
 
