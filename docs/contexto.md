@@ -131,10 +131,7 @@ O projeto está restrito pelos itens apresentados na tabela a seguir.
 - Gerenciamento de dados: permite a criação de usuário com privilégios de administrador do sistema, para gerenciamento de usuários, cadastros e banco de dados. 
 
 # Arquitetura da Solução
-
-Definição de como o software é estruturado em termos dos componentes que fazem parte da solução e do ambiente de hospedagem da aplicação.
-
-![arq](https://github.com/user-attachments/assets/b9402e05-8445-47c3-9d47-f11696e38a3d)
+![arq](https://github.com/ICEI-PUC-Minas-PMV-SI/pmv-si-2025-1-pe6-t1-g1-agenda-medica-distribuida/blob/main/docs/img/diagrama.png?raw=true)
 
 ## Tecnologias Utilizadas
 
