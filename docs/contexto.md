@@ -138,7 +138,7 @@ O projeto está restrito pelos itens apresentados na tabela a seguir.
 - Express.js : Framework web para aplicações node.
 - React/Next : Biblioteca para aplicações criação de interfaces web.
 - React Native/Expo: Framework para desenvolvimente de aplicações mobile nativas, tanto para Android como IOS.
-- MongoDB : Sistema de gerenciamento de banco de dados não relacional. [//]: # (Definir se vai ser MongoDB ou PostgreSQL)
+- MongoDB : Sistema de gerenciamento de banco de dados não relacional.
 
 ### Ferramentas
 
@@ -151,7 +151,7 @@ O projeto está restrito pelos itens apresentados na tabela a seguir.
 
 ## Hospedagem
 
-Para hospedagem foi utilizado a Vercel para o frontend e AWS Lambda para o backend, utilizando o MongoDB Atlas para o banco de dados.  [//]: # (Definir posteriormente a melhor maneira de fazer o deploy do backend e do banco de dados)
+Para hospedagem foi utilizado a Vercel para o frontend e AWS Lambda para o backend, utilizando o MongoDB Atlas para o banco de dados.
 
 ## Referências
 
