@@ -1,17 +1,22 @@
 # APIs e Web Services
 
-O planejamento de uma aplicação de APIS Web é uma etapa fundamental para o sucesso do projeto. Ao planejar adequadamente, você pode evitar muitos problemas e garantir que a sua API seja segura, escalável e eficiente.
+Esta API tem por objetivo cadastar, atualizar, listar e excluir usuários e seus agendamentos. O paciente poderá agendar a consulta conforme a especialidade médica desejada e também poderá cancelar sua consulta. O consultório poderá cadastrar e alterar os agendamentos, médicos e seus horários disponíveis. 
 
-Aqui estão algumas etapas importantes que devem ser consideradas no planejamento de uma aplicação de APIS Web.
-
-[Inclua uma breve descrição do projeto.]
+A API foi desenvolvida seguindo os padrões REST, e autenticando os usuários com JWT. A documentação foi feita utilizando Swagger. 
 
 ## Objetivos da API
 
-O primeiro passo é definir os objetivos da sua API. O que você espera alcançar com ela? Você quer que ela seja usada por clientes externos ou apenas por aplicações internas? Quais são os recursos que a API deve fornecer?
+- **Gerenciar agendamentos de consultas:**
+  
+    A API vai criar os agendamentos baseados na especialidade escolhida pelo pacientes e na disponibilidade dos médicos. A API também poderá atualizar e cancelar a consulta. Além disso, será possível visualizar os agendamentos realizados, tanto por médico como por paciente.
+    
+- **Gerenciar o paciente:**
+  
+    A API vai cadastrar com segurança login e senha de usuário para o paciente. Também, será possível exluir um usuário e seus agendamentos relacionados.
 
-[Inclua os objetivos da sua api.]
+- **Gerenciar os médicos:**
 
+    Através do usuário da clínica, será possível a adição, alteração, exclusão e visualização dos médicos.
 
 ## Modelagem da Aplicação
 [Descreva a modelagem da aplicação, incluindo a estrutura de dados, diagramas de classes ou entidades, e outras representações visuais relevantes.]
