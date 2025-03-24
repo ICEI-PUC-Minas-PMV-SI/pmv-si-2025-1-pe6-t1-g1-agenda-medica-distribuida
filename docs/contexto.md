@@ -112,6 +112,15 @@ As tabelas que se seguem apresentam os requisitos funcionais e não funcionais q
 |RNF-004| O sistema deve ser responsivo para rodar em um dispositivos móvel | MÉDIA | 
 |RNF-005| Deve processar requisições do usuário em no máximo 3s |  BAIXA | 
 
+### Desenvolvimento em Camadas do Projeto
+
+|Camadas     | Integrantes Responsáveis  |
+|------------|-------------------------|
+|Backend| Breno de Oliveira Pereira & Maurício Martins dos Santos |
+|Frontend Web| Rodrigo Pena Furtado & Samara Mariah dos Santos |
+|Frontend Mobile| Diego Calado Freitas & Sílvia de Oliveira Cunha |
+
+
 ## Restrições
 
 O projeto está restrito pelos itens apresentados na tabela a seguir.
