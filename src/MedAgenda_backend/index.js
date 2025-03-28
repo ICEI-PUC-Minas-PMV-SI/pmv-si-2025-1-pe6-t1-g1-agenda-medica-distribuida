@@ -21,6 +21,7 @@ mongoose
   });
 
 app.use("/api/auth", authRouter);
+app.use("/api/appointment", appointmentsRouter);
 app.get("/", (req, res) => {
   res.json({message: "Hello World!"});
 });

@@ -350,3 +350,39 @@ exports.verifyVerificationCode = async (req, res) => {
     console.log(error);
   }
 };
+
+// API to get user profile data
+exports.getProfile = async (req, res) => {
+
+  try {
+      const { userId } = req.body
+      const userData = await userModel.findById(userId).select('-password')
+
+      res.json({ success: true, userData })
+
+  } catch (error) {
+      console.log(error)
+      res.json({ success: false, message: error.message })
+  }
+}
+
+// API to update user profile
+exports.updateProfile = async (req, res) => {
+
+  try {
+
+      const { userId, name, phone, dob, gender } = req.body
+
+      if (!name || !phone || !dob || !gender) {
+          return res.json({ success: false, message: "Data Missing" })
+      }
+
+      await userModel.findByIdAndUpdate(userId, { name, phone, dob, gender })
+
+      res.json({ success: true, message: 'Profile Updated' })
+
+  } catch (error) {
+      console.log(error)
+      res.json({ success: false, message: error.message })
+  }
+}
