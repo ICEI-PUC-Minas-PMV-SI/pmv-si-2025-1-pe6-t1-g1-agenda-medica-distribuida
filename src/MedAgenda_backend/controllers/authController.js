@@ -10,9 +10,16 @@ const {doHash, doHashValidation, hmacProcess} = require("../utils/hashing");
 const User = require("../models/usersModel");
 const transport = require("../middlewares/sendMail");
 exports.signup = async (req, res) => {
-  const {email, password} = req.body;
+  const {name, email, password, gender, birthdate, userImage} = req.body;
   try {
-    const {error, value} = signupSchema.validate({email, password});
+    const {error, value} = signupSchema.validate({
+      name,
+      email,
+      password,
+      gender,
+      birthdate,
+      userImage,
+    });
 
     if (error) {
       return res.status(401).json({
@@ -30,8 +37,10 @@ exports.signup = async (req, res) => {
 
     const hashedPassword = await doHash(password, 12);
     const newUser = new User({
+      name,
       email,
       password: hashedPassword,
+      isAdmin: false,
     });
 
     const result = await newUser.save();
@@ -75,6 +84,7 @@ exports.signin = async (req, res) => {
         userId: existingUser._id,
         email: existingUser.email,
         verified: existingUser.verified,
+        isAdmin: existingUser.isAdmin,
       },
       process.env.TOKEN_SECRET,
       {
@@ -106,8 +116,12 @@ exports.signout = async (req, res) => {
 };
 
 exports.sendVerificationCode = async (req, res) => {
+  const tokenEmail = req.user.email;
   const {email} = req.body;
   try {
+    if (tokenEmail !== email) {
+      return res.status(403).json({success: false, message: "Unauthorized"});
+    }
     const existingUser = await User.findOne({email});
     if (!existingUser) {
       return res
@@ -287,7 +301,12 @@ exports.sendForgotPasswordCode = async (req, res) => {
 };
 
 exports.verifyVerificationCode = async (req, res) => {
+  const tokenEmail = req.user.email;
+
   const {email, providedCode} = req.body;
+  if (tokenEmail !== email) {
+    return res.status(403).json({success: false, message: "Unauthorized"});
+  }
   try {
     const {error, value} = acceptCodeSchema.validate({email, providedCode});
     if (error) {

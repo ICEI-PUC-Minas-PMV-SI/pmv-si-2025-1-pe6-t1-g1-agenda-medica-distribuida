@@ -4,6 +4,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 
 const authRouter = require("./routers/authRouter");
+const doctorRouter = require("./routers/doctorRouter");
 
 const app = express();
 app.use(express.json());
@@ -21,6 +22,7 @@ mongoose
   });
 
 app.use("/api/auth", authRouter);
+app.use("/api/doctors", doctorRouter);
 app.get("/", (req, res) => {
   res.json({message: "Hello World!"});
 });
