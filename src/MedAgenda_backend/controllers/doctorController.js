@@ -8,7 +8,7 @@ exports.newDoctor = async (req, res) => {
     req.body;
   const {isAdmin} = req.user;
   if (!isAdmin) {
-    return res.status(403).json({success: false, message: "Unauthorized"});
+    return res.status(401).json({success: false, message: "Unauthorized"});
   }
   try {
     const {error, value} = newDoctorSchema.validate({
@@ -59,7 +59,7 @@ exports.updateDoctor = async (req, res) => {
   const {crm} = req.params;
   const {isAdmin} = req.user;
   if (!isAdmin) {
-    return res.status(403).json({success: false, message: "Unauthorized"});
+    return res.status(401).json({success: false, message: "Unauthorized"});
   }
 
   const {error, value} = updateDoctorSchema.validate({
@@ -97,7 +97,7 @@ exports.deleteDoctor = async (req, res) => {
   const {isAdmin} = req.user;
 
   if (!isAdmin) {
-    return res.status(403).json({success: false, message: "Unauthorized"});
+    return res.status(401).json({success: false, message: "Unauthorized"});
   }
 
   try {

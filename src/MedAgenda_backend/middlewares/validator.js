@@ -88,3 +88,15 @@ exports.updateDoctorSchema = joi.object({
   doctorImage: joi.string().base64(),
   about: joi.string(),
 });
+
+exports.newAppointmentSchema = joi.object({
+  userId: joi.string().required(),
+  docId: joi.string().required(),
+  slotDate: joi.string().required(),
+  slotTime: joi.string().required(),
+});
+
+exports.cancelAppointment = joi.object({
+  userId: joi.string().required(),
+  appointmentId: joi.string().required(),
+});

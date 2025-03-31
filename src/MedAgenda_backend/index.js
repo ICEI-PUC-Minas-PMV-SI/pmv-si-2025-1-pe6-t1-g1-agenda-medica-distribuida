@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 
 const authRouter = require("./routers/authRouter");
 const doctorRouter = require("./routers/doctorRouter");
+const appointmentRouter = require("./routers/appointmentRouter");
 
 const app = express();
 app.use(express.json());
@@ -25,8 +26,6 @@ mongoose
 
 app.use("/api/auth", authRouter);
 app.use("/api/doctors", doctorRouter);
-app.get("/", (req, res) => {
-  res.json({message: "Hello World!"});
-});
+app.use("/api/appointment", appointmentRouter);
 
 app.listen(process.env.PORT);
