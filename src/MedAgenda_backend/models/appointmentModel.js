@@ -1,16 +1,15 @@
 const mongoose = require("mongoose");
+const {Schema} = mongoose;
 
 const appointmentSchema = mongoose.Schema({
-    userId: { type: String, required: true },
-    docId: { type: String, required: true },
-    slotDate: { type: String, required: true },
-    slotTime: { type: String, required: true },
-    userData: { type: Object, required: true },
-    docData: { type: Object, required: true },
-    date: { type: Number, required: true },
-    amount: { type: Number, required: true },
-    cancelled: { type: Boolean, default: false },
-    isCompleted: { type: Boolean, default: false }
+  user: [{type: Schema.Types.ObjectId, ref: "User"}],
+  doctor: [{type: Schema.Types.ObjectId, ref: "Doctor"}],
+  slotDate: {type: String, required: true},
+  slotTime: {type: String, required: true},
+  date: {type: Number, required: true},
+  amount: {type: Number, required: true},
+  cancelled: {type: Boolean, default: false},
+  isCompleted: {type: Boolean, default: false},
 });
 
 module.exports = mongoose.model("appointment", appointmentSchema);

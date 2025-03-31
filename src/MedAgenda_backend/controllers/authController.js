@@ -120,7 +120,7 @@ exports.sendVerificationCode = async (req, res) => {
   const {email} = req.body;
   try {
     if (tokenEmail !== email) {
-      return res.status(403).json({success: false, message: "Unauthorized"});
+      return res.status(401).json({success: false, message: "Unauthorized"});
     }
     const existingUser = await User.findOne({email});
     if (!existingUser) {
@@ -305,7 +305,7 @@ exports.verifyVerificationCode = async (req, res) => {
 
   const {email, providedCode} = req.body;
   if (tokenEmail !== email) {
-    return res.status(403).json({success: false, message: "Unauthorized"});
+    return res.status(401).json({success: false, message: "Unauthorized"});
   }
   try {
     const {error, value} = acceptCodeSchema.validate({email, providedCode});

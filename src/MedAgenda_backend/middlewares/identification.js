@@ -10,7 +10,7 @@ exports.identifier = (req, res, next) => {
 
   if (!token) {
     return res
-      .status(403)
+      .status(401)
       .json({success: false, message: "Unauthorized - Missing token!"});
   }
 
