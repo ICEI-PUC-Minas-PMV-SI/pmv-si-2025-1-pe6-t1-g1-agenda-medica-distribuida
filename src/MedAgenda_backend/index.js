@@ -44,7 +44,9 @@ const swaggerOptions = {
         description: "Servidor de desenvolvimento",
       },
       {
-        url: "http://ec2-35-153-153-45.compute-1.amazonaws.com:3000",
+        url:
+          "http://ec2-35-153-153-45.compute-1.amazonaws.com" +
+          (process.env.PORT || 3000),
         description: "Servidor em produção",
       },
     ],
