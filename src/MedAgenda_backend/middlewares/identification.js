@@ -8,6 +8,7 @@ exports.identifier = (req, res, next) => {
     token = req.cookies["Authorization"];
   }
 
+  console.log(token);
   if (!token) {
     return res
       .status(401)
