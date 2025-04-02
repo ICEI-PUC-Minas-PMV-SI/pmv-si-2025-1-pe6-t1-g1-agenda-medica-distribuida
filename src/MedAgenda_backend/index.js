@@ -40,14 +40,9 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: "http://localhost:" + (process.env.PORT || 3000),
-        description: "Servidor de desenvolvimento",
-      },
-      {
-        url:
-          "http://ec2-35-153-153-45.compute-1.amazonaws.com" +
-          (process.env.PORT || 3000),
-        description: "Servidor em produção",
+        url: process.env.NODE_ENV
+          ? "https://med-agenda-backend.vercel.app/"
+          : "http://localhost/",
       },
     ],
     components: {
@@ -69,6 +64,23 @@ const swaggerOptions = {
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
+const CSS_URL =
+  "https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.1.0/swagger-ui.min.css";
+app.use(
+  "/api-docs",
+  swaggerUI.serve,
+  swaggerUI.setup(swaggerDocs, {
+    customCss:
+      ".swagger-ui .opblock .opblock-summary-path-description-wrapper { align-items: center; display: flex; flex-wrap: wrap; gap: 0 10px; padding: 0 10px; width: 100%; }",
+    customCssUrl: CSS_URL,
+  })
+);
 
-app.listen(process.env.PORT);
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server running locally on port ${PORT}`);
+  });
+}
+
+module.exports = app;

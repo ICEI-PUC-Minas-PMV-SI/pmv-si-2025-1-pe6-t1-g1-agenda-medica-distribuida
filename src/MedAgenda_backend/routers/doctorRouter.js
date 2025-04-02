@@ -163,15 +163,16 @@ router.delete("/:crm", identifier, doctorController.deleteDoctor);
  *       - bearerAuth: []
  *     parameters:
  *       - in: query
- *         name: name
+ *         name: any
+ *         style: form
+ *         explode: true
  *         schema:
- *           type: string
- *         description: Nome do médico (filtro opcional)
- *       - in: query
- *         name: speciality
- *         schema:
- *           type: string
- *         description: Especialidade médica (filtro opcional)
+ *           type: object
+ *           additionalProperties: true
+ *         description: |
+ *           Filtros dinâmicos. Exemplos:
+ *           - ?speciality=Cardiologia
+ *           - ?minPrice=200&available=true
  *     responses:
  *       200:
  *         description: Lista de médicos
