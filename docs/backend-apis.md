@@ -30,7 +30,14 @@ Existem muitas tecnologias diferentes que podem ser usadas para desenvolver APIs
 
 ## API Endpoints
 
-[Liste os principais endpoints da API, incluindo as operações disponíveis, os parâmetros esperados e as respostas retornadas.]
+A figura abaixo mostra o localhost na ferramenta SWAGGER:
+
+![image](https://github.com/user-attachments/assets/401bea6a-b632-4782-ae77-4f779c3cd294)
+![image](https://github.com/user-attachments/assets/e28a6e35-40fa-4cf8-95bb-2c057fd09d82)
+
+
+
+
 
 ### Endpoint 1
 - Método: GET
