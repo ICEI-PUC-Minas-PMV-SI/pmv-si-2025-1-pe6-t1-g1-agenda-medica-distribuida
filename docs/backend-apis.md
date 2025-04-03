@@ -12,14 +12,23 @@ A API foi desenvolvida seguindo os padrões REST, e autenticando os usuários co
     
 - **Gerenciar o paciente:**
   
-    A API vai cadastrar com segurança login e senha de usuário para o paciente. Também, será possível exluir um usuário e seus agendamentos relacionados.
+    A API vai cadastrar com segurança login e senha de usuário para o paciente. Também será possível exluir um usuário e seus agendamentos relacionados.
 
 - **Gerenciar os médicos:**
 
-    Através do usuário da clínica, será possível a adição, alteração, exclusão e visualização dos médicos.
+    Através do usuário da clínica será possível a inclusão, alteração, exclusão e visualização dos médicos.
 
 ## Modelagem da Aplicação
-[Descreva a modelagem da aplicação, incluindo a estrutura de dados, diagramas de classes ou entidades, e outras representações visuais relevantes.]
+
+A modelagem da aplicação segue o padrão de API REST, onde cada recurso corresponde a uma entidade do sistema. As principais entidades incluem:
+
+Usuário: Representado por pacientes e administradores.
+
+Consulta: Representa os dados de uma consulta médica, incluindo data, hora, paciente e médico.
+
+
+
+![Imagem do WhatsApp de 2025-04-02 à(s) 21 15 54_8337d146](https://github.com/user-attachments/assets/5e038037-209b-45c3-bab4-4c1309a15586)
 
 
 ## Tecnologias Utilizadas
@@ -35,34 +44,6 @@ A figura abaixo mostra o localhost na ferramenta SWAGGER:
 ![image](https://github.com/user-attachments/assets/401bea6a-b632-4782-ae77-4f779c3cd294)
 ![image](https://github.com/user-attachments/assets/e28a6e35-40fa-4cf8-95bb-2c057fd09d82)
 
-
-
-
-
-### Endpoint 1
-- Método: GET
-- URL: /endpoint1
-- Parâmetros:
-  - param1: [descrição]
-- Resposta:
-  - Sucesso (200 OK)
-    ```
-    {
-      "message": "Success",
-      "data": {
-        ...
-      }
-    }
-    ```
-  - Erro (4XX, 5XX)
-    ```
-    {
-      "message": "Error",
-      "error": {
-        ...
-      }
-    }
-    ```
 
 ## Considerações de Segurança
 
