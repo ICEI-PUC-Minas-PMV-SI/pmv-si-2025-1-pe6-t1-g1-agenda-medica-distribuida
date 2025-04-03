@@ -33,9 +33,11 @@ Consulta: Representa os dados de uma consulta médica, incluindo data, hora, pac
 
 ## Tecnologias Utilizadas
 
-Existem muitas tecnologias diferentes que podem ser usadas para desenvolver APIs Web. A tecnologia certa para o seu projeto dependerá dos seus objetivos, dos seus clientes e dos recursos que a API deve fornecer.
+- Express.js : Framework web para aplicações node.
+- React/Next : Biblioteca para aplicações criação de interfaces web.
+- React Native/Expo: Framework para desenvolvimente de aplicações mobile nativas, tanto para Android como IOS.
+- MongoDB : Sistema de gerenciamento de banco de dados não relacional.
 
-[Lista das tecnologias principais que serão utilizadas no projeto.]
 
 ## API Endpoints
 
