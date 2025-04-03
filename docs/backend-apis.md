@@ -78,3 +78,5 @@ A figura abaixo mostra o localhost na ferramenta SWAGGER:
 2. **JWT.IO**. *Introduction to JSON Web Tokens*. 2024. Disponível em: <https://jwt.io/introduction/>. Acesso em: 3 abr. 2025, 21:07.
 
 3. **SWAGGER**. *Swagger UI Documentation*. 2025. Disponível em: <https://swagger.io/tools/swagger-ui/>. Acesso em: 3 abr. 2025, 21:15.
+
+4. **EAD PLATAFORMA**. *Testando a API com Postman*. 2025. Disponível em: <https://docs.eadplataforma.com/docs/testando-a-api-com-postman>. Acesso em: 3 abr. 2025, 20:10.
