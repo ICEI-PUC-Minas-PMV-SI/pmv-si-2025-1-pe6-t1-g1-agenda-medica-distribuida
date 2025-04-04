@@ -524,6 +524,40 @@ JSON:
 }
 ```
 
+#### Gerenciamento de médicos
+
+Teste 1: Criar um novo médico (apenas por admin) - Caso de sucesso  
+ 
+Método: POST
+ 
+Endpoint: /api/doctors
+ 
+Cenário: Cria um novo médico por um usuário admin  
+ 
+![image](https://github.com/user-attachments/assets/761e918d-fa3c-417c-814d-1af7430d8199)
+
+
+Status: 201 Created
+ 
+JSON:
+ 
+```http
+{
+    "success": true,
+    "message": "The doctor has been created successfully",
+    "result": {
+        "name": "Dr. João Silva",
+        "speciality": "Cardiologia",
+        "crm": "CRM-SP 123456",
+        "pricePerAppointment": 200,
+        "doctorImage": "iVBORw0KGgoAAAANSUhEUgAAAAUA",
+        "about": "Dr. João Silva é cardiologista com 15 anos de experiência, especializado no tratamento de doenças do coração e prevenção de doenças cardiovasculares.",
+        "_id": "67f061124c667ff56a17aa39",
+        "__v": 0
+    }
+}
+```
+
 # Referências
 
 1. **OPENAPI INITIATIVE**. *OpenAPI Specification v3.1.0*. 2023. Disponível em: <https://spec.openapis.org/oas/latest.html>. Acesso em: 3 abr. 2025, 21:00.
