@@ -397,6 +397,28 @@ JSON:
 }
 ```
 
+Teste 3: Cancelamento de agendamento - Caso de sucesso  
+ 
+Método: POST
+ 
+Endpoint: /api/appointment/cancel
+ 
+Cenário: Cancela agendamento 
+ 
+![image](https://github.com/user-attachments/assets/140c177a-d8b0-4026-affb-3fc3802eb72a)
+
+
+Status: 200 OK
+ 
+JSON:
+ 
+```http
+{
+    "success": true,
+    "message": "Appointment Cancelled"
+}
+```
+
 # Referências
 
 1. **OPENAPI INITIATIVE**. *OpenAPI Specification v3.1.0*. 2023. Disponível em: <https://spec.openapis.org/oas/latest.html>. Acesso em: 3 abr. 2025, 21:00.
