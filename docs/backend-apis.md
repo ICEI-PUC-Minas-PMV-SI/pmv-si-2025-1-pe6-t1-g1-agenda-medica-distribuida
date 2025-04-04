@@ -78,18 +78,17 @@ A figura abaixo mostra o localhost na ferramenta SWAGGER:
 Ferramenta utilizada: Postman
 
 #### Autenticação e Gerenciamento de Usuários
-Teste 1: Registro de Novo Usuário - Caso de erro 
+Teste 1: Registro de Novo Usuário - Senha Inválida 
 
 Método: POST
 
 Endpoint: /api/auth/signup
 
-Cenário: Registro com credenciais inválidas. A senha precisa ter 8 caracteres com número, letra maiuscula e minuscula e algum símbolo
+Cenário: Tentativa de registro com senha que não atende aos requisitos. A senha precisa ter 8 caracteres com número, letra maiuscula e minuscula e algum símbolo
 
 ![image](https://github.com/user-attachments/assets/a9d44f68-ff1b-4821-abab-6fd1f18aa66e)
 
 
-Saída:
 Status: 401 Unauthorized
 
 JSON:
@@ -113,6 +112,9 @@ Cenário: Registro com credenciais válidas.
 
 ![image](https://github.com/user-attachments/assets/a9b4d43e-6d71-4d82-8279-28292791af68)
 
+Status: 201 Created
+
+
 JSON:
 
 ```http
@@ -133,6 +135,27 @@ JSON:
 }
 ```
 
+Teste 3: Autenticação de Usuário - Caso de Sucesso
+
+Método: POST
+
+Endpoint: /api/auth/signin
+
+Cenário: Login com credenciais válidas
+
+![image](https://github.com/user-attachments/assets/66323d2e-dd0e-4309-9c07-8dff663dcb8b)
+
+Status: 200 OK
+
+JSON:
+
+```http
+{
+    "success": true,
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2VkZDU2M2Q5ODI5M2UyM2U1Y2YyNGQiLCJlbWFpbCI6InNhbWFyYW1hcmlhaDE2QGdtYWlsLmNvbSIsInZlcmlmaWVkIjpmYWxzZSwiaXNBZG1pbiI6ZmFsc2UsImlhdCI6MTc0MzY0MDIzMiwiZXhwIjoxNzQzNjY5MDMyfQ.UJ5LdgMAHjRcD9bRAjpFDi8DBCNwK_Nq2Lkt1uK6sSk",
+    "message": "logged in successfully"
+}
+```
 # Referências
 
 1. **OPENAPI INITIATIVE**. *OpenAPI Specification v3.1.0*. 2023. Disponível em: <https://spec.openapis.org/oas/latest.html>. Acesso em: 3 abr. 2025, 21:00.
