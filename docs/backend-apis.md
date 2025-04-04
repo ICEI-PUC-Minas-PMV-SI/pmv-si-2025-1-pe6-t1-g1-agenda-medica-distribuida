@@ -333,6 +333,9 @@ JSON:
 }
 ```
 
+
+#### Operações relacionadas a agendamentos
+
 # Referências
 
 1. **OPENAPI INITIATIVE**. *OpenAPI Specification v3.1.0*. 2023. Disponível em: <https://spec.openapis.org/oas/latest.html>. Acesso em: 3 abr. 2025, 21:00.
