@@ -121,7 +121,7 @@ Prevenção de SQL Injection: Para evitar ataques, toda comunicação com o banc
   
 3. Configuração e Execução do Banco de Dados
 
-- Configure e execute o PostgreSQL usando Docker:
+- Configure e execute o MongoDB usando Docker:
 
     docker run --name banco_agendamento -e MONGO_INITDB_ROOT_USERNAME=mongoadmin -e MONGO_INITDB_ROOT_PASSWORD=senha -p 27017:27017 -d mongo
 
