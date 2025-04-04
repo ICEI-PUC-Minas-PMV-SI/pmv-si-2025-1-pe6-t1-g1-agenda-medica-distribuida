@@ -336,6 +336,44 @@ JSON:
 
 #### Operações relacionadas a agendamentos
 
+Teste 1: Criar um novo agendamento - Caso de sucesso  
+ 
+Método: POST
+ 
+Endpoint: /api/appointment
+ 
+Cenário: Cria um novo agendamento   
+ 
+![image](https://github.com/user-attachments/assets/3853e9d7-c5b9-41c8-b4ca-ed24364127d8)
+ 
+ 
+Status: 200 OK
+ 
+JSON:
+ 
+```http
+{
+    "success": true,
+    "message": "Appointment Booked",
+    "newAppointment": {
+        "user": [
+            "67edd563d98293e23e5cf24d"
+        ],
+        "doctor": [
+            "67e98444b6d6f2f5af408b65"
+        ],
+        "slotDate": "2025-04-07",
+        "slotTime": "14:30:00",
+        "date": 1743642017008,
+        "amount": 600,
+        "cancelled": false,
+        "isCompleted": false,
+        "_id": "67eddda190338f16ac3824dc",
+        "__v": 0
+    }
+}
+```
+
 # Referências
 
 1. **OPENAPI INITIATIVE**. *OpenAPI Specification v3.1.0*. 2023. Disponível em: <https://spec.openapis.org/oas/latest.html>. Acesso em: 3 abr. 2025, 21:00.
