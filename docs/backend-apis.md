@@ -244,6 +244,29 @@ JSON:
     "message": "logged in successfully"
 }
 ```
+
+
+Teste 4: Envio de código de verificação por email - Caso de Sucesso
+
+Método: PATCH
+
+Endpoint: /api/auth/send-verification-code
+
+Cenário: Envio de código de verificação por email
+
+![image](https://github.com/user-attachments/assets/ae0c2bfc-3ed7-4304-8153-b399ae4a4e96)
+
+Status: 200 OK
+
+JSON:
+
+```http
+{
+    "success": true,
+    "message": "Code sent!"
+}
+```
+
 # Referências
 
 1. **OPENAPI INITIATIVE**. *OpenAPI Specification v3.1.0*. 2023. Disponível em: <https://spec.openapis.org/oas/latest.html>. Acesso em: 3 abr. 2025, 21:00.
