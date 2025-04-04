@@ -310,6 +310,29 @@ JSON:
 }
 ```
 
+Teste 7: Verifica código e redefine senha 
+
+Método: PATCH
+
+Endpoint: /api/auth/verify-forgot-password-code
+
+Cenário: Verifica código e faz a redefinição da senha  
+
+![image](https://github.com/user-attachments/assets/076b05fc-db51-4f6c-addd-6a5c6cb981c2)
+
+
+
+Status: 200 OK
+
+JSON:
+
+```http
+{
+    "success": true,
+    "message": "Your password has been changed!"
+}
+```
+
 # Referências
 
 1. **OPENAPI INITIATIVE**. *OpenAPI Specification v3.1.0*. 2023. Disponível em: <https://spec.openapis.org/oas/latest.html>. Acesso em: 3 abr. 2025, 21:00.
