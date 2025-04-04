@@ -419,6 +419,111 @@ JSON:
 }
 ```
 
+
+Teste 4: Ver lista de agendamentos - Caso de sucesso  
+ 
+Método: GET
+ 
+Endpoint: /api/appointment
+ 
+Cenário: Ver lista de agendamentos 
+ 
+![image](https://github.com/user-attachments/assets/d60d9af3-0faa-4073-ab14-b31c65959749)
+
+![image](https://github.com/user-attachments/assets/acc83400-8e22-44ed-ad51-6b41a7d96f22)
+
+Status: 200 OK
+ 
+JSON:
+ 
+```http
+{
+    "success": true,
+    "appointments": [
+        {
+            "_id": "67eddda190338f16ac3824dc",
+            "user": [
+                "67edd563d98293e23e5cf24d"
+            ],
+            "doctor": [
+                "67e98444b6d6f2f5af408b65"
+            ],
+            "slotDate": "2025-04-07",
+            "slotTime": "14:30:00",
+            "date": 1743642017008,
+            "amount": 600,
+            "cancelled": false,
+            "isCompleted": false,
+            "__v": 0
+        },
+        {
+            "_id": "67ede2b8a75f88fc4b7b01f2",
+            "user": [
+                "67edd563d98293e23e5cf24d"
+            ],
+            "doctor": [
+                "67e98444b6d6f2f5af408b65"
+            ],
+            "slotDate": "2025-04-07",
+            "slotTime": "16:30:00",
+            "date": 1743643320979,
+            "amount": 600,
+            "cancelled": false,
+            "isCompleted": false,
+            "__v": 0
+        },
+        {
+            "_id": "67ede4e4a75f88fc4b7b01f8",
+            "user": [
+                "67edd563d98293e23e5cf24d"
+            ],
+            "doctor": [
+                "67e98444b6d6f2f5af408b65"
+            ],
+            "slotDate": "2025-04-04",
+            "slotTime": "10:30:00",
+            "date": 1743643876417,
+            "amount": 600,
+            "cancelled": true,
+            "isCompleted": false,
+            "__v": 0
+        },
+        {
+            "_id": "67ede552a75f88fc4b7b01fd",
+            "user": [
+                "67edd563d98293e23e5cf24d"
+            ],
+            "doctor": [
+                "67e98444b6d6f2f5af408b65"
+            ],
+            "slotDate": "2024-06-25",
+            "slotTime": "10:30:00",
+            "date": 1743643986282,
+            "amount": 600,
+            "cancelled": true,
+            "isCompleted": false,
+            "__v": 0
+        },
+        {
+            "_id": "67ede577a75f88fc4b7b0202",
+            "user": [
+                "67edd563d98293e23e5cf24d"
+            ],
+            "doctor": [
+                "67e98444b6d6f2f5af408b65"
+            ],
+            "slotDate": "2025-06-25",
+            "slotTime": "10:30:00",
+            "date": 1743644023430,
+            "amount": 600,
+            "cancelled": false,
+            "isCompleted": false,
+            "__v": 0
+        }
+    ]
+}
+```
+
 # Referências
 
 1. **OPENAPI INITIATIVE**. *OpenAPI Specification v3.1.0*. 2023. Disponível em: <https://spec.openapis.org/oas/latest.html>. Acesso em: 3 abr. 2025, 21:00.
