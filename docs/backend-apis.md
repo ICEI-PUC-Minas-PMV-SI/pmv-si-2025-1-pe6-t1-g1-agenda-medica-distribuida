@@ -374,6 +374,29 @@ JSON:
 }
 ```
 
+Teste 2: Criar um novo agendamento - Horário/dia indisponível   
+ 
+Método: POST
+ 
+Endpoint: /api/appointment
+ 
+Cenário: Dia e horário igual ao já existente na lista de agendamento  
+ 
+![image](https://github.com/user-attachments/assets/7e20bd08-725c-4457-a689-f3bd36414ea6)
+
+ 
+ 
+Status: 403 Forbidden
+ 
+JSON:
+ 
+```http
+{
+    "success": false,
+    "message": "Slot Not Available"
+}
+```
+
 # Referências
 
 1. **OPENAPI INITIATIVE**. *OpenAPI Specification v3.1.0*. 2023. Disponível em: <https://spec.openapis.org/oas/latest.html>. Acesso em: 3 abr. 2025, 21:00.
