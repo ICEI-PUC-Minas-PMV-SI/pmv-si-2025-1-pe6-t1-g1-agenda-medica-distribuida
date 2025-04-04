@@ -267,6 +267,27 @@ JSON:
 }
 ```
 
+Teste 5: Verificando código de verificação - Caso de sucesso
+
+Método: PATCH
+
+Endpoint: /api/auth/verify-verification-code
+
+Cenário: Verificando o código de verificação gerado. 
+
+![image](https://github.com/user-attachments/assets/9a2f8e5e-6047-4fde-a673-a890ad9c9e70)
+
+Status: 200 OK
+
+JSON:
+
+```http
+{
+    "success": true,
+    "message": "Your account has been verified!"
+}
+```
+
 # Referências
 
 1. **OPENAPI INITIATIVE**. *OpenAPI Specification v3.1.0*. 2023. Disponível em: <https://spec.openapis.org/oas/latest.html>. Acesso em: 3 abr. 2025, 21:00.
