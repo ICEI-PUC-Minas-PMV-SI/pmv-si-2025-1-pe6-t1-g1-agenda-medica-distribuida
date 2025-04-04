@@ -288,6 +288,28 @@ JSON:
 }
 ```
 
+Teste 6: Envia código para redefinir senha - Caso de sucesso
+
+Método: PATCH
+
+Endpoint: /api/auth/send-forgot-password-code
+
+Cenário: Envia código para redefinição de senha. 
+
+![image](https://github.com/user-attachments/assets/820614a8-258f-448c-9e53-9edc95825222)
+
+
+Status: 200 OK
+
+JSON:
+
+```http
+{
+    "success": true,
+    "message": "Code sent!"
+}
+```
+
 # Referências
 
 1. **OPENAPI INITIATIVE**. *OpenAPI Specification v3.1.0*. 2023. Disponível em: <https://spec.openapis.org/oas/latest.html>. Acesso em: 3 abr. 2025, 21:00.
