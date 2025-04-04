@@ -27,7 +27,6 @@ Usuário: Representado por pacientes e administradores.
 Consulta: Representa os dados de uma consulta médica, incluindo data, hora, paciente e médico.
 
 
-
 ![Imagem do WhatsApp de 2025-04-02 à(s) 21 15 54_8337d146](https://github.com/user-attachments/assets/5e038037-209b-45c3-bab4-4c1309a15586)
 
 
@@ -46,20 +45,102 @@ A figura abaixo mostra o localhost na ferramenta SWAGGER:
 ![image](https://github.com/user-attachments/assets/401bea6a-b632-4782-ae77-4f779c3cd294)
 ![image](https://github.com/user-attachments/assets/e28a6e35-40fa-4cf8-95bb-2c057fd09d82)
 
+* Appointments - Operações relacionadas a agendamentos
+
+![image](https://github.com/user-attachments/assets/4dd36aba-e0ed-4e6e-b770-9093d1933a62)
+
+![image](https://github.com/user-attachments/assets/a51e7d03-0871-4c29-ba2c-b57e267e78b4)
+
+![image](https://github.com/user-attachments/assets/06c33580-7d9c-4a72-925a-235525f67e75)
+
+* Authentication - Autenticação e gerenciamento de usuários
+
+![image](https://github.com/user-attachments/assets/382c7ee3-9d17-4467-846f-6ee4b580b621)
+
+![image](https://github.com/user-attachments/assets/5c4c9fd9-8285-4d15-9cd5-24436b7add8c)
+
+![image](https://github.com/user-attachments/assets/10ac26f4-b5cc-48db-8997-f8377416795c)
+
+![image](https://github.com/user-attachments/assets/f8a3e891-77a8-4d81-b5d4-3d3deb8d3b0c)
+
+![image](https://github.com/user-attachments/assets/c1241989-a381-4dcf-ad5f-3abf00241aa1)
+
+![image](https://github.com/user-attachments/assets/258ece6c-73b5-4ae4-b708-51aac01927b1)
+
+![image](https://github.com/user-attachments/assets/62f767c7-221d-4903-8095-97e790254b56)
+
+![image](https://github.com/user-attachments/assets/51ac2ff1-4912-4151-810d-93d4275c33ef)
+
+* Doctors - Gerenciamento de médicos
+
+  ![image](https://github.com/user-attachments/assets/7eb60c44-4c2b-4d3a-8220-85e5726d0f8d)
+  ![image](https://github.com/user-attachments/assets/aa490094-0714-4cd1-97cb-2b0b2d2ccffc)
+  
+  ![image](https://github.com/user-attachments/assets/fe8b7480-d6e9-4a72-8ac1-3923731ace08)
+  ![image](https://github.com/user-attachments/assets/846c177e-a0f7-4896-b629-1738d9811862)
+
+  ![image](https://github.com/user-attachments/assets/0e4a3528-e178-430f-928c-d8ce187b7850)
+  ![image](https://github.com/user-attachments/assets/132f755f-2629-4b9b-95df-64042d620571)
 
 ## Considerações de Segurança
 
-[Discuta as considerações de segurança relevantes para a aplicação distribuída, como autenticação, autorização, proteção contra ataques, etc.]
+A autenticação JWT (JSON Web Token) Bearer em aplicações distribuídas exige uma abordagem rigorosa de segurança para garantir a proteção dos dados e a integridade do sistema. Entre os principais aspectos a serem observados, destacam-se:**
 
+Autenticação Segura: É imprescindível utilizar HTTPS para garantir que a transmissão dos tokens JWT seja protegida contra interceptações durante a comunicação entre cliente e servidor. Além disso, é necessário exigir que os usuários adotem senhas fortes, reforçando a segurança na geração dos tokens.
+  
+Autorização: É fundamental implementar uma verificação eficaz de usuários e suas respectivas permissões, assegurando que apenas os recursos apropriados sejam disponibilizados a cada perfil de acesso.
+
+Prevenção de SQL Injection: Para evitar ataques, toda comunicação com o banco de dados deve ser realizada exclusivamente no backend, com validações robustas para impedir a execução de comandos maliciosos.
+ 
 ## Implantação
 
-[Instruções para implantar a aplicação distribuída em um ambiente de produção.]
+1. Pré-requisitos
 
-1. Defina os requisitos de hardware e software necessários para implantar a aplicação em um ambiente de produção.
-2. Escolha uma plataforma de hospedagem adequada, como um provedor de nuvem ou um servidor dedicado.
-3. Configure o ambiente de implantação, incluindo a instalação de dependências e configuração de variáveis de ambiente.
-4. Faça o deploy da aplicação no ambiente escolhido, seguindo as instruções específicas da plataforma de hospedagem.
-5. Realize testes para garantir que a aplicação esteja funcionando corretamente no ambiente de produção.
+- Ferramentas necessárias:
+
+    Docker e Docker Compose.
+    Node.js (v14 ou superior).
+    MongoDB (utilizado como banco de dados).
+
+2. Configuração de Variáveis de Ambiente
+
+- Crie um arquivo .env na raiz do projeto com as seguintes variáveis:
+
+    PORT: Porta de execução do backend (ex: 3000).
+    DB_HOST: localhost ou nome do container Docker.
+    DB_USER: Usuário do MongoDB (ex: User).
+    DB_PASS: Senha do MongoDB.
+    DB_NAME: Nome do banco de dados (ex: agendamento_db).
+  
+3. Configuração e Execução do Banco de Dados
+
+- Configure e execute o PostgreSQL usando Docker:
+
+    docker run --name banco_agendamento -e MONGO_INITDB_ROOT_USERNAME=mongoadmin -e MONGO_INITDB_ROOT_PASSWORD=senha -p 27017:27017 -d mongo
+
+4. Execução do Backend
+
+- No diretório do backend:
+
+    npm install
+    npm run dev
+
+5. Execução do Frontend
+
+- No diretório do frontend:
+
+    npm install
+    npm start
+
+6. Execução Completa usando Docker Compose
+
+- No diretório raiz do projeto, utilize:
+
+   docker-compose up --build
+   
+7. Verificação
+   
+- Acesse o sistema na URL http://localhost:3000 para garantir que o sistema foi implantado corretamente com o banco MongoDB.
 
 ## Testes
 
