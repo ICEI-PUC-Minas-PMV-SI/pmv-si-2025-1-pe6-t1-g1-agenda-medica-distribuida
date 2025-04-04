@@ -30,6 +30,13 @@ Consulta: Representa os dados de uma consulta médica, incluindo data, hora, pac
 ![Imagem do WhatsApp de 2025-04-02 à(s) 21 15 54_8337d146](https://github.com/user-attachments/assets/5e038037-209b-45c3-bab4-4c1309a15586)
 
 
+## Fluxo de Dados
+
+O fluxo de dados na aplicação segue o padrão cliente-servidor, conforme o diagrama a seguir:
+
+![image](https://github.com/user-attachments/assets/a76aea76-76b8-454a-92db-4ce33826a3eb)
+
+
 ## Tecnologias Utilizadas
 
 - Express.js : Framework web para aplicações node.
