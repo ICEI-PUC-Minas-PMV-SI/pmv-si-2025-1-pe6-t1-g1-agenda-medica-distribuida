@@ -617,6 +617,30 @@ JSON:
 }
 ```
 
+Teste 3: Atualizar informações de um médico (apenas admin)  - Caso de sucesso  
+ 
+Método: PATCH
+ 
+Endpoint: /api/doctors/{crm}
+ 
+Cenário: Atualizar nome de um médico cadastrado  
+ 
+![image](https://github.com/user-attachments/assets/b61a13d5-8a85-4a40-b788-09cf0d1fb120)
+
+
+
+Status: 200 OK
+ 
+JSON:
+ 
+```http
+{
+    "success": true,
+    "message": "Doctor has been updated successfully!"
+}
+```
+
+
 # Referências
 
 1. **OPENAPI INITIATIVE**. *OpenAPI Specification v3.1.0*. 2023. Disponível em: <https://spec.openapis.org/oas/latest.html>. Acesso em: 3 abr. 2025, 21:00.
