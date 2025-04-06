@@ -640,6 +640,32 @@ JSON:
 }
 ```
 
+Teste 4: Remover um médico (apenas admin)  - Caso de sucesso  
+ 
+Método: DELETE
+ 
+Endpoint: /api/doctors/{crm}
+ 
+Cenário: Remove médico cadastrado (apenas admin) 
+ 
+![image](https://github.com/user-attachments/assets/78b5b3d5-e77c-4f38-8579-f9429ef00883)
+
+
+
+Status: 200 OK
+ 
+JSON:
+ 
+```http
+{
+    "success": true,
+    "message": "Doctor deleted successfully!",
+    "doctorToDelete": {
+        "acknowledged": true,
+        "deletedCount": 1
+    }
+}
+```
 
 # Referências
 
