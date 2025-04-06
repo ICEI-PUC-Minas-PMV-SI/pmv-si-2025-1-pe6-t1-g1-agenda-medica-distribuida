@@ -40,9 +40,10 @@ O fluxo de dados na aplicação segue o padrão cliente-servidor, conforme o dia
 ## Tecnologias Utilizadas
 
 - Express.js : Framework web para aplicações node.
-- React/Next : Biblioteca para aplicações criação de interfaces web.
-- React Native/Expo: Framework para desenvolvimente de aplicações mobile nativas, tanto para Android como IOS.
 - MongoDB : Sistema de gerenciamento de banco de dados não relacional.
+- JWT : Utilizando para garantir segurança na autenticação dos usuários.
+- Postman : Ferramenta utilizada para teste da API.
+- Swagger : Ferramenta utilizada para documentação da API. 
 
 
 ## API Endpoints
@@ -96,8 +97,6 @@ A autenticação JWT (JSON Web Token) Bearer em aplicações distribuídas exige
 Autenticação Segura: É imprescindível utilizar HTTPS para garantir que a transmissão dos tokens JWT seja protegida contra interceptações durante a comunicação entre cliente e servidor. Além disso, é necessário exigir que os usuários adotem senhas fortes, reforçando a segurança na geração dos tokens.
   
 Autorização: É fundamental implementar uma verificação eficaz de usuários e suas respectivas permissões, assegurando que apenas os recursos apropriados sejam disponibilizados a cada perfil de acesso.
-
-Prevenção de SQL Injection: Para evitar ataques, toda comunicação com o banco de dados deve ser realizada exclusivamente no backend, com validações robustas para impedir a execução de comandos maliciosos.
  
 ## Implantação
 
@@ -105,61 +104,46 @@ Prevenção de SQL Injection: Para evitar ataques, toda comunicação com o banc
 
 - Ferramentas necessárias:
 
-    Docker e Docker Compose.
-    Node.js (v14 ou superior).
-    MongoDB (utilizado como banco de dados).
+    - Node.js.
+    - MongoDB (utilizado como banco de dados).
 
 2. Configuração de Variáveis de Ambiente
 
 - Crie um arquivo .env na raiz do projeto com as seguintes variáveis:
 
-    PORT: Porta de execução do backend (ex: 3000).
-    DB_HOST: localhost ou nome do container Docker.
-    DB_USER: Usuário do MongoDB (ex: User).
-    DB_PASS: Senha do MongoDB.
-    DB_NAME: Nome do banco de dados (ex: agendamento_db).
+    PORT: Porta de execução do backend na máquina local (ex: 3000).
+
+    MONGO_URI : String para conexão com o MongoDB.
+  
+    TOKEN_SECRET : Chave secreta do JWT utilizada para assinar e verificar a autenticidade dos tokens.
+  
+    NODE_CODE_SENDING_EMAIL_ADDRESS: Endereço do remetente para envio de emails.
+  
+    NODE_CODE_SENDING_EMAIL_PASSWORD: Senha ou chave do email remetente.
+  
+    HMAC_VERIFICATION_CODE_SECRET: Chave secreta para criação dos códigos de verificação.  
   
 3. Configuração e Execução do Banco de Dados
 
-- Configure e execute o MongoDB usando Docker:
+- Configure e execute o MongoDB usando o npm:
 
-    docker run --name banco_agendamento -e MONGO_INITDB_ROOT_USERNAME=mongoadmin -e MONGO_INITDB_ROOT_PASSWORD=senha -p 27017:27017 -d mongo
+    ```console
+        npm install
+    ```
 
 4. Execução do Backend
 
 - No diretório do backend:
-
-    npm install
-    npm run dev
-
-5. Execução do Frontend
-
-- No diretório do frontend:
-
-    npm install
-    npm start
-
-6. Execução Completa usando Docker Compose
-
-- No diretório raiz do projeto, utilize:
-
-   docker-compose up --build
+  
+    ```console
+        npm run start
+    ```
    
 7. Verificação
    
-- Acesse o sistema na URL http://localhost:3000 para garantir que o sistema foi implantado corretamente com o banco MongoDB.
+- Acesse o sistema na URL http://localhost:3000 (ou outra porta que foi configurada no .env) para garantir que o sistema foi implantado corretamente com o banco MongoDB.
 
 ## Testes
-
-[Descreva a estratégia de teste, incluindo os tipos de teste a serem realizados (unitários, integração, carga, etc.) e as ferramentas a serem utilizadas.]
-
-1. Crie casos de teste para cobrir todos os requisitos funcionais e não funcionais da aplicação.
-2. Implemente testes unitários para testar unidades individuais de código, como funções e classes.
-3. Realize testes de integração para verificar a interação correta entre os componentes da aplicação.
-4. Execute testes de carga para avaliar o desempenho da aplicação sob carga significativa.
-5. Utilize ferramentas de teste adequadas, como frameworks de teste e ferramentas de automação de teste, para agilizar o processo de teste.
-
-
 
 ### Casos de Teste Organizados - API
 
