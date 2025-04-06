@@ -558,6 +558,81 @@ JSON:
 }
 ```
 
+
+Teste 2: Ver lista de médicos cadastrados - Caso de sucesso  
+ 
+Método: GET
+ 
+Endpoint: /api/doctors
+ 
+Cenário: Lista médicos dermatologistas cadastrados 
+ 
+![image](https://github.com/user-attachments/assets/a1de12ad-bb75-4e8a-b916-d0714e5ea643)
+
+
+
+Status: 200 OK
+ 
+JSON:
+ 
+```http
+{
+    "success": true,
+    "doctors": [
+        {
+            "_id": "67f0636e6fb78d431b5b3de3",
+            "name": "Dr. Maria Souza",
+            "speciality": "Dermatologia",
+            "crm": "CRM-RJ 654321",
+            "pricePerAppointment": 180,
+            "doctorImage": "iVBORw0KGgoAAAANSUhEUgAAAAUA",
+            "about": "Dr. Maria Souza é dermatologista com 12 anos de experiência, especializada no tratamento de acne, doenças da pele e procedimentos estéticos.",
+            "__v": 0
+        },
+        {
+            "_id": "67f063d26fb78d431b5b3dea",
+            "name": "Dr. Carla Oliveira",
+            "speciality": "Dermatologia",
+            "crm": "CRM-SP 112233",
+            "pricePerAppointment": 190,
+            "doctorImage": "iVBORw0KGgoAAAANSUhEUgAAAAUA",
+            "about": "Dra. Carla Oliveira é dermatologista com 14 anos de experiência, especializada no tratamento de acne, doenças da pele e cuidados estéticos.",
+            "__v": 0
+        },
+        {
+            "_id": "67f063e36fb78d431b5b3ded",
+            "name": "Dr. João Lima",
+            "speciality": "Dermatologia",
+            "crm": "CRM-RJ 223344",
+            "pricePerAppointment": 220,
+            "doctorImage": "iVBORw0KGgoAAAANSUhEUgAAAAUA",
+            "about": "Dr. João Lima é dermatologista com 10 anos de experiência, especializado em dermatologia estética e tratamentos anti-envelhecimento.",
+            "__v": 0
+        },
+        {
+            "_id": "67f063f86fb78d431b5b3df0",
+            "name": "Dra. Fernanda Costa",
+            "speciality": "Dermatologia",
+            "crm": "CRM-MG 334455",
+            "pricePerAppointment": 250,
+            "doctorImage": "iVBORw0KGgoAAAANSUhEUgAAAAUA",
+            "about": "Dra. Fernanda Costa é dermatologista com 18 anos de experiência, especializada no tratamento de doenças cutâneas, psoríase e vitiligo.",
+            "__v": 0
+        },
+        {
+            "_id": "67f064096fb78d431b5b3df3",
+            "name": "Dr. Roberto Souza",
+            "speciality": "Dermatologia",
+            "crm": "CRM-ES 667788",
+            "pricePerAppointment": 240,
+            "doctorImage": "iVBORw0KGgoAAAANSUhEUgAAAAUA",
+            "about": "Dr. Roberto Souza é dermatologista com 15 anos de experiência, especializado em doenças da pele, cirurgia dermatológica e estética.",
+            "__v": 0
+        }
+    ]
+}
+```
+
 # Referências
 
 1. **OPENAPI INITIATIVE**. *OpenAPI Specification v3.1.0*. 2023. Disponível em: <https://spec.openapis.org/oas/latest.html>. Acesso em: 3 abr. 2025, 21:00.
