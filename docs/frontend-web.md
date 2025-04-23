@@ -1,10 +1,17 @@
 # Front-end Web
 
-[Inclua uma breve descrição do projeto e seus objetivos.]
+O MedAgenda é uma solução web e mobile desenvolvida para otimizar o processo de agendamento de consultas médicas em uma clínica pública. O sistema visa reduzir a espera e simplificar o gerenciamento das agendas de médicos e pacientes, proporcionando uma interface acessível para reservas e acompanhamento de consultas.
 
 ## Projeto da Interface Web
 
-[Descreva o projeto da interface Web da aplicação, incluindo o design visual, layout das páginas, interações do usuário e outros aspectos relevantes.]
+O projeto foi idealizado e implementado com um enfoque prioritário na usabilidade, eficiência e na qualidade da experiência do usuário. O design visual da aplicação apresenta características limpas, modernas e intuitivas, sustentado por uma paleta de cores predominantemente azul-marinho e branco. A harmonia entre essas tonalidades é estrategicamente utilizada para ressaltar informações cruciais e elementos de navegação. A estrutura das páginas foi projetada de maneira lógica e funcional, otimizando a navegação e facilitando o acesso às principais ferramentas.
+
+- Página de Login: Permite aos usuários autenticar-se na aplicação por meio de suas credenciais pessoais.
+- Página de Agendamento de Consultas: Oferece aos usuários a possibilidade de agendar novas consultas, selecionando o profissional médico, informações específicas e horários adequados.
+- Página de Perfil do Paciente: Apresenta um painel com informações sobre o paciente e consultas agendadas.
+- Página de Administrador: Centraliza funcionalidades administrativas, como cadastro, edição e exclusão de médicos.
+- Página “Sobre nós”: Fornece uma informações sobre o MedAgenda, destacando sua proposta e valores.
+- Página de Contato: Disponibiliza canais de comunicação para facilitar o contato com o MedAgenda.
 
 ### Wireframes
 
@@ -16,14 +23,23 @@
 
 ## Fluxo de Dados
 
-[Diagrama ou descrição do fluxo de dados na aplicação.]
+O fluxo de dados do MedAgenda ocorre entre o cliente (navegador), a API e o banco de dados:
+
+Requisição do Cliente: O usuário realiza uma ação (ex.: agendar consulta).
+Processamento no Back-end: A API recebe a solicitação, valida, e consulta ou atualiza o banco.
+Resposta ao Cliente: O back-end envia dados de confirmação ou resposta de erro ao front-end.
 
 ## Tecnologias Utilizadas
-[Lista das tecnologias principais que serão utilizadas no projeto.]
+
+- React: Para criação das interfaces responsivas.
+- JavaScript: Para a interatividade da página e manipulação assíncrona de dados.
+- JWT (JSON Web Tokens): Para autenticação e segurança da aplicação.
 
 ## Considerações de Segurança
 
-[Discuta as considerações de segurança relevantes para a aplicação distribuída, como autenticação, autorização, proteção contra ataques, etc.]
+- Autenticação: JWT para sessões seguras de usuários.
+- Autorização: Diferentes níveis de acesso (pacientes e administradores).
+- Armazenamento Seguro: Criptografia para dados sensíveis e senhas.
 
 ## Implantação
 
