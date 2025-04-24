@@ -9,8 +9,24 @@ const Navbar = () => {
         <ul>
             <NavLink>
                 <li>HOME</li>
+                <hr />
+            </NavLink>
+            <NavLink>
+                <li>DOUTORES</li>
+                <hr />
+            </NavLink>
+            <NavLink>
+                <li>SOBRE NÓS</li>
+                <hr />
+            </NavLink>
+            <NavLink>
+                <li>CONTATO</li>
+                <hr />
             </NavLink>
         </ul>
+        <div>
+            <button>Crie sua conta</button>
+        </div>
     </div>
   )
 }
