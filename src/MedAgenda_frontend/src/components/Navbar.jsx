@@ -8,19 +8,19 @@ const Navbar = () => {
         <img className='w-60 cursor-pointer' src={assets.logo} alt="" />
         <ul className='hidden md:flex items-start gap-5 font-medium'>
             <NavLink>
-                <li>HOME</li>
+                <li className='py-1'>HOME</li>
                 <hr />
             </NavLink>
             <NavLink>
-                <li>DOUTORES</li>
+                <li className='py-1'>DOUTORES</li>
                 <hr />
             </NavLink>
             <NavLink>
-                <li>SOBRE NÓS</li>
+                <li className='py-1'>SOBRE NÓS</li>
                 <hr />
             </NavLink>
             <NavLink>
-                <li>CONTATO</li>
+                <li className='py-1'>CONTATO</li>
                 <hr />
             </NavLink>
         </ul>
