@@ -1,4 +1,5 @@
 import React from 'react'
+import { assets } from '../assets/assets'
 
 const Contact = () => {
   return (
@@ -17,4 +18,4 @@ const Contact = () => {
   )
 }
 
-export default Contact
+export default Contact 
