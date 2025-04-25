@@ -10,7 +10,17 @@ const Contact = () => {
     </div>
 
    <div>
-   
+   <img src={assets.contact_image} alt="" />
+
+   <div>
+  
+   </div>
+  <p>INFORMAÇÕES DE CONTATO</p>
+  <p></p>
+  <p></p>
+  <p></p>
+  <p></p>
+<button></button>
 
    </div>
 
