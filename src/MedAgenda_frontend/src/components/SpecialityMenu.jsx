@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom'
 
 const SpecialityMenu = () => {
   return (
-    <div id='speciality'>
-        <h1>Encontre Por Especialidade</h1>
-        <p>Navegue pela lista dos nossos melhores profissionais.</p>
-        <div>
+    <div className='flex flex-col items-center gap-4 py-16 text-gray-800' id='speciality'>
+        <h1 className='text-3xl font-medium'>Encontre Por Especialidade</h1>
+        <p className='sm:w-1/3 text-center text-sm'>Basta navegar pela nossa lista abrangente de médicos e agendar sua consulta sem complicação.</p>
+        <div className='flex sm:justify-center gap-4 pt-5 w-full overflow-scr'>
             {specialityData.map((item, index)=>(
                 <Link key={index} to={`/doctors/${item.speciality}`}>
                     <img src={item.image} alt="" />
