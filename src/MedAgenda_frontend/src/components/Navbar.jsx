@@ -24,7 +24,7 @@ const Navbar = () => {
                 <hr className='border-none outline-none h-0.5 bg-black w-3/5 m-auto hidden' />
             </NavLink>
         </ul>
-        <div>
+        <div className='flex items-center gap-4'>
             <button className='bg-black text-white px-8 py-3 rounded-full font-light hidden md:block'>Crie sua conta</button>
         </div>
     </div>
