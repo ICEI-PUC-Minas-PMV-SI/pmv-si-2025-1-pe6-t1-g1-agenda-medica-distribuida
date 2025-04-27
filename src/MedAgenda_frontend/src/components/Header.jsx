@@ -7,7 +7,7 @@ const Header = () => {
 
         {/* ------ lado esquerdo ------- */}
         <div className='md:w-1/2 flex flex-col items-start justify-center gap-4 py-10 m-auto md:py-[10vw] md:mb-[-30px]'>
-            <p className='text-white text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight md:leading-tight lg:leading-tight'>
+            <p className='text-white text-3xl md:text-4xl lg:text-4xl font-semibold leading-tight md:leading-tight lg:leading-tight'>
                 Agende sua consulta com <br /> médicos de confiança
             </p>
             <div className='text-white'>
