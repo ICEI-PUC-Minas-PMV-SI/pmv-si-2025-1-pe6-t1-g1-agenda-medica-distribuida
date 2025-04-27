@@ -10,12 +10,11 @@ const Header = () => {
             <p className='text-white text-3xl md:text-4xl lg:text-4xl font-semibold leading-tight md:leading-tight lg:leading-tight'>
                 Agende sua consulta com <br /> médicos de confiança
             </p>
-            <div className='text-white'>
-                <img src={assets.group_profiles} alt="" />
-                <p>Navegue pela nossa ampla lista de médicos especializados e agende sua consulta facilmente.</p>
+            <div className='text-white flex flex-col md:flex-row items-center gap-3 text-sm font-light'>
+                <p>Navegue pela nossa ampla lista de médicos especializados <br className='hidden sm:block'/> e agende sua consulta facilmente.</p>
             </div>
-            <a href="">
-                Criar Conta <img src={assets.arrow_icon} alt="" />
+            <a href="#speciality"  className='flex items-center gap-2 bg-white px-8 py-3 rounded-full text-gray-800 text-sm m-auto md:m-0 hover:scale-105 transition-all duration-300'>
+                Guia Médico <img src={assets.arrow_icon} alt="" />
             </a>
         </div>
 
