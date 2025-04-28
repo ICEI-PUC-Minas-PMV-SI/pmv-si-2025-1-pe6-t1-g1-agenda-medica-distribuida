@@ -90,7 +90,7 @@ export const doctors = [
         _id: 'doc1',
         name: 'Dr. Ricardo Takahashi',
         image: doc1,
-        speciality: 'Clínico Geral',
+        speciality: 'Gastroenterologista',
         degree: 'MBBS',
         experience: '4 Years',
         about: 'Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies. Dr. Davis has a strong commitment to delivering comprehensive medical care, focusing on preventive medicine, early diagnosis, and effective treatment strategies.',
