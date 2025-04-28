@@ -8,6 +8,7 @@ const Appointment = () => {
 
   const {docId} = useParams()
   const {doctors, currencySymbol} = useContext(AppContext)
+  const daysOfWeek = ['SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SAB', 'DOM']
 
   const [docInfo,SetDocInfo] = useState(null)
   const [docSlots, setDocSlots] = useState([])
@@ -107,6 +108,20 @@ const Appointment = () => {
             </p>
           </div>
         </div>
+
+        {/*------- agendamento -------  */}
+        <div className='sm:ml-72 sm:pl-4 mt-4 font-medium text-gray-700'>Horários Disponíveis</div>
+        <div>
+          {
+            docSlots.length && docSlots.map((item,index)=> (
+              <div key={index}>
+                <p>{item[0] && daysOfWeek[item[0].datetime.getDay()]}</p>
+                <p>{item[0] && item[0].datetime.getDate()}</p>
+              </div>
+            ))
+          }
+        </div>
+
     </div>
   )
 }
