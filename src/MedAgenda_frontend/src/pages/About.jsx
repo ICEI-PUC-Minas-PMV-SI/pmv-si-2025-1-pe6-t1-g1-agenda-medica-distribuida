@@ -12,11 +12,11 @@ const About = () => {
       <div className='my-10 flex flex-col md:flex-row gap-12'>
         <img className='w-full md:max-w-[360px]' src={assets.sobre_nos_Illustration_Medical} alt="" />
         <div className='flex flex-col justify-center gap-6 md:w-2/4 text-sm text-gray-600'>
-          <p>Lorem ipsum dolor sit amet. In reiciendis doloribus vel reiciendis galisum non distinctio dolor ut commodi recusandae qui molestiae amet aut accusantium ipsa. Ea ducimus tempora ut voluptas maiores sed quia fugiat qui delectus aperiam ut nostrum officiis in dolores officiis. Sed nobis molestias aut nulla distinctio in quia saepe et similique laborum sed tempore dolorem rem velit enim.</p>
-          <p>Aut inventore libero in internos omnis ut libero deleniti non voluptatem omnis. Ut explicabo voluptatum non quasi modi aut alias adipisci. Non delectus iste eum cupiditate veritatis ea fuga facilis.</p>
+          <p>A MedAgenda é uma plataforma desenvolvida para transformar a experiência de agendamento médico. Com o aumento da demanda por consultas e a necessidade de organização, buscamos soluções que otimizem o tempo de pacientes, médicos e secretários de clínicas e hospitais.</p>
+          <p>Nossa proposta é oferecer uma ferramenta que conecta todos os envolvidos, proporcionando praticidade, eficiência e segurança na marcação e no gerenciamento de consultas médicas em qualquer lugar.</p>
           <b className='text-gray-800'>Nossa Visão</b>
-          <p>Lorem ipsum dolor sit amet. In reiciendis doloribus vel reiciendis galisum non distinctio dolor ut commodi recusandae qui molestiae amet aut accusantium ipsa. Ea ducimus tempora ut voluptas maiores sed quia fugiat qui delectus aperiam ut nostrum officiis in dolores officiis. Sed nobis molestias aut nulla distinctio in quia saepe et similique laborum sed tempore dolorem rem velit enim.</p>
-          <p>Aut inventore libero in internos omnis ut libero deleniti non voluptatem omnis. Ut explicabo voluptatum non quasi modi aut alias adipisci. Non delectus iste eum cupiditate veritatis ea fuga facilis.</p>
+          <p>Ser referência em inovação tecnológica para o setor da saúde, oferecendo um sistema de agendamento que se adapta às necessidades de cada usuário.</p>
+          <p>Buscamos melhorar a gestão do tempo, aumentar a qualidade do atendimento e tornar o acesso aos serviços de saúde mais ágil, prático e humano para todos.</p>
         </div>
       </div>
 
@@ -27,16 +27,16 @@ const About = () => {
       <div className='flex flex-col md:flex-row mb-20'>
         <div className='border px-10 md:px-16 py-8 sm:py-16 flex flex-col gap-5 text-[15px] hover:bg-primary hover:text-white transition-all duration-300 text-gray-600 cursor-pointer'>
           <b>EFICIÊNCIA:</b>
-          <p>Aut inventore libero in internos omnis ut libero deleniti</p>
+          <p>Agendamentos otimizados e redução de conflitos de horários, melhorando o fluxo de atendimentos e diminuindo faltas.</p>
         </div>
         <div className='border px-10 md:px-16 py-8 sm:py-16 flex flex-col gap-5 text-[15px] hover:bg-primary hover:text-white transition-all duration-300 text-gray-600 cursor-pointer'>
           <b>CONVENIÊNCIA:</b>
-          <p>Aut inventore libero in internos omnis ut libero deleniti</p>
+          <p>Agende, altere ou cancele consultas facilmente, de qualquer dispositivo, com acesso imediato à disponibilidade dos médicos.</p>
 
         </div>
         <div className='border px-10 md:px-16 py-8 sm:py-16 flex flex-col gap-5 text-[15px] hover:bg-primary hover:text-white transition-all duration-300 text-gray-600 cursor-pointer'>
           <b>PERSONALIZAÇÃO:</b>
-          <p>Aut inventore libero in internos omnis ut libero deleniti</p>
+          <p>Plataforma adaptável às rotinas de clínicas e consultórios, com agendamento fácil e lembretes ajustados para cada necessidade.</p>
 
         </div>
       </div>
