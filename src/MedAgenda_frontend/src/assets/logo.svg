@@ -1,14 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="320" height="64" viewBox="0 0 320 64" fill="none">
+
+<svg xmlns="http://www.w3.org/2000/svg" width="368" height="72" viewBox="0 0 368 72" fill="none">
   <!-- Ícone -->
-  <g stroke="#212836" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <rect x="8" y="8" width="36" height="48" rx="2" ry="2"/>
-    <circle cx="26" cy="28" r="6"/>
-    <path d="M16 44c0-4 6-6 10-6s10 2 10 6"/>
-    <line x1="4" y1="16" x2="8" y2="16"/>
-    <line x1="4" y1="32" x2="8" y2="32"/>
-    <line x1="4" y1="48" x2="8" y2="48"/>
+  <g stroke="#212836" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="4" y="8" width="52" height="56" rx="4"/>
+    <circle cx="30" cy="30" r="8"/>
+    <path d="M16 50c0-5 8-8 14-8s14 3 14 8"/>
+    <line x1="0" y1="18" x2="4" y2="18"/>
+    <line x1="0" y1="34" x2="4" y2="34"/>
+    <line x1="0" y1="50" x2="4" y2="50"/>
   </g>
 
   <!-- Texto -->
-  <text x="54" y="45" font-family="Arial, Helvetica, sans-serif" font-size="28" fill="#212836" font-weight="bold">MedAgenda</text>
+  <text x="65" y="50" font-family="Arial, Helvetica, sans-serif" font-size="36" fill="#212836" font-weight="bold">
+    MedAgenda
+  </text>
 </svg>
