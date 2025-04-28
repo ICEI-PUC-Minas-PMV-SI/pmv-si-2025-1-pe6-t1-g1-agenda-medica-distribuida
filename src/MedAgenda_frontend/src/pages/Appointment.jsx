@@ -38,7 +38,29 @@ const Appointment = () => {
       //configurando horas
       if (today.getDate() === currentDate.getDate()) {
         currentDate.setHours(currentDate.getHours() > 10 ? currentDate.getHours() + 1 : 10)
+        currentDate.setMinutes(currentDate.getMinutes() > 30 ? 30 : 0)
+      } else {
+        currentDate.setHours(10)
+        currentDate.setMinutes(0)
       }
+
+      let timeSlots = []
+
+      while(currentDate < endTime) {
+        let formattedTime = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit'})
+
+        //array
+        timeSlots.push({
+          datetime: new Date(currentDate),
+          time: formattedTime
+        })
+
+        // 30 m
+        currentDate.setMinutes(currentDate.getMinutes() + 30)
+      }
+
+      setDocSlots(prev => ([...prev,timeSlots]))
+
     }
   }
 
@@ -49,6 +71,10 @@ const Appointment = () => {
   useEffect(()=> {
     getAvaliableSlots()
   }, [docInfo])
+
+  useEffect(()=> {
+    console.log(docSlots)
+  },[docSlots])
 
   return docInfo && (
     <div>
