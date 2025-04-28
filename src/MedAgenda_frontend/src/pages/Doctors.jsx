@@ -26,15 +26,15 @@ const Doctors = () => {
     <div>
         <p className='text-gray-600'>Navegue pela lista de nossos melhores profissionais.</p>
         <div className='flex flex-col sm:flex-row items-start gap-5 mt-5'>
-          <div className='flex-col gap-4 text-sm text-gray-600'>
-            <p className>Clínico Geral</p>
-            <p className>Ginecologista</p>
-            <p className>Dermatologista</p>
-            <p className>Pediatra</p>
-            <p className>Neurologista</p>
-            <p className>Gastroenterologista</p>
+          <div className='flex flex-col gap-4 text-sm text-gray-600'>
+            <p onClick={()=> speciality === 'Clínico Geral' ? navigate('/doctors') : navigate('/doctors/Clínico Geral')} className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer`}>Clínico Geral</p>
+            <p onClick={()=> speciality === 'Ginecologista' ? navigate('/doctors') : navigate('/doctors/Ginecologista')} className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer`}>Ginecologista</p>
+            <p onClick={()=> speciality === 'Dermatologista' ? navigate('/doctors') : navigate('/doctors/Dermatologista')} className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer`}>Dermatologista</p>
+            <p onClick={()=> speciality === 'Pediatra' ? navigate('/doctors') : navigate('/doctors/Pediatra')} className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer`}>Pediatra</p>
+            <p onClick={()=> speciality === 'Neurologista' ? navigate('/doctors') : navigate('/doctors/Neurologista')} className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer`}>Neurologista</p>
+            <p onClick={()=> speciality === 'Gastroenterologista' ? navigate('/doctors') : navigate('/doctors/Gastroenterologista')} className={`w-[94vw] sm:w-auto pl-3 py-1.5 pr-16 border border-gray-300 rounded transition-all cursor-pointer`}>Gastroenterologista</p>
           </div>
-          <div className='w-full grid [grid-template-columns:repeat(auto-fill,minmax(100px,1fr))] gap-4 pt-5 gap-y-6 px-3 sm:px-0'>
+          <div className='w-full grid [grid-template-columns:repeat(auto-fill,minmax(200px,1fr))] gap-4 gap-y-6'>
             {
               filterDoc.map((item,index)=>(
                 <div onClick={(()=>navigate(`/appointment/${item._id}`))} className='border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500' key={index}>
