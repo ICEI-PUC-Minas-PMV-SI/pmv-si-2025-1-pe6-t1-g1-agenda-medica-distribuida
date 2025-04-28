@@ -24,15 +24,15 @@ const Appointment = () => {
   return docInfo && (
     <div>
       {/* detalhe medico */}
-        <div className='flex flex-col sm:flex-row gap-4'>
-          <div>
+        <div className='flex flex-col sm:flex-row gap-20 items-center justify-center sm:justify-start'>
+          <div className='pl-12'>
             <img className='bg-gray-800 w-full sm:max-w-72 rounded-4xl' src={docInfo.image} alt="" />
           </div>
 
-          <div>
+          <div className='flex-l border border-gray-400 rounded-lg p-8 py-7 bg-white mx-2 sm:mx-0 mt-[-80px] sm:mt-0'>
             {/* doc info: nome, etc */}
-            <p>
-              {docInfo.nome} 
+            <p className='flex items-center gap-2 text-2xl font-medium text-gray-900'>
+              {docInfo.name} 
               <img src={assets.verified_icon} alt="" />
             </p>
             <div>
@@ -40,7 +40,7 @@ const Appointment = () => {
               <button>{docInfo.experience}</button>
             </div>
 
-            {/* ------ sobroe o medico -------- */}
+            {/* ------ sobre o medico -------- */}
             <div>
               <p>
                 Sobre <img src={assets.info_icon} alt="" />
