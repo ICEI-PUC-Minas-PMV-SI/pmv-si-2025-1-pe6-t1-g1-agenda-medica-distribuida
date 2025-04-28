@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import { useParams } from 'react-router-dom'
 import { AppContext } from '../context/AppContext'
+import { assets } from '../assets/assets'
 
 const Appointment = () => {
 
@@ -26,6 +27,18 @@ const Appointment = () => {
         <div>
           <div>
             <img src={docInfo.image} alt="" />
+          </div>
+
+          <div>
+            {/* doc info: nome, etc */}
+            <p>
+              {docInfo.nome} 
+              <img src={assets.verified_icon} alt="" />
+            </p>
+            <div>
+              <p>{docInfo.degree} - {docInfo.speciality}</p>
+              <button>{docInfo.experience}</button>
+            </div>
           </div>
         </div>
     </div>
