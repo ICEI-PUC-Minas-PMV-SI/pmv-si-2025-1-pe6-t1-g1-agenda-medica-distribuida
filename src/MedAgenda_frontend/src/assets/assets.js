@@ -2,7 +2,7 @@ import appointment_img from './appointment_img.png'
 import header_img from './header_img.png'
 import group_profiles from './group_profiles.png'
 import profile_pic from './profile_pic.png'
-import contato_illustration_medical from './contato_illustration_medical.png'
+import contact_image from './contact_image.png'
 import about_image from './about_image.png'
 import logo from './logo.svg'
 import dropdown_icon from './dropdown_icon.svg'
@@ -48,7 +48,7 @@ export const assets = {
     info_icon,
     profile_pic,
     arrow_icon,
-    contato_illustration_medical,
+    contact_image,
     about_image,
     menu_icon,
     cross_icon,
