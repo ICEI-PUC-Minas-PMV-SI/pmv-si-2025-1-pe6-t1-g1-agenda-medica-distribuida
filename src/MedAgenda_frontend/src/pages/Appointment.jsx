@@ -24,9 +24,9 @@ const Appointment = () => {
   return docInfo && (
     <div>
       {/* detalhe medico */}
-        <div>
+        <div className='flex flex-col sm:flex-row gap-4'>
           <div>
-            <img src={docInfo.image} alt="" />
+            <img className='bg-gray-800 w-full sm:max-w-72 rounded-4xl' src={docInfo.image} alt="" />
           </div>
 
           <div>
@@ -38,6 +38,14 @@ const Appointment = () => {
             <div>
               <p>{docInfo.degree} - {docInfo.speciality}</p>
               <button>{docInfo.experience}</button>
+            </div>
+
+            {/* ------ sobroe o medico -------- */}
+            <div>
+              <p>
+                Sobre <img src={assets.info_icon} alt="" />
+              </p>
+              <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Enim voluptatibus quidem magnam molestiae pariatur officia iusto ipsam fuga corrupti maxime nemo quod consectetur aliquid, quo porro minima suscipit itaque corporis. Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum suscipit harum alias laudantium magnam.  </p>
             </div>
           </div>
         </div>
