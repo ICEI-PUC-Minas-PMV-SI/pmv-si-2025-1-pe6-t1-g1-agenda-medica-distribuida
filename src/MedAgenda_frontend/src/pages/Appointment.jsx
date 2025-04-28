@@ -20,7 +20,7 @@ const Appointment = () => {
     fetchDocInfo()
   }, [doctors,docId])
 
-  return (
+  return docInfo && (
     <div>
       {/* detalhe medico */}
         <div>
