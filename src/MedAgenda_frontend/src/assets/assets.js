@@ -3,7 +3,7 @@ import header_img from './header_img.png'
 import group_profiles from './group_profiles.png'
 import profile_pic from './profile_pic.png'
 import contact_image from './contact_image.png'
-import sobre_nos_Illustration_Medical from './sobre_nos_Illustration_Medical.png'
+import about_image from './about_image.png'
 import logo from './logo.svg'
 import dropdown_icon from './dropdown_icon.svg'
 import menu_icon from './menu_icon.svg'
@@ -49,7 +49,7 @@ export const assets = {
     profile_pic,
     arrow_icon,
     contact_image,
-    sobre_nos_Illustration_Medical,
+    about_image,
     menu_icon,
     cross_icon,
     dropdown_icon,

@@ -10,7 +10,7 @@ const About = () => {
       </div>
 
       <div className='my-10 flex flex-col md:flex-row gap-12'>
-        <img className='w-full md:max-w-[360px]' src={assets.sobre_nos_Illustration_Medical} alt="" />
+        <img className='w-full md:max-w-[360px]' src={assets.about_image} alt="" />
         <div className='flex flex-col justify-center gap-6 md:w-2/4 text-sm text-gray-600'>
           <p>A MedAgenda é uma plataforma desenvolvida para transformar a experiência de agendamento médico. Com o aumento da demanda por consultas e a necessidade de organização, buscamos soluções que otimizem o tempo de pacientes, médicos e secretários de clínicas e hospitais.</p>
           <p>Nossa proposta é oferecer uma ferramenta que conecta todos os envolvidos, proporcionando praticidade, eficiência e segurança na marcação e no gerenciamento de consultas médicas em qualquer lugar.</p>
