@@ -122,6 +122,14 @@ const Appointment = () => {
             ))
           }
         </div>
+
+        <div>
+          {docSlots.length && docSlots[slotIndex].map((item,index)=>(
+            <p key={index}>
+              {item.time.toLowerCase()}
+            </p>
+          ))}
+        </div>
         </div>
         
 
