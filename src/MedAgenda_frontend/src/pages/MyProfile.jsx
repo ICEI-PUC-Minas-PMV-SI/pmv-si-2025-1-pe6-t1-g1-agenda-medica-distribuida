@@ -30,7 +30,7 @@ const [isEdit,setIsEdit] = useState(false)
           <div>
             <p>Email id:</p>
             <p>{userData.email}</p>
-            <p>Gender:</p>
+            <p>Gênero:</p>
             {
           isEdit
            ? <select onChange={(e) => setUserData(prev => ({...prev, gender: e.target.value}))} value={userData.gender}>
@@ -54,8 +54,8 @@ const [isEdit,setIsEdit] = useState(false)
 <div>
   {
     isEdit
-    ? <button onClick={()=>setIsEdit(false)}>Alterar senha</button>
-    : <button onClick={()=>setIsEdit(true)}>Alterar senha</button>
+    ? <button onClick ={()=>setIsEdit(false)} className='bg-gray-800 text-white px-8 py-3 rounded-full font-light hidden md:block'>Alterar senha</button>
+    : <button onClick={()=>setIsEdit(true)} className='bg-gray-800 text-white px-8 py-3 rounded-full font-light hidden md:block'>Alterar senha</button>
 
   }
 </div>
