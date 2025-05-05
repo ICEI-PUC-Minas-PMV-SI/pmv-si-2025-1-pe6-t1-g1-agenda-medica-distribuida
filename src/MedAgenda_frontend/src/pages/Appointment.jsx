@@ -131,7 +131,7 @@ const Appointment = () => {
             </p>
           ))}
         </div>
-        <button className='bg-gray-800 text-white text-sm font-light px-18 py-4 rounded-full my-6'>Marque a consulta</button>
+        <button className='bg-gray-800 text-white text-sm font-light px-18 py-4 rounded-full my-6 cursor-pointer'>Marque a consulta</button>
         </div>
 
         {/* lista de médicos relacionados */}
