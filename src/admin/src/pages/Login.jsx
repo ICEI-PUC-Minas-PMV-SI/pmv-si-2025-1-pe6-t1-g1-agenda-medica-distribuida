@@ -13,32 +13,33 @@ const Login = () => {
     const {setAToken,backendUrl} = useContext(AdminContext)
 
 
-const onSubmitHandler = async (event) => {
-
-    event.preventDefault()
-
-    try {
-
-        if (state === 'Admin') {
-            
-const {data} = await axios.post(backendUrl + '/api/admin/login', {email,password})
-if (data.success) {
-    localStorage.setItem('aToken',data.token)
-    setAToken(data.token);  
-}else{
-    toast.error(data.message)
-}
-
-        }else{
-
-
-        }
-        
-    } catch (error) {
-        
-    }
-
-}
+    const onSubmitHandler = async (event) => {
+        event.preventDefault();
+      
+        try {
+          if (state === 'Admin') {
+            const { data } = await axios.post(backendUrl + '/api/admin/login', { email, password });
+      
+            if (data.success) {
+              localStorage.setItem('aToken', data.token);
+              setAToken(data.token);
+              toast.success('Login realizado com sucesso!');
+            } else {
+              toast.error(data.message || 'Erro ao fazer login.');
+            }
+          } else {
+            toast.warn('Login de Doutor ainda não implementado.');
+          }
+        } catch (error) {
+            console.error('Erro no login:', error);  // JÁ EXISTE
+            console.log('Detalhes do erro:', error?.response); // ADICIONE ISSO
+            toast.error(
+              error?.response?.data?.message ||
+              'Erro inesperado. Verifique seu backend ou tente novamente.'
+            );
+          }
+      };
+      
 
 
 
