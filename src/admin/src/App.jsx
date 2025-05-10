@@ -4,6 +4,11 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AdminContext } from './context/AdminContext';
 import NavBar from './components/NavBar';
+import Sidebar from './components/Sidebar';
+import { Route, Routes } from 'react-router-dom';
+import AllApointments from './pages/Admin/AllApointments';
+import AddDoctor from './pages/Admin/AddDoctor';
+import DoctorsList from './pages/Admin/DoctorsList';
 
 const App = () => {
   const {aToken} = useContext(AdminContext)
@@ -12,6 +17,16 @@ const App = () => {
       
       <ToastContainer/>
       <NavBar />
+      <div className='flex items-start'>
+        <Sidebar />
+        <Routes>
+          <Route path= '/' element={<></>} />
+          <Route path= '/all-appointments' element={<AllApointments />} />
+          <Route path= '/add-doctor' element={<AddDoctor />} />
+          <Route path= '/doctor-list' element={<DoctorsList />} />
+
+        </Routes>
+      </div>
     </div>
   ) : (
     <>
