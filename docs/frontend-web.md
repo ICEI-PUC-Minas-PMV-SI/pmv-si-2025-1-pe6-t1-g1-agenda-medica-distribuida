@@ -17,6 +17,8 @@ O projeto foi idealizado e implementado com um enfoque prioritário na usabilida
 
 MedAgenda - Homepage
 
+![MedAgenda - Homepage (5)](https://github.com/user-attachments/assets/0031dafe-7a76-4038-9540-99e8ab89a9db)
+
 
 [Inclua os wireframes das páginas principais da interface, mostrando a disposição dos elementos na página.]
 
