@@ -27,6 +27,11 @@ MedAgenda - Doctors Page
 
 ![Prescripto - Doctors Page (2)](https://github.com/user-attachments/assets/4c1df396-f8fd-4256-8209-d75e9a393ae9)
 
+MedAgenda - About Page
+
+![Prescripto - About Page (5)](https://github.com/user-attachments/assets/13d95e22-1931-4673-b35d-1c6f65adc4d7)
+
+
 [Inclua os wireframes das páginas principais da interface, mostrando a disposição dos elementos na página.]
 
 ### Design Visual
