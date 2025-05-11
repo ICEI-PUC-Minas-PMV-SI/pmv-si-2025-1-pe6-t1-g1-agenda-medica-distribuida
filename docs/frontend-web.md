@@ -35,6 +35,22 @@ MedAgenda - Contact Page
 
 ![Prescripto - Contact Page (2)](https://github.com/user-attachments/assets/be4b951b-f8a6-4c4a-b877-832578755593)
 
+MedAgenda - Admin Panel - Consultas
+
+![Admin Panel (8)](https://github.com/user-attachments/assets/8f717822-8932-4dd0-b858-0763ea77c39d)
+
+MedAgenda -  Admin Panel - Adicionar Doutor
+
+![Admin Panel (8)](https://github.com/user-attachments/assets/5d86bb76-1422-4704-aff7-ca2a5290bbf6)
+
+MedAgenda - Admin Panel - Lista de Doutores
+
+![Admin Panel (1)](https://github.com/user-attachments/assets/c612c2de-7a75-40ab-8641-7299c0be6d19)
+
+
+
+
+
 
 [Inclua os wireframes das páginas principais da interface, mostrando a disposição dos elementos na página.]
 
