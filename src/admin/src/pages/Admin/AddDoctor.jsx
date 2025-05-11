@@ -44,7 +44,7 @@ const AddDoctor = () => {
                 console.log(`${key}: ${value}`);
             });
 
-            const { data } = await axios.post(backendUrl + '/api/doctors', formData, { headers: { aToken } })
+            const { data } = await axios.post(backendUrl + '/api/doctors',Object.fromEntries(formData), { headers: {"client": "not-browser", "Authorization": `Bearer ${aToken}`}})
             if (data.success) {                
                 toast.success(data.message)
                 setDocImg(false)
