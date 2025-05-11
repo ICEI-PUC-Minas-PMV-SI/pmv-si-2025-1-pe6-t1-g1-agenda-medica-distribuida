@@ -40,13 +40,15 @@ MedAgenda - Contact Page
 
 ### Design Visual
 
-A interface do sistema apresenta um estilo visual moderno e funcional, com foco em clareza e usabilidade. A paleta de cores predominante utiliza tons de azul, branco e cinza, proporcionando um visual limpo e profissional, adequado ao contexto da área da saúde. Os tons de azul transmitem confiança e tranquilidade, enquanto os fundos brancos e os elementos em cinza claro ajudam a manter uma aparência neutra e organizada.
+A interface do sistema adota uma abordagem utility-first por meio do framework Tailwind CSS, permitindo a aplicação direta de classes utilitárias no código HTML/JSX para a estilização de elementos. Essa metodologia promove um desenvolvimento ágil e uma personalização refinada da interface, com foco em eficiência e consistência visual.
 
-A tipografia é simples e legível, adotando fontes sans-serif — como a Roboto — que são comumente utilizadas em aplicações web por sua clareza em telas digitais. Os tamanhos de fonte são bem hierarquizados para distinguir títulos, subtítulos e conteúdo textual, contribuindo para uma boa experiência de leitura.
+A paleta de cores apresenta um estilo visual moderno e funcional, com foco em clareza e usabilidade. A paleta de cores predominante utiliza tons de azul, branco e cinza, proporcionando um visual limpo e profissional, adequado ao contexto da área da saúde. Os tons de azul transmitem confiança e tranquilidade, enquanto os fundos brancos e os elementos em cinza claro ajudam a manter uma aparência neutra e organizada. Essas cores são aplicadas em botões, textos e fundos, garantindo contraste adequado, harmonia visual e acessibilidade para os usuários.
 
-A interface utiliza ícones vetoriais padronizados (provavelmente da biblioteca Material Icons), que auxiliam na identificação rápida de funcionalidades como edição, exclusão e visualização de dados. Esses ícones são aplicados de forma consistente, mantendo a coerência visual em toda a aplicação.
+A tipografia é gerenciada através das classes utilitárias do Tailwind, como text-base e font-semibold que asseguram uma hierarquia visual clara e uma boa legibilidade em diferentes tamanhos de tela. O projeto pode utilizar fontes padrão do sistema ou integrar fontes personalizadas por meio de serviços como o Google Fonts.
 
-Outros elementos gráficos, como botões, campos de formulário e tabelas, seguem um design baseado em componentes do Material UI (MUI), o que contribui para a padronização da interface e responsividade entre diferentes dispositivos. Os botões têm bordas arredondadas e utilizam cores de destaque (como o azul) para chamar a atenção para ações importantes.
+Os ícones utilizados na interface são provenientes de bibliotecas compatíveis com Tailwind CSS, como o Heroicons, integrando-se de maneira fluida ao restante da interface. Elementos gráficos como botões, campos de entrada e cartões são estilizados utilizando classes específicas do Tailwind, o que favorece a consistência no design e facilita a criação de componentes reutilizáveis.
+
+Por fim, o layout é construído com classes como flex, grid, p-4 e m-2, que proporcionam uma estrutura visual organizada e responsiva. O uso de breakpoints (sm:, md:, lg:, xl:) permite adaptar a interface a diferentes tamanhos de tela, garantindo uma boa experiência tanto em dispositivos móveis quanto em desktops.
 
 ## Fluxo de Dados
 
