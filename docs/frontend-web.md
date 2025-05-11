@@ -48,8 +48,6 @@ A interface utiliza ícones vetoriais padronizados (provavelmente da biblioteca 
 
 Outros elementos gráficos, como botões, campos de formulário e tabelas, seguem um design baseado em componentes do Material UI (MUI), o que contribui para a padronização da interface e responsividade entre diferentes dispositivos. Os botões têm bordas arredondadas e utilizam cores de destaque (como o azul) para chamar a atenção para ações importantes.
 
-[Descreva o estilo visual da interface, incluindo paleta de cores, tipografia, ícones e outros elementos gráficos.]
-
 ## Fluxo de Dados
 
 O fluxo de dados do MedAgenda ocorre entre o cliente (navegador), a API e o banco de dados:
