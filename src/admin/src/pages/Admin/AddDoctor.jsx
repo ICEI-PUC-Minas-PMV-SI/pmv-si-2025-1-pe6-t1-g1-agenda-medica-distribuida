@@ -3,6 +3,8 @@ import { assets } from '../../assets/assets'
 import { useState } from 'react'
 import { AdminContext } from '../../context/AdminContext'
 import { toast } from 'react-toastify'
+import axios from 'axios'
+
 
 
 const AddDoctor = () => {
@@ -11,10 +13,11 @@ const AddDoctor = () => {
     const [name, setName] = useState('')
     const [crm, setCRM] = useState('')
     const [speciality, setSpeciality] = useState('Clínico Geral')
-    const [price, setPrice] = useState('')
+    const [pricePerAppointment, setPrice] = useState('')
     const [about, setAbout] = useState('')
 
-    const { backendUrl, aToken }= useContext(AdminContext)
+   
+    const {backendUrl, aToken } = useContext(AdminContext)
 
 
     const onSubmitHandler = async (event) => {
@@ -24,7 +27,7 @@ const AddDoctor = () => {
         try {
 
             if (!docImg) {
-                return toast.error('Imagem não selecionada') 
+                return toast.error('Imagem não selecionada')
             }
 
             const formData = new FormData();
@@ -33,19 +36,42 @@ const AddDoctor = () => {
             formData.append('name', name)
             formData.append('crm', crm)
             formData.append('speciality', speciality)
-            formData.append('price', price)
+            formData.append('pricePerAppointment', pricePerAppointment)
             formData.append('about', about)
 
             // console log formdata 
             formData.forEach((value, key) => {
                 console.log(`${key}: ${value}`);
             });
-            
-        } catch (error) {
-            
-        }
 
-  }
+            const { data } = await axios.post(backendUrl + '/api/doctors', formData, { headers: { aToken } })
+            if (data.success) {
+                
+                toast.success(data.message)
+
+            } else {
+                
+                toast.error(data.message)
+            }
+
+
+        } catch (error) {
+            if (error.response) {
+                console.error("Status da resposta:", error.response.status);
+              console.error("Erro na resposta do servidor:", error.response.data);
+              console.error("Status:", error.response.status);
+              console.error("Headers:", error.response.headers);
+              toast.error(error.response.data?.message || 'Erro do servidor ao adicionar o doutor.');
+            } else if (error.request) {
+              console.error("Sem resposta do servidor:", error.request);
+              toast.error('Servidor não respondeu.');
+            } else {
+              console.error("Erro na requisição:", error.message);
+              toast.error('Erro ao configurar a requisição.');
+            }
+          }
+
+    }
 
 
     return (
@@ -93,7 +119,7 @@ const AddDoctor = () => {
 
                         <div className='flex-1 flex flex-col gap-1'>
                             <p >Preço da consulta</p>
-                            <input onChange={e => setPrice(e.target.value)} value={price} className='border rounded px-3 py-2' type="text" placeholder='R$' required />
+                            <input onChange={e => setPrice(e.target.value)} value={pricePerAppointment} className='border rounded px-3 py-2' type="number" placeholder='R$' required />
                         </div>
 
                     </div>
