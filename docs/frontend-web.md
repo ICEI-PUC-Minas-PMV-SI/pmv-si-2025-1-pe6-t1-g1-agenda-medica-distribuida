@@ -35,6 +35,11 @@ MedAgenda - Contact Page
 
 ![Prescripto - Contact Page (2)](https://github.com/user-attachments/assets/be4b951b-f8a6-4c4a-b877-832578755593)
 
+MedAgenda - Profile Page
+
+![Prescripto - Profile Page (7)](https://github.com/user-attachments/assets/78a17dc6-0a76-4ac7-b396-52e181020449)
+
+
 MedAgenda - Admin Panel - Consultas
 
 ![Admin Panel (8)](https://github.com/user-attachments/assets/8f717822-8932-4dd0-b858-0763ea77c39d)
