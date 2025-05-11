@@ -40,6 +40,19 @@ MedAgenda - Profile Page
 ![Prescripto - Profile Page (7)](https://github.com/user-attachments/assets/78a17dc6-0a76-4ac7-b396-52e181020449)
 
 
+MedAgenda - Sign Up Page
+
+![Prescripto - Sign Up Page (1)](https://github.com/user-attachments/assets/2e163b27-270b-459a-8086-77b6e83f72d5)
+
+
+MedAgenda - My Appointments Page
+
+![Prescripto - My Appointments Page (1)](https://github.com/user-attachments/assets/45961a5c-3fe3-4961-9aa6-c11567cd53b9)
+
+
+
+
+
 MedAgenda - Admin Panel - Consultas
 
 ![Admin Panel (8)](https://github.com/user-attachments/assets/8f717822-8932-4dd0-b858-0763ea77c39d)
