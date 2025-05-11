@@ -29,7 +29,8 @@ const AdminContextProvider = (props) => {
 
     const value = {
         aToken, setAToken,
-        backendUrl,
+        backendUrl, doctors,
+        getAllDoctors
 
     }
 
