@@ -7,7 +7,7 @@ const DoctorsList = () => {
 
   useEffect(()=>{
     if (aToken) {
-      getAllDoctors
+      getAllDoctors ()
     }
   },[aToken])
 
