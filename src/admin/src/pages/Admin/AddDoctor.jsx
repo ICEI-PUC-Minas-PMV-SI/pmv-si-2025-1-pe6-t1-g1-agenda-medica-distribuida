@@ -45,9 +45,14 @@ const AddDoctor = () => {
             });
 
             const { data } = await axios.post(backendUrl + '/api/doctors', formData, { headers: { aToken } })
-            if (data.success) {
-                
+            if (data.success) {                
                 toast.success(data.message)
+                setDocImg(false)
+                setName('')
+                setCRM('')
+                setSpeciality('')
+                setPrice('')
+                setAbout('')
 
             } else {
                 
