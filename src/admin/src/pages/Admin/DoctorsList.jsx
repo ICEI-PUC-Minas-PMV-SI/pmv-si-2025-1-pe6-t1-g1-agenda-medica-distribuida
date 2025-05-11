@@ -14,14 +14,14 @@ const DoctorsList = () => {
   return (
     <div className='m-5 max-h-[90vh] overflow-y-scroll'>
       <h1 className='text-lg font-medium'>Todos os Doutores</h1>
-      <div className='w-full flex flew-wrap gap-4 pt-5 gap-y-6'>
+      <div className='w-full flex flex-wrap gap-4 pt-5 gap-y-6'>
         {
           doctors.map((item,index)=>(
-            <div className='border border-indigo-200 rounded-xl max-w-56 overflow-hidden cursor-pointer group' key={index}>
-              <img className='bg-indigo-50 group-hover:bg-gray-800 transition-all duration-500' src={item.image} alt="" />
+            <div className='border border-[#C9D8FF] rounded-xl max-w-56 overflow-hidden cursor-pointer groupp' key={index}>
+              <img className='bg-[#EAEFFF] group-hover:bg-primary transition-all duration-50' src={item.image} alt="" />
               <div className='p-4'>
-                <p className='text-neutral-800 text-lg font-medium'>{item.name}</p>
-                <p className='text-zinc-600 text-sm'>{item.speciality}</p>
+                <p className='text-[#262626] text-lg font-medium'>{item.name}</p>
+                <p className='text-[#5C5C5C] text-sm'>{item.speciality}</p>
                 
               </div>
             </div>
