@@ -67,6 +67,9 @@ MedAgenda - Admin Panel - Lista de Doutores
 ![Admin Panel (1)](https://github.com/user-attachments/assets/c612c2de-7a75-40ab-8641-7299c0be6d19)
 
 
+MedAgenda - Admin - Painel - Editar Doutor
+
+![Admin Panel (1)](https://github.com/user-attachments/assets/3ac188de-c5b8-4277-ab3e-20966d7f50fc)
 
 
 
