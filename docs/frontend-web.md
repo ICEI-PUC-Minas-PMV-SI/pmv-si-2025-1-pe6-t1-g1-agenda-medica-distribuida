@@ -40,6 +40,14 @@ MedAgenda - Contact Page
 
 ### Design Visual
 
+A interface do sistema apresenta um estilo visual moderno e funcional, com foco em clareza e usabilidade. A paleta de cores predominante utiliza tons de azul, branco e cinza, proporcionando um visual limpo e profissional, adequado ao contexto da área da saúde. Os tons de azul transmitem confiança e tranquilidade, enquanto os fundos brancos e os elementos em cinza claro ajudam a manter uma aparência neutra e organizada.
+
+A tipografia é simples e legível, adotando fontes sans-serif — como a Roboto — que são comumente utilizadas em aplicações web por sua clareza em telas digitais. Os tamanhos de fonte são bem hierarquizados para distinguir títulos, subtítulos e conteúdo textual, contribuindo para uma boa experiência de leitura.
+
+A interface utiliza ícones vetoriais padronizados (provavelmente da biblioteca Material Icons), que auxiliam na identificação rápida de funcionalidades como edição, exclusão e visualização de dados. Esses ícones são aplicados de forma consistente, mantendo a coerência visual em toda a aplicação.
+
+Outros elementos gráficos, como botões, campos de formulário e tabelas, seguem um design baseado em componentes do Material UI (MUI), o que contribui para a padronização da interface e responsividade entre diferentes dispositivos. Os botões têm bordas arredondadas e utilizam cores de destaque (como o azul) para chamar a atenção para ações importantes.
+
 [Descreva o estilo visual da interface, incluindo paleta de cores, tipografia, ícones e outros elementos gráficos.]
 
 ## Fluxo de Dados
