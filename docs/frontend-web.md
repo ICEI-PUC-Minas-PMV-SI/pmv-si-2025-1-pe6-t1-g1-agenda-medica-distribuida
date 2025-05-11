@@ -19,6 +19,13 @@ MedAgenda - Homepage
 
 ![MedAgenda - Homepage (5)](https://github.com/user-attachments/assets/0031dafe-7a76-4038-9540-99e8ab89a9db)
 
+MedAgenda - Appointment Page
+
+![MedAgenda - Appointment Page (2)](https://github.com/user-attachments/assets/835bd99c-0581-4c2c-aa6a-645364852c8d)
+
+MedAgenda - Doctors Page
+
+![Prescripto - Doctors Page (2)](https://github.com/user-attachments/assets/4c1df396-f8fd-4256-8209-d75e9a393ae9)
 
 [Inclua os wireframes das páginas principais da interface, mostrando a disposição dos elementos na página.]
 
