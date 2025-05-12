@@ -67,10 +67,9 @@ MedAgenda - Admin Panel - Lista de Doutores
 ![Admin Panel (1)](https://github.com/user-attachments/assets/c612c2de-7a75-40ab-8641-7299c0be6d19)
 
 
-MedAgenda - Admin - Painel - Editar Doutor
+MedAgenda - Login Admin
 
-![Admin Panel (1)](https://github.com/user-attachments/assets/3ac188de-c5b8-4277-ab3e-20966d7f50fc)
-
+![Admin Login (2)](https://github.com/user-attachments/assets/cb1a2d36-b8da-4204-b566-a88e7aec6b47)
 
 
 
@@ -110,9 +109,20 @@ Resposta ao Cliente: O back-end envia dados de confirmação ou resposta de erro
 
 ## Implantação
 
-[Instruções para implantar a aplicação distribuída em um ambiente de produção.]
+### 1. Requisitos de Hardware e Software
 
-1. Defina os requisitos de hardware e software necessários para implantar a aplicação em um ambiente de produção.
+**Hardware mínimo recomendado (por instância):**
+- CPU: 1 vCPU
+- RAM: 2 GB
+- Armazenamento: 10 GB SSD
+
+**Software necessário:**
+- Instalar o Node.js (versão 18 ou superior)
+- Instalar o gerenciador de pacotes (npm ou yarn).
+- Instalar o Git para clonar o repositório
+- Executar npm install ou yarn install para instalar as dependências
+
+  
 2. Escolha uma plataforma de hospedagem adequada, como um provedor de nuvem ou um servidor dedicado.
 3. Configure o ambiente de implantação, incluindo a instalação de dependências e configuração de variáveis de ambiente.
 4. Faça o deploy da aplicação no ambiente escolhido, seguindo as instruções específicas da plataforma de hospedagem.
