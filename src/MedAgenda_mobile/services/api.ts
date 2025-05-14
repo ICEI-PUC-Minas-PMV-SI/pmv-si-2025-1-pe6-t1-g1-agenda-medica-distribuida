@@ -1,10 +1,28 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import getEnvVars from '../config/env';
+import {
+  User,
+  Doctor,
+  Appointment,
+  LoginResponse,
+  RegisterData,
+  AppointmentData,
+  ProfileUpdateData,
+  ApiError,
+  AppointmentStatus,
+} from '../types/api';
 
-const BASE_URL = 'http://localhost:3000/api'; // Change this to your actual API URL
+interface ErrorResponse {
+  message: string;
+  code?: string;
+}
+
+const env = getEnvVars();
 
 const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: env.API_URL,
+  timeout: env.API_TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -20,7 +38,7 @@ api.interceptors.request.use(
     return config;
   },
   (error) => {
-    return Promise.reject(error);
+    return Promise.reject(handleApiError(error));
   }
 );
 
@@ -29,78 +47,111 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
-      // Handle token expiration
       await AsyncStorage.removeItem('authToken');
       // You might want to redirect to login screen here
     }
-    return Promise.reject(error);
+    return Promise.reject(handleApiError(error));
   }
 );
 
+const handleApiError = (error: AxiosError<ErrorResponse>): ApiError => {
+  if (error.response) {
+    // The request was made and the server responded with a status code
+    // that falls out of the range of 2xx
+    return {
+      message: error.response.data?.message || 'An error occurred',
+      code: error.response.data?.code,
+      status: error.response.status,
+    };
+  } else if (error.request) {
+    // The request was made but no response was received
+    return {
+      message: 'No response from server',
+      code: 'NETWORK_ERROR',
+      status: 0,
+    };
+  } else {
+    // Something happened in setting up the request that triggered an Error
+    return {
+      message: error.message || 'An unexpected error occurred',
+      code: 'UNKNOWN_ERROR',
+    };
+  }
+};
+
 export const authService = {
-  login: async (email: string, password: string) => {
-    const response = await api.post('/auth/login', { email, password });
+  login: async (email: string, password: string): Promise<LoginResponse> => {
+    const response = await api.post<LoginResponse>('/auth/login', { email, password });
     await AsyncStorage.setItem('authToken', response.data.token);
     return response.data;
   },
-  logout: async () => {
+  logout: async (): Promise<void> => {
     await AsyncStorage.removeItem('authToken');
   },
-  register: async (userData: any) => {
-    const response = await api.post('/auth/register', userData);
+  register: async (userData: RegisterData): Promise<User> => {
+    const response = await api.post<User>('/auth/register', userData);
     return response.data;
   },
 };
 
 export const appointmentService = {
-  getAppointments: async () => {
-    const response = await api.get('/appointments');
+  getAppointments: async (status?: AppointmentStatus): Promise<Appointment[]> => {
+    const response = await api.get<Appointment[]>('/appointments', {
+      params: { status },
+    });
     return response.data;
   },
-  createAppointment: async (appointmentData: any) => {
-    const response = await api.post('/appointments', appointmentData);
+  createAppointment: async (appointmentData: AppointmentData): Promise<Appointment> => {
+    const response = await api.post<Appointment>('/appointments', appointmentData);
     return response.data;
   },
-  updateAppointment: async (id: string, appointmentData: any) => {
-    const response = await api.put(`/appointments/${id}`, appointmentData);
+  updateAppointment: async (id: string, appointmentData: Partial<AppointmentData>): Promise<Appointment> => {
+    const response = await api.put<Appointment>(`/appointments/${id}`, appointmentData);
     return response.data;
   },
-  cancelAppointment: async (id: string) => {
-    const response = await api.delete(`/appointments/${id}`);
+  cancelAppointment: async (id: string): Promise<void> => {
+    await api.delete(`/appointments/${id}`);
+  },
+  getAppointmentById: async (id: string): Promise<Appointment> => {
+    const response = await api.get<Appointment>(`/appointments/${id}`);
     return response.data;
   },
 };
 
 export const doctorService = {
-  getDoctors: async () => {
-    const response = await api.get('/doctors');
+  getDoctors: async (specialty?: string, search?: string): Promise<Doctor[]> => {
+    const response = await api.get<Doctor[]>('/doctors', {
+      params: { specialty, search },
+    });
     return response.data;
   },
-  getDoctorById: async (id: string) => {
-    const response = await api.get(`/doctors/${id}`);
+  getDoctorById: async (id: string): Promise<Doctor> => {
+    const response = await api.get<Doctor>(`/doctors/${id}`);
     return response.data;
   },
-  getDoctorAvailability: async (id: string, date: string) => {
-    const response = await api.get(`/doctors/${id}/availability`, {
+  getDoctorAvailability: async (id: string, date: string): Promise<string[]> => {
+    const response = await api.get<string[]>(`/doctors/${id}/availability`, {
       params: { date },
     });
+    return response.data;
+  },
+  getDoctorSpecialties: async (): Promise<string[]> => {
+    const response = await api.get<string[]>('/doctors/specialties');
     return response.data;
   },
 };
 
 export const profileService = {
-  getProfile: async () => {
-    const response = await api.get('/profile');
+  getProfile: async (): Promise<User> => {
+    const response = await api.get<User>('/profile');
     return response.data;
   },
-  updateProfile: async (profileData: any) => {
-    const response = await api.put('/profile', profileData);
+  updateProfile: async (profileData: ProfileUpdateData): Promise<User> => {
+    const response = await api.put<User>('/profile', profileData);
     return response.data;
   },
-  updateProfileImage: async (imageFile: any) => {
-    const formData = new FormData();
-    formData.append('image', imageFile);
-    const response = await api.put('/profile/image', formData, {
+  updateProfileImage: async (imageFile: FormData): Promise<User> => {
+    const response = await api.put<User>('/profile/image', imageFile, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
