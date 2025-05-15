@@ -15,6 +15,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@expo/vector-icons": "^13.0.0",
     "@react-navigation/native": "^6.1.7",
     "@react-navigation/bottom-tabs": "^6.5.8",
@@ -41,6 +42,39 @@
     "react-native-screens": "~3.22.0",
     "react-native-web": "~0.19.6",
     "react-native-webview": "13.2.2"
+=======
+    "@expo/vector-icons": "^14.0.2",
+    "@react-native-async-storage/async-storage": "^1.22.3",
+    "@react-native-community/datetimepicker": "^7.7.0",
+    "@react-navigation/bottom-tabs": "^7.2.0",
+    "@react-navigation/native": "^7.0.14",
+    "axios": "^1.6.7",
+    "date-fns": "^3.6.0",
+    "expo": "~52.0.38",
+    "expo-blur": "~14.0.3",
+    "expo-constants": "~17.0.8",
+    "expo-font": "~13.0.4",
+    "expo-haptics": "~14.0.1",
+    "expo-image-picker": "~14.7.1",
+    "expo-linking": "~7.0.5",
+    "expo-router": "~4.0.18",
+    "expo-splash-screen": "~0.29.22",
+    "expo-status-bar": "~2.0.1",
+    "expo-symbols": "~0.2.2",
+    "expo-system-ui": "~4.0.8",
+    "expo-web-browser": "~14.0.2",
+    "formik": "^2.4.6",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-native": "0.76.7",
+    "react-native-gesture-handler": "~2.20.2",
+    "react-native-reanimated": "~3.16.1",
+    "react-native-safe-area-context": "4.12.0",
+    "react-native-screens": "~4.4.0",
+    "react-native-web": "~0.19.13",
+    "react-native-webview": "13.12.5",
+    "yup": "^1.6.1"
+>>>>>>> 9493de3b365faeed6fd22497b6bb3bccd726c7c0
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
