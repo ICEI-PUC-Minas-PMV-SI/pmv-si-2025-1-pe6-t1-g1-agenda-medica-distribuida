@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import getEnvVars from '../config/env';
 import {
@@ -21,7 +21,7 @@ interface ErrorResponse {
 const env = getEnvVars();
 
 const api = axios.create({
-  baseURL: env.API_URL,
+  baseURL: 'http://localhost:3000/api',
   timeout: env.API_TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
@@ -30,14 +30,14 @@ const api = axios.create({
 
 // Request interceptor for adding auth token
 api.interceptors.request.use(
-  async (config) => {
-    const token = await AsyncStorage.getItem('authToken');
-    if (token) {
+  async (config: AxiosRequestConfig) => {
+    const token = await AsyncStorage.getItem('@MedAgenda:token');
+    if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
+  (error: AxiosError) => {
     return Promise.reject(handleApiError(error));
   }
 );
@@ -79,7 +79,8 @@ const handleApiError = (error: AxiosError<ErrorResponse>): ApiError => {
   }
 };
 
-export const authService = {
+// Auth endpoints
+export const auth = {
   login: async (email: string, password: string): Promise<LoginResponse> => {
     const response = await api.post<LoginResponse>('/auth/login', { email, password });
     await AsyncStorage.setItem('authToken', response.data.token);
@@ -94,49 +95,67 @@ export const authService = {
   },
 };
 
-export const appointmentService = {
-  getAppointments: async (status?: AppointmentStatus): Promise<Appointment[]> => {
+// Appointments endpoints
+export const appointments = {
+  getAll: async (status?: AppointmentStatus): Promise<Appointment[]> => {
     const response = await api.get<Appointment[]>('/appointments', {
       params: { status },
     });
     return response.data;
   },
-  createAppointment: async (appointmentData: AppointmentData): Promise<Appointment> => {
-    const response = await api.post<Appointment>('/appointments', appointmentData);
-    return response.data;
-  },
-  updateAppointment: async (id: string, appointmentData: Partial<AppointmentData>): Promise<Appointment> => {
-    const response = await api.put<Appointment>(`/appointments/${id}`, appointmentData);
-    return response.data;
-  },
-  cancelAppointment: async (id: string): Promise<void> => {
-    await api.delete(`/appointments/${id}`);
-  },
-  getAppointmentById: async (id: string): Promise<Appointment> => {
+  getById: async (id: string): Promise<Appointment> => {
     const response = await api.get<Appointment>(`/appointments/${id}`);
     return response.data;
   },
+  create: async (appointmentData: AppointmentData): Promise<Appointment> => {
+    const response = await api.post<Appointment>('/appointments', appointmentData);
+    return response.data;
+  },
+  update: async (id: string, appointmentData: Partial<AppointmentData>): Promise<Appointment> => {
+    const response = await api.put<Appointment>(`/appointments/${id}`, appointmentData);
+    return response.data;
+  },
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/appointments/${id}`);
+  },
 };
 
-export const doctorService = {
-  getDoctors: async (specialty?: string, search?: string): Promise<Doctor[]> => {
+// Doctors endpoints
+export const doctors = {
+  getAll: async (specialty?: string, search?: string): Promise<Doctor[]> => {
     const response = await api.get<Doctor[]>('/doctors', {
       params: { specialty, search },
     });
     return response.data;
   },
-  getDoctorById: async (id: string): Promise<Doctor> => {
+  getById: async (id: string): Promise<Doctor> => {
     const response = await api.get<Doctor>(`/doctors/${id}`);
     return response.data;
   },
-  getDoctorAvailability: async (id: string, date: string): Promise<string[]> => {
+  getAvailability: async (id: string, date: string): Promise<string[]> => {
     const response = await api.get<string[]>(`/doctors/${id}/availability`, {
       params: { date },
     });
     return response.data;
   },
-  getDoctorSpecialties: async (): Promise<string[]> => {
+  getSpecialties: async (): Promise<string[]> => {
     const response = await api.get<string[]>('/doctors/specialties');
+    return response.data;
+  },
+};
+
+// Patients endpoints
+export const patients = {
+  getAll: async (): Promise<Patient[]> => {
+    const response = await api.get<Patient[]>('/patients');
+    return response.data;
+  },
+  getById: async (id: string): Promise<Patient> => {
+    const response = await api.get<Patient>(`/patients/${id}`);
+    return response.data;
+  },
+  update: async (id: string, patientData: Partial<Patient>): Promise<Patient> => {
+    const response = await api.put<Patient>(`/patients/${id}`, patientData);
     return response.data;
   },
 };

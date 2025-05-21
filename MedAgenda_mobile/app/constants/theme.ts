@@ -12,4 +12,14 @@ export const COLORS = {
   white: '#FFFFFF',
   black: '#000000',
   gray: '#8E8E93',
-} as const; 
+} as const;
+
+const theme = {
+  ...MD3LightTheme,
+  colors: {
+    ...MD3LightTheme.colors,
+    ...COLORS,
+  },
+};
+
+export default theme; 

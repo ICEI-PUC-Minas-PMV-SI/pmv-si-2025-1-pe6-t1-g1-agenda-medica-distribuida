@@ -1,12 +1,32 @@
-import { Tabs } from 'expo-router';
+import { Tabs, useRouter, useSegments } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { COLORS } from '../constants/theme';
+import { useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
 
 export default function TabLayout() {
+  const { user, loading } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading) {
+      const inAuthGroup = segments[0] === 'auth';
+      if (!user && !inAuthGroup) {
+        router.replace('/auth/login');
+      } else if (user && inAuthGroup) {
+        router.replace('/(tabs)');
+      }
+    }
+  }, [user, loading, segments]);
+
+  if (loading) {
+    return null;
+  }
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: COLORS.primary,
+        tabBarActiveTintColor: '#2196F3',
         headerShown: false,
       }}
     >
@@ -29,13 +49,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="new-appointment"
+        name="doctors"
         options={{
-          title: 'Nova Consulta',
+          title: 'Médicos',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="calendar-plus" size={size} color={color} />
+            <MaterialCommunityIcons name="doctor" size={size} color={color} />
           ),
-          href: null,
         }}
       />
       <Tabs.Screen

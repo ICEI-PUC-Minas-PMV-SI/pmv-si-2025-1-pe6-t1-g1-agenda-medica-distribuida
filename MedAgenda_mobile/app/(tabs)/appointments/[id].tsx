@@ -1,150 +1,129 @@
-import React from 'react';
-import { ScrollView, View } from 'react-native';
-import { Button, Card, Divider, Text, Portal, Dialog } from 'react-native-paper';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import { Button, Card, Text, ActivityIndicator } from 'react-native-paper';
+import { useLocalSearchParams, router } from 'expo-router';
+import { appointments, doctors } from '../../../services/api';
+import { Appointment, Doctor } from '../../../services/api';
+import { ScrollView as ScrollViewRN } from 'react-native';
+import { Text as TextRN } from 'react-native';
+import { Button as ButtonRN } from 'react-native';
+import { Card as CardRN } from 'react-native';
+import { Divider } from 'react-native-paper';
+import { Portal, Dialog } from 'react-native-paper';
 import { COLORS } from '../../constants/theme';
-import { router, useLocalSearchParams } from 'expo-router';
-
-interface Appointment {
-  id: string;
-  doctor: string;
-  specialty: string;
-  date: string;
-  time: string;
-  status: 'upcoming' | 'completed' | 'cancelled';
-  notes?: string;
-}
 
 export default function AppointmentDetailsScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id } = useLocalSearchParams();
+  const [appointment, setAppointment] = useState<Appointment | null>(null);
+  const [doctor, setDoctor] = useState<Doctor | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [showCancelDialog, setShowCancelDialog] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
 
-  // Mock data - replace with API call
-  const appointment: Appointment = {
-    id: '1',
-    doctor: 'Dr. Maria Silva',
-    specialty: 'Cardiologia',
-    date: '2024-03-25',
-    time: '14:30',
-    status: 'upcoming',
-    notes: 'Trazer exames anteriores',
-  };
+  useEffect(() => {
+    loadAppointmentDetails();
+  }, [id]);
 
-  const getStatusLabel = (status: Appointment['status']) => {
-    switch (status) {
-      case 'upcoming':
-        return 'Agendada';
-      case 'completed':
-        return 'Realizada';
-      case 'cancelled':
-        return 'Cancelada';
-      default:
-        return status;
-    }
-  };
+  const loadAppointmentDetails = async () => {
+    try {
+      setLoading(true);
+      const appointmentData = await appointments.getById(id as string);
+      setAppointment(appointmentData);
 
-  const getStatusColor = (status: Appointment['status']) => {
-    switch (status) {
-      case 'upcoming':
-        return COLORS.primary;
-      case 'completed':
-        return COLORS.accent;
-      case 'cancelled':
-        return COLORS.error;
-      default:
-        return COLORS.text;
+      if (appointmentData.doctorId) {
+        const doctorData = await doctors.getById(appointmentData.doctorId);
+        setDoctor(doctorData);
+      }
+    } catch (err) {
+      setError('Erro ao carregar detalhes da consulta');
+      console.error('Error loading appointment details:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleCancelAppointment = async () => {
-    setLoading(true);
     try {
-      // TODO: Implement cancellation logic
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      console.log('Cancel appointment:', id);
+      setLoading(true);
+      await appointments.update(id as string, { status: 'cancelled' });
       router.back();
-    } catch (error) {
-      console.error('Error cancelling appointment:', error);
+    } catch (err) {
+      setError('Erro ao cancelar consulta');
+      console.error('Error cancelling appointment:', err);
     } finally {
       setLoading(false);
-      setShowCancelDialog(false);
     }
   };
 
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  if (error || !appointment) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.error}>{error || 'Consulta não encontrada'}</Text>
+        <Button mode="contained" onPress={loadAppointmentDetails} style={styles.retryButton}>
+          Tentar novamente
+        </Button>
+      </View>
+    );
+  }
+
   return (
     <>
-      <ScrollView style={{ flex: 1, backgroundColor: COLORS.background }}>
-        <View style={{ padding: 16 }}>
-          <Text variant="headlineMedium" style={{ marginBottom: 24 }}>
-            Detalhes da Consulta
-          </Text>
+      <ScrollView style={styles.container}>
+        <Card style={styles.card}>
+          <Card.Content>
+            <Text variant="titleLarge" style={styles.title}>
+              Detalhes da Consulta
+            </Text>
 
-          {/* Status Card */}
-          <Card style={{ marginBottom: 16 }}>
-            <Card.Content>
-              <Text variant="titleLarge" style={{ color: getStatusColor(appointment.status) }}>
-                {getStatusLabel(appointment.status)}
-              </Text>
-            </Card.Content>
-          </Card>
-
-          {/* Appointment Details */}
-          <Card style={{ marginBottom: 16 }}>
-            <Card.Title title="Informações" />
-            <Card.Content>
-              <View style={{ marginBottom: 16 }}>
-                <Text variant="titleMedium">Médico</Text>
-                <Text variant="bodyLarge">{appointment.doctor}</Text>
-              </View>
-              <Divider style={{ marginVertical: 8 }} />
-              <View style={{ marginBottom: 16 }}>
-                <Text variant="titleMedium">Especialidade</Text>
-                <Text variant="bodyLarge">{appointment.specialty}</Text>
-              </View>
-              <Divider style={{ marginVertical: 8 }} />
-              <View style={{ marginBottom: 16 }}>
-                <Text variant="titleMedium">Data e Horário</Text>
-                <Text variant="bodyLarge">
-                  {appointment.date} às {appointment.time}
-                </Text>
-              </View>
-              {appointment.notes && (
+            <View style={styles.section}>
+              <Text variant="titleMedium">Informações do Médico</Text>
+              {doctor ? (
                 <>
-                  <Divider style={{ marginVertical: 8 }} />
-                  <View>
-                    <Text variant="titleMedium">Observações</Text>
-                    <Text variant="bodyLarge">{appointment.notes}</Text>
-                  </View>
+                  <Text variant="bodyMedium">Nome: {doctor.name}</Text>
+                  <Text variant="bodyMedium">Especialidade: {doctor.specialty}</Text>
+                  <Text variant="bodyMedium">Email: {doctor.email}</Text>
+                  <Text variant="bodyMedium">Telefone: {doctor.phone}</Text>
                 </>
+              ) : (
+                <Text variant="bodyMedium">Médico não encontrado</Text>
               )}
-            </Card.Content>
-          </Card>
+            </View>
 
-          {/* Actions */}
-          {appointment.status === 'upcoming' && (
-            <View style={{ gap: 8 }}>
+            <View style={styles.section}>
+              <Text variant="titleMedium">Informações da Consulta</Text>
+              <Text variant="bodyMedium">Data: {appointment.date}</Text>
+              <Text variant="bodyMedium">Horário: {appointment.time}</Text>
+              <Text variant="bodyMedium">
+                Status:{' '}
+                <Text style={{ color: getStatusColor(appointment.status) }}>
+                  {getStatusText(appointment.status)}
+                </Text>
+              </Text>
+              {appointment.notes && (
+                <Text variant="bodyMedium">Observações: {appointment.notes}</Text>
+              )}
+            </View>
+
+            {appointment.status === 'scheduled' && (
               <Button
                 mode="contained"
-                onPress={() => router.push({
-                  pathname: '/appointments/new',
-                  params: { id: appointment.id }
-                })}
-                style={{ marginBottom: 8 }}
-              >
-                Remarcar Consulta
-              </Button>
-              <Button
-                mode="outlined"
                 onPress={() => setShowCancelDialog(true)}
-                textColor={COLORS.error}
-                style={{ borderColor: COLORS.error }}
-                disabled={loading}
+                style={styles.cancelButton}
+                buttonColor="#F44336"
               >
                 Cancelar Consulta
               </Button>
-            </View>
-          )}
-        </View>
+            )}
+          </Card.Content>
+        </Card>
       </ScrollView>
 
       {/* Cancel Confirmation Dialog */}
@@ -170,4 +149,57 @@ export default function AppointmentDetailsScreen() {
       </Portal>
     </>
   );
-} 
+}
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'scheduled':
+      return '#2196F3';
+    case 'completed':
+      return '#4CAF50';
+    case 'cancelled':
+      return '#F44336';
+    default:
+      return '#757575';
+  }
+};
+
+const getStatusText = (status: string) => {
+  switch (status) {
+    case 'scheduled':
+      return 'Agendada';
+    case 'completed':
+      return 'Realizada';
+    case 'cancelled':
+      return 'Cancelada';
+    default:
+      return status;
+  }
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  card: {
+    margin: 16,
+  },
+  title: {
+    marginBottom: 16,
+  },
+  section: {
+    marginBottom: 24,
+  },
+  cancelButton: {
+    marginTop: 16,
+  },
+  error: {
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  retryButton: {
+    marginHorizontal: 16,
+  },
+}); 

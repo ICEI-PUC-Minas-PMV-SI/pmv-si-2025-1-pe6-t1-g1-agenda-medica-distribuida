@@ -1,74 +1,98 @@
-import { useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, View, StyleSheet } from 'react-native';
 import { Button, Card, Chip, FAB, Searchbar, SegmentedButtons, Text } from 'react-native-paper';
-import { COLORS } from '../../constants/theme';
 import { router } from 'expo-router';
+import { appointments } from '../../../services/api';
+import { Appointment } from '../../../services/api';
+import { useAuth } from '../../../context/AuthContext';
 
 export default function AppointmentsScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('upcoming');
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
+  const [appointmentsList, setAppointmentsList] = useState<Appointment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const { user } = useAuth();
 
-  // Mock data - replace with actual data from your API
-  const appointments = [
-    {
-      id: '1',
-      doctor: 'Dr. Maria Silva',
-      specialty: 'Cardiologia',
-      date: '2024-03-25',
-      time: '14:30',
-      status: 'upcoming',
-    },
-    {
-      id: '2',
-      doctor: 'Dr. João Santos',
-      specialty: 'Clínico Geral',
-      date: '2024-03-27',
-      time: '10:00',
-      status: 'upcoming',
-    },
-    {
-      id: '3',
-      doctor: 'Dra. Ana Oliveira',
-      specialty: 'Dermatologia',
-      date: '2024-03-20',
-      time: '09:15',
-      status: 'completed',
-    },
-  ];
+  useEffect(() => {
+    loadAppointments();
+  }, []);
 
-  const specialties = ['Cardiologia', 'Clínico Geral', 'Dermatologia', 'Ortopedia'];
+  const loadAppointments = async () => {
+    try {
+      setLoading(true);
+      const data = await appointments.getAll();
+      setAppointmentsList(data);
+    } catch (err) {
+      setError('Erro ao carregar consultas');
+      console.error('Error loading appointments:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const filteredAppointments = appointments.filter((appointment) => {
-    const matchesSearch = appointment.doctor.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      appointment.specialty.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredAppointments = appointmentsList.filter((appointment) => {
+    const matchesSearch = appointment.doctorId.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = filterStatus === 'all' || appointment.status === filterStatus;
-    const matchesSpecialty = selectedSpecialties.length === 0 || 
-      selectedSpecialties.includes(appointment.specialty);
-    return matchesSearch && matchesStatus && matchesSpecialty;
+    return matchesSearch && matchesStatus;
   });
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'upcoming':
-        return COLORS.primary;
+      case 'scheduled':
+        return '#2196F3';
       case 'completed':
-        return COLORS.accent;
+        return '#4CAF50';
+      case 'cancelled':
+        return '#F44336';
       default:
-        return COLORS.text;
+        return '#757575';
     }
   };
 
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'scheduled':
+        return 'Agendada';
+      case 'completed':
+        return 'Realizada';
+      case 'cancelled':
+        return 'Cancelada';
+      default:
+        return status;
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text>Carregando consultas...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.error}>{error}</Text>
+        <Button mode="contained" onPress={loadAppointments} style={styles.retryButton}>
+          Tentar novamente
+        </Button>
+      </View>
+    );
+  }
+
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.background }}>
+    <View style={styles.container}>
       <ScrollView>
         {/* Search and Filters */}
-        <View style={{ padding: 16 }}>
+        <View style={styles.filtersContainer}>
           <Searchbar
             placeholder="Buscar consultas..."
             onChangeText={setSearchQuery}
             value={searchQuery}
-            style={{ marginBottom: 16 }}
+            style={styles.searchBar}
           />
 
           <SegmentedButtons
@@ -76,42 +100,19 @@ export default function AppointmentsScreen() {
             onValueChange={setFilterStatus}
             buttons={[
               { value: 'all', label: 'Todas' },
-              { value: 'upcoming', label: 'Próximas' },
+              { value: 'scheduled', label: 'Agendadas' },
               { value: 'completed', label: 'Realizadas' },
             ]}
-            style={{ marginBottom: 16 }}
+            style={styles.segmentedButtons}
           />
-
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={{ marginBottom: 16 }}
-          >
-            {specialties.map((specialty) => (
-              <Chip
-                key={specialty}
-                selected={selectedSpecialties.includes(specialty)}
-                onPress={() => {
-                  setSelectedSpecialties(
-                    selectedSpecialties.includes(specialty)
-                      ? selectedSpecialties.filter(s => s !== specialty)
-                      : [...selectedSpecialties, specialty]
-                  );
-                }}
-                style={{ marginRight: 8 }}
-              >
-                {specialty}
-              </Chip>
-            ))}
-          </ScrollView>
         </View>
 
         {/* Appointments List */}
-        <View style={{ padding: 16 }}>
+        <View style={styles.appointmentsList}>
           {filteredAppointments.map((appointment) => (
             <Card
               key={appointment.id}
-              style={{ marginBottom: 16 }}
+              style={styles.card}
               onPress={() => {
                 router.push({
                   pathname: '/(tabs)/appointments/[id]',
@@ -120,17 +121,15 @@ export default function AppointmentsScreen() {
               }}
             >
               <Card.Content>
-                <Text variant="titleMedium">{appointment.doctor}</Text>
-                <Text variant="bodyMedium">{appointment.specialty}</Text>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
-                  <Text variant="bodySmall">
-                    {appointment.date} às {appointment.time}
-                  </Text>
+                <Text variant="titleMedium">Consulta #{appointment.id}</Text>
+                <Text variant="bodyMedium">Data: {appointment.date}</Text>
+                <Text variant="bodyMedium">Horário: {appointment.time}</Text>
+                <View style={styles.statusContainer}>
                   <Text
                     variant="bodySmall"
-                    style={{ color: getStatusColor(appointment.status) }}
+                    style={[styles.statusText, { color: getStatusColor(appointment.status) }]}
                   >
-                    {appointment.status === 'upcoming' ? 'Agendada' : 'Realizada'}
+                    {getStatusText(appointment.status)}
                   </Text>
                 </View>
               </Card.Content>
@@ -143,16 +142,55 @@ export default function AppointmentsScreen() {
       <FAB
         icon="plus"
         label="Nova Consulta"
-        style={{
-          position: 'absolute',
-          margin: 16,
-          right: 0,
-          bottom: 0,
-        }}
+        style={styles.fab}
         onPress={() => {
-          router.push('/(tabs)/appointments/new');
+          router.push('/(tabs)/new-appointment');
         }}
       />
     </View>
   );
-} 
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  filtersContainer: {
+    padding: 16,
+  },
+  searchBar: {
+    marginBottom: 16,
+  },
+  segmentedButtons: {
+    marginBottom: 16,
+  },
+  appointmentsList: {
+    padding: 16,
+  },
+  card: {
+    marginBottom: 16,
+  },
+  statusContainer: {
+    marginTop: 8,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  statusText: {
+    fontWeight: 'bold',
+  },
+  fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 0,
+  },
+  error: {
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  retryButton: {
+    marginHorizontal: 16,
+  },
+}); 

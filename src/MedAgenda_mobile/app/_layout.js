@@ -31,7 +31,10 @@ function RootLayoutNav() {
           <Stack.Screen name="register" options={{ headerShown: true }} />
         </>
       ) : (
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="test" options={{ headerShown: true, title: 'API Tests' }} />
+        </>
       )}
     </Stack>
   );
