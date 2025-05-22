@@ -1,32 +1,25 @@
-interface Environment {
+import Constants from 'expo-constants';
+
+interface EnvConfig {
   API_URL: string;
   API_TIMEOUT: number;
-  IMAGE_BASE_URL: string;
 }
 
-const ENV: { [key: string]: Environment } = {
-  development: {
-    API_URL: 'http://localhost:3000/api',
+const ENV = {
+  dev: {
+    API_URL: 'http://192.168.2.13:3000/api', // IP da máquina local
+    // API_URL: 'http://localhost:3000/api', // Para iOS Simulator
     API_TIMEOUT: 10000,
-    IMAGE_BASE_URL: 'http://localhost:3000/uploads'
   },
-  staging: {
-    API_URL: 'https://staging-api.medagenda.com/api',
+  prod: {
+    API_URL: 'https://med-agenda-backend.vercel.app/api',
     API_TIMEOUT: 10000,
-    IMAGE_BASE_URL: 'https://staging-api.medagenda.com/uploads'
   },
-  production: {
-    API_URL: 'https://api.medagenda.com/api',
-    API_TIMEOUT: 10000,
-    IMAGE_BASE_URL: 'https://api.medagenda.com/uploads'
-  }
 };
 
-const getEnvVars = (preset: string = 'development'): Environment => {
-  if (__DEV__) {
-    return ENV.development;
-  }
-  return ENV[preset] || ENV.production;
+const getEnvVars = (): EnvConfig => {
+  const env = Constants.expoConfig?.extra?.env || 'dev';
+  return ENV[env];
 };
 
 export default getEnvVars; 

@@ -1,4 +1,4 @@
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosRequestConfig, AxiosError } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import getEnvVars from '../config/env';
 import {
@@ -30,14 +30,14 @@ const api = axios.create({
 
 // Request interceptor for adding auth token
 api.interceptors.request.use(
-  async (config) => {
-    const token = await AsyncStorage.getItem('authToken');
-    if (token) {
+  async (config: AxiosRequestConfig) => {
+    const token = await AsyncStorage.getItem('@MedAgenda:token');
+    if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
+  (error: AxiosError) => {
     return Promise.reject(handleApiError(error));
   }
 );
@@ -79,88 +79,98 @@ const handleApiError = (error: AxiosError<ErrorResponse>): ApiError => {
   }
 };
 
-export const authService = {
+// Auth endpoints
+export const auth = {
   login: async (email: string, password: string): Promise<LoginResponse> => {
-    const response = await api.post<LoginResponse>('/api/auth/signin', { email, password });
-    await AsyncStorage.setItem('authToken', response.data.token);
+    const response = await api.post<LoginResponse>('/auth/signin', { email, password });
+    await AsyncStorage.setItem('@MedAgenda:token', response.data.token);
     return response.data;
   },
   logout: async (): Promise<void> => {
-    await api.post('/api/auth/signout');
-    await AsyncStorage.removeItem('authToken');
+    await AsyncStorage.removeItem('@MedAgenda:token');
   },
   register: async (userData: RegisterData): Promise<User> => {
-    const response = await api.post<User>('/api/auth/signup', userData);
+    const response = await api.post<User>('/auth/signup', userData);
     return response.data;
-  },
-  sendVerificationCode: async (email: string): Promise<void> => {
-    await api.patch('/api/auth/send-verification-code', { email });
-  },
-  verifyEmail: async (email: string, providedCode: string): Promise<void> => {
-    await api.patch('/api/auth/verify-verification-code', { email, providedCode });
-  },
-  resetPassword: async (email: string): Promise<void> => {
-    await api.patch('/api/auth/reset-password', { email });
-  },
-  updatePassword: async (oldPassword: string, newPassword: string): Promise<void> => {
-    await api.patch('/api/auth/change-password', { oldPassword, newPassword });
   },
 };
 
-export const appointmentService = {
-  getAppointments: async (status?: AppointmentStatus): Promise<Appointment[]> => {
-    const response = await api.get<Appointment[]>('/api/appointment', {
+// Appointments endpoints
+export const appointments = {
+  getAll: async (status?: AppointmentStatus): Promise<Appointment[]> => {
+    const response = await api.get<Appointment[]>('/appointments', {
       params: { status },
     });
     return response.data;
   },
-  createAppointment: async (appointmentData: AppointmentData): Promise<Appointment> => {
-    const response = await api.post<Appointment>('/api/appointment', appointmentData);
+  getById: async (id: string): Promise<Appointment> => {
+    const response = await api.get<Appointment>(`/appointments/${id}`);
     return response.data;
   },
-  cancelAppointment: async (userId: string, appointmentId: string): Promise<void> => {
-    await api.post('/api/appointment/cancel', { userId, appointmentId });
+  create: async (appointmentData: AppointmentData): Promise<Appointment> => {
+    const response = await api.post<Appointment>('/appointments', appointmentData);
+    return response.data;
+  },
+  update: async (id: string, appointmentData: Partial<AppointmentData>): Promise<Appointment> => {
+    const response = await api.put<Appointment>(`/appointments/${id}`, appointmentData);
+    return response.data;
+  },
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/appointments/${id}`);
   },
 };
 
-export const doctorService = {
-  getDoctors: async (specialty?: string, search?: string): Promise<Doctor[]> => {
-    const response = await api.get<Doctor[]>('/api/doctors', {
+// Doctors endpoints
+export const doctors = {
+  getAll: async (specialty?: string, search?: string): Promise<Doctor[]> => {
+    const response = await api.get<Doctor[]>('/doctors', {
       params: { specialty, search },
     });
     return response.data;
   },
-  getDoctorById: async (crm: string): Promise<Doctor> => {
-    const response = await api.get<Doctor>(`/api/doctors/${crm}`);
+  getById: async (id: string): Promise<Doctor> => {
+    const response = await api.get<Doctor>(`/doctors/${id}`);
     return response.data;
   },
-  // Admin-only routes
-  createDoctor: async (doctorData: Partial<Doctor>): Promise<Doctor> => {
-    const response = await api.post<Doctor>('/api/doctors', doctorData);
+  getAvailability: async (id: string, date: string): Promise<string[]> => {
+    const response = await api.get<string[]>(`/doctors/${id}/availability`, {
+      params: { date },
+    });
     return response.data;
   },
-  updateDoctor: async (crm: string, doctorData: Partial<Doctor>): Promise<Doctor> => {
-    const response = await api.patch<Doctor>(`/api/doctors/${crm}`, doctorData);
+  getSpecialties: async (): Promise<string[]> => {
+    const response = await api.get<string[]>('/doctors/specialties');
     return response.data;
-  },
-  deleteDoctor: async (crm: string): Promise<void> => {
-    await api.delete(`/api/doctors/${crm}`);
   },
 };
 
-// Note: Profile routes are not shown in the backend documentation
-// You may want to confirm with the backend team if these endpoints exist
+// Patients endpoints
+export const patients = {
+  getAll: async (): Promise<Patient[]> => {
+    const response = await api.get<Patient[]>('/patients');
+    return response.data;
+  },
+  getById: async (id: string): Promise<Patient> => {
+    const response = await api.get<Patient>(`/patients/${id}`);
+    return response.data;
+  },
+  update: async (id: string, patientData: Partial<Patient>): Promise<Patient> => {
+    const response = await api.put<Patient>(`/patients/${id}`, patientData);
+    return response.data;
+  },
+};
+
 export const profileService = {
   getProfile: async (): Promise<User> => {
-    const response = await api.get<User>('/api/profile');
+    const response = await api.get<User>('/profile');
     return response.data;
   },
   updateProfile: async (profileData: ProfileUpdateData): Promise<User> => {
-    const response = await api.put<User>('/api/profile', profileData);
+    const response = await api.put<User>('/profile', profileData);
     return response.data;
   },
   updateProfileImage: async (imageFile: FormData): Promise<User> => {
-    const response = await api.put<User>('/api/profile/image', imageFile, {
+    const response = await api.put<User>('/profile/image', imageFile, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

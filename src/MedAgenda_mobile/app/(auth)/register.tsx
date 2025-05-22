@@ -1,8 +1,9 @@
 import { ScrollView, View } from 'react-native';
-import { Button, Text, TextInput } from 'react-native-paper';
-import { Link } from 'expo-router';
+import { Button, Text, TextInput, HelperText } from 'react-native-paper';
+import { Link, router } from 'expo-router';
 import { useState } from 'react';
-import { COLORS } from '../constants/theme';
+import { COLORS } from '../../constants/theme';
+import { useAuth } from '../../context/AuthContext';
 
 export default function RegisterScreen() {
   const [name, setName] = useState('');
@@ -11,10 +12,37 @@ export default function RegisterScreen() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const { signUp } = useAuth();
 
-  const handleRegister = () => {
-    // TODO: Implement registration logic
-    console.log('Register:', { name, email, password, phone });
+  const handleRegister = async () => {
+    if (!name || !email || !password || !confirmPassword) {
+      setError('Por favor, preencha todos os campos obrigatórios');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('As senhas não coincidem');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError('');
+      await signUp({
+        name,
+        email,
+        password,
+        phone
+      });
+      router.replace('/(tabs)');
+    } catch (err) {
+      setError('Erro ao criar conta. Por favor, tente novamente.');
+      console.error('Registration error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -81,10 +109,14 @@ export default function RegisterScreen() {
         style={{ marginBottom: 24 }}
       />
 
+      {error ? <HelperText type="error" visible={!!error}>{error}</HelperText> : null}
+
       <Button
         mode="contained"
         onPress={handleRegister}
         style={{ marginBottom: 16 }}
+        loading={loading}
+        disabled={loading}
       >
         Cadastrar
       </Button>

@@ -1,25 +1,25 @@
 export interface User {
-  _id: string;
-  name: string;
+  id: string;
   email: string;
-  gender?: string;
-  birthdate?: string;
-  userImage?: string;
-  isAdmin: boolean;
-  verified: boolean;
+  name: string;
+  phone?: string;
+  profileImage?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Doctor {
-  _id: string;
+  id: string;
   name: string;
-  speciality: string;
-  crm: string;
-  pricePerAppointment: number;
-  doctorImage?: string;
-  about?: string;
-  scheduledAppointments: {
-    [date: string]: string[];
-  };
+  specialty: string;
+  experience: string;
+  rating: number;
+  patients: string;
+  about: string;
+  profileImage?: string;
+  education: Education[];
+  availability: Availability[];
+  location: string;
 }
 
 export interface Education {
@@ -36,46 +36,60 @@ export interface Availability {
 }
 
 export interface Appointment {
-  _id: string;
-  user: string;
-  doctor: string;
-  amount: number;
-  slotTime: string;
-  slotDate: string;
+  id: string;
+  doctorId: string;
+  userId: string;
   date: string;
-  cancelled: boolean;
+  time: string;
+  status: AppointmentStatus;
+  type: AppointmentType;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+  doctor?: Doctor;
+  user?: User;
+}
+
+export enum AppointmentStatus {
+  PENDING = 'pending',
+  CONFIRMED = 'confirmed',
+  COMPLETED = 'completed',
+  CANCELLED = 'cancelled'
+}
+
+export enum AppointmentType {
+  CONSULTATION = 'consultation',
+  FOLLOWUP = 'followup',
+  CHECKUP = 'checkup'
 }
 
 export interface LoginResponse {
-  success: boolean;
   token: string;
-  message: string;
+  user: User;
 }
 
 export interface RegisterData {
-  name: string;
   email: string;
   password: string;
-  gender?: string;
-  birthdate?: string;
-  userImage?: string;
+  name: string;
+  phone?: string;
 }
 
 export interface AppointmentData {
-  userId: string;
-  docId: string;
-  slotDate: string;
-  slotTime: string;
+  doctorId: string;
+  date: string;
+  time: string;
+  type: AppointmentType;
+  notes?: string;
 }
 
 export interface ProfileUpdateData {
   name?: string;
-  gender?: string;
-  birthdate?: string;
-  userImage?: string;
+  phone?: string;
+  email?: string;
+  currentPassword?: string;
+  newPassword?: string;
 }
-
-export type AppointmentStatus = 'upcoming' | 'past' | 'cancelled';
 
 export interface ApiError {
   message: string;

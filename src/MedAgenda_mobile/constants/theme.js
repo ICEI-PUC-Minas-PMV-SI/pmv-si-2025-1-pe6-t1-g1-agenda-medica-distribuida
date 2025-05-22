@@ -1,81 +1,36 @@
+import { MD3LightTheme } from 'react-native-paper';
+
 export const COLORS = {
-  primary: '#00A6A6',     // Main brand color
-  secondary: '#2D5F5F',   // Secondary brand color
-  accent: '#CADB73',      // Accent color for highlights
-  
-  // Text colors
-  textPrimary: '#333333',
-  textSecondary: '#666666',
-  textLight: '#FFFFFF',
-  
-  // Status colors
-  success: '#4CAF50',
-  warning: '#FFC107',
+  primary: '#007AFF',
+  secondary: '#5856D6',
+  accent: '#FF2D55',
+  background: '#F2F2F7',
+  text: '#000000',
   error: '#FF3B30',
-  info: '#2196F3',
-  
-  // UI colors
-  background: '#FFFFFF',
-  surface: '#F5F5F5',
-  border: '#E0E0E0',
-  divider: '#EEEEEE',
-  
-  // Status badge colors
-  upcomingBadge: '#E3F2FF',
-  upcomingText: '#00A6A6',
-  completedBadge: '#E8FAF0',
-  completedText: '#4CAF50',
+  success: '#34C759',
+  warning: '#FFCC00',
+  white: '#FFFFFF',
+  black: '#000000',
+  gray: '#8E8E93',
 };
 
-export const FONTS = {
-  // Font families
-  regular: 'Poppins-Regular',
-  medium: 'Poppins-Medium',
-  semiBold: 'Poppins-SemiBold',
-  bold: 'Poppins-Bold',
-  
-  // Font sizes
-  largeTitle: 32,
-  title: 24,
-  subtitle: 20,
-  body: 16,
-  caption: 14,
-  small: 12,
-};
+// ... existing FONTS, SHADOWS, SIZES definitions ...
 
-export const SHADOWS = {
-  small: {
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+export const theme = {
+  ...MD3LightTheme,
+  colors: {
+    ...MD3LightTheme.colors,
+    primary: COLORS.primary,
+    secondary: COLORS.secondary,
+    accent: COLORS.accent,
+    background: COLORS.background,
+    error: COLORS.error,
+    text: COLORS.text,
   },
-  medium: {
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 4,
+  fonts: {
+    regular: FONTS.regular,
+    medium: FONTS.medium,
+    light: FONTS.regular,
+    thin: FONTS.regular,
   },
 };
-
-export const SIZES = {
-  padding: {
-    small: 10,
-    medium: 15,
-    large: 20,
-  },
-  radius: {
-    small: 8,
-    medium: 12,
-    large: 16,
-    full: 999,
-  },
-}; 
