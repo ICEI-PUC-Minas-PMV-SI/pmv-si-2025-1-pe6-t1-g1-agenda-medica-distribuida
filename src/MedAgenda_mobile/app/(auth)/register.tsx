@@ -37,8 +37,14 @@ export default function RegisterScreen() {
         phone
       });
       router.replace('/(tabs)');
-    } catch (err) {
-      setError('Erro ao criar conta. Por favor, tente novamente.');
+    } catch (err: any) {
+      if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else if (err.message) {
+        setError(err.message);
+      } else {
+        setError('Erro ao criar conta. Por favor, tente novamente.');
+      }
       console.error('Registration error:', err);
     } finally {
       setLoading(false);

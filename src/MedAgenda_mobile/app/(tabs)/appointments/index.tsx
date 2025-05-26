@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { ScrollView, View, StyleSheet } from 'react-native';
-import { Button, Card, Chip, FAB, Searchbar, SegmentedButtons, Text } from 'react-native-paper';
+import { Button, Card, Chip, FAB, Searchbar, SegmentedButtons, Text, ActivityIndicator, Snackbar } from 'react-native-paper';
 import { router } from 'expo-router';
 import { appointments } from '../../../services/api';
-import { Appointment } from '../../../services/api';
-import { useAuth } from '../../../context/AuthContext';
+import { Appointment, AppointmentStatus } from '../../../types/api';
+import { COLORS } from '../../../constants/theme';
 
 export default function AppointmentsScreen() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterStatus, setFilterStatus] = useState('upcoming');
-  const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
+  const [filterStatus, setFilterStatus] = useState<AppointmentStatus | 'all'>('all');
   const [appointmentsList, setAppointmentsList] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { user } = useAuth();
+  const [showError, setShowError] = useState(false);
 
   useEffect(() => {
     loadAppointments();
@@ -22,42 +21,79 @@ export default function AppointmentsScreen() {
   const loadAppointments = async () => {
     try {
       setLoading(true);
-      const data = await appointments.getAll();
+      setError('');
+      const data = await appointments.getAll(filterStatus === 'all' ? undefined : filterStatus);
       setAppointmentsList(data);
     } catch (err) {
-      setError('Erro ao carregar consultas');
+      const message = 'Erro ao carregar consultas';
+      setError(message);
+      setShowError(true);
       console.error('Error loading appointments:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const filteredAppointments = appointmentsList.filter((appointment) => {
-    const matchesSearch = appointment.doctorId.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = filterStatus === 'all' || appointment.status === filterStatus;
-    return matchesSearch && matchesStatus;
-  });
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'scheduled':
-        return '#2196F3';
-      case 'completed':
-        return '#4CAF50';
-      case 'cancelled':
-        return '#F44336';
-      default:
-        return '#757575';
+  const handleStatusChange = async (status: AppointmentStatus | 'all') => {
+    setFilterStatus(status);
+    try {
+      setLoading(true);
+      const data = await appointments.getAll(status === 'all' ? undefined : status);
+      setAppointmentsList(data);
+    } catch (err) {
+      const message = 'Erro ao filtrar consultas';
+      setError(message);
+      setShowError(true);
+      console.error('Error filtering appointments:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getStatusText = (status: string) => {
+  const handleCancelAppointment = async (id: string) => {
+    try {
+      await appointments.cancel(id);
+      loadAppointments();
+    } catch (err) {
+      const message = 'Erro ao cancelar consulta';
+      setError(message);
+      setShowError(true);
+      console.error('Error canceling appointment:', err);
+    }
+  };
+
+  const filteredAppointments = appointmentsList.filter((appointment) => {
+    const searchLower = searchQuery.toLowerCase();
+    return (
+      appointment.doctor?.name.toLowerCase().includes(searchLower) ||
+      appointment.doctor?.specialty.toLowerCase().includes(searchLower)
+    );
+  });
+
+  const getStatusColor = (status: AppointmentStatus) => {
     switch (status) {
-      case 'scheduled':
-        return 'Agendada';
-      case 'completed':
+      case AppointmentStatus.PENDING:
+        return COLORS.warning;
+      case AppointmentStatus.CONFIRMED:
+        return COLORS.primary;
+      case AppointmentStatus.COMPLETED:
+        return COLORS.success;
+      case AppointmentStatus.CANCELLED:
+        return COLORS.error;
+      default:
+        return COLORS.disabled;
+    }
+  };
+
+  const getStatusText = (status: AppointmentStatus) => {
+    switch (status) {
+      case AppointmentStatus.PENDING:
+        return 'Pendente';
+      case AppointmentStatus.CONFIRMED:
+        return 'Confirmada';
+      case AppointmentStatus.COMPLETED:
         return 'Realizada';
-      case 'cancelled':
+      case AppointmentStatus.CANCELLED:
         return 'Cancelada';
       default:
         return status;
@@ -66,19 +102,8 @@ export default function AppointmentsScreen() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <Text>Carregando consultas...</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.error}>{error}</Text>
-        <Button mode="contained" onPress={loadAppointments} style={styles.retryButton}>
-          Tentar novamente
-        </Button>
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
       </View>
     );
   }
@@ -89,7 +114,7 @@ export default function AppointmentsScreen() {
         {/* Search and Filters */}
         <View style={styles.filtersContainer}>
           <Searchbar
-            placeholder="Buscar consultas..."
+            placeholder="Buscar por médico ou especialidade..."
             onChangeText={setSearchQuery}
             value={searchQuery}
             style={styles.searchBar}
@@ -97,11 +122,11 @@ export default function AppointmentsScreen() {
 
           <SegmentedButtons
             value={filterStatus}
-            onValueChange={setFilterStatus}
+            onValueChange={handleStatusChange}
             buttons={[
               { value: 'all', label: 'Todas' },
-              { value: 'scheduled', label: 'Agendadas' },
-              { value: 'completed', label: 'Realizadas' },
+              { value: AppointmentStatus.CONFIRMED, label: 'Confirmadas' },
+              { value: AppointmentStatus.COMPLETED, label: 'Realizadas' },
             ]}
             style={styles.segmentedButtons}
           />
@@ -109,32 +134,54 @@ export default function AppointmentsScreen() {
 
         {/* Appointments List */}
         <View style={styles.appointmentsList}>
-          {filteredAppointments.map((appointment) => (
-            <Card
-              key={appointment.id}
-              style={styles.card}
-              onPress={() => {
-                router.push({
-                  pathname: '/(tabs)/appointments/[id]',
-                  params: { id: appointment.id }
-                });
-              }}
-            >
-              <Card.Content>
-                <Text variant="titleMedium">Consulta #{appointment.id}</Text>
-                <Text variant="bodyMedium">Data: {appointment.date}</Text>
-                <Text variant="bodyMedium">Horário: {appointment.time}</Text>
-                <View style={styles.statusContainer}>
-                  <Text
-                    variant="bodySmall"
-                    style={[styles.statusText, { color: getStatusColor(appointment.status) }]}
-                  >
-                    {getStatusText(appointment.status)}
-                  </Text>
-                </View>
-              </Card.Content>
-            </Card>
-          ))}
+          {filteredAppointments.length === 0 ? (
+            <Text style={styles.emptyText}>Nenhuma consulta encontrada</Text>
+          ) : (
+            filteredAppointments.map((appointment) => (
+              <Card
+                key={appointment.id}
+                style={styles.card}
+                onPress={() => {
+                  router.push({
+                    pathname: '/(tabs)/appointments/[id]',
+                    params: { id: appointment.id }
+                  });
+                }}
+              >
+                <Card.Content>
+                  <View style={styles.cardHeader}>
+                    <View>
+                      <Text variant="titleMedium">{appointment.doctor?.name}</Text>
+                      <Text variant="bodyMedium">{appointment.doctor?.specialty}</Text>
+                    </View>
+                    <Chip
+                      mode="flat"
+                      textStyle={{ color: 'white' }}
+                      style={{ backgroundColor: getStatusColor(appointment.status) }}
+                    >
+                      {getStatusText(appointment.status)}
+                    </Chip>
+                  </View>
+                  
+                  <View style={styles.appointmentInfo}>
+                    <Text variant="bodyMedium">Data: {new Date(appointment.date).toLocaleDateString('pt-BR')}</Text>
+                    <Text variant="bodyMedium">Horário: {appointment.time}</Text>
+                  </View>
+
+                  {appointment.status === AppointmentStatus.CONFIRMED && (
+                    <Button
+                      mode="outlined"
+                      onPress={() => handleCancelAppointment(appointment.id)}
+                      style={styles.cancelButton}
+                      textColor={COLORS.error}
+                    >
+                      Cancelar Consulta
+                    </Button>
+                  )}
+                </Card.Content>
+              </Card>
+            ))
+          )}
         </View>
       </ScrollView>
 
@@ -147,6 +194,17 @@ export default function AppointmentsScreen() {
           router.push('/(tabs)/new-appointment');
         }}
       />
+
+      <Snackbar
+        visible={showError}
+        onDismiss={() => setShowError(false)}
+        action={{
+          label: 'OK',
+          onPress: () => setShowError(false),
+        }}
+      >
+        {error}
+      </Snackbar>
     </View>
   );
 }
@@ -155,6 +213,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+  },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   filtersContainer: {
     padding: 16,
@@ -171,26 +233,28 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: 16,
   },
-  statusContainer: {
-    marginTop: 8,
+  cardHeader: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 8,
   },
-  statusText: {
-    fontWeight: 'bold',
+  appointmentInfo: {
+    marginVertical: 8,
+  },
+  cancelButton: {
+    marginTop: 8,
   },
   fab: {
     position: 'absolute',
     margin: 16,
     right: 0,
     bottom: 0,
+    backgroundColor: COLORS.primary,
   },
-  error: {
-    color: 'red',
+  emptyText: {
     textAlign: 'center',
-    marginBottom: 16,
-  },
-  retryButton: {
-    marginHorizontal: 16,
+    marginTop: 24,
+    color: COLORS.disabled,
   },
 }); 

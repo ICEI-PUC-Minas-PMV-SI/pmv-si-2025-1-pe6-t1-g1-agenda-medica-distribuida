@@ -89,8 +89,8 @@ export const auth = {
   logout: async (): Promise<void> => {
     await AsyncStorage.removeItem('@MedAgenda:token');
   },
-  register: async (userData: RegisterData): Promise<User> => {
-    const response = await api.post<User>('/auth/signup', userData);
+  register: async (userData: RegisterData): Promise<LoginResponse> => {
+    const response = await api.post<LoginResponse>('/auth/signup', userData);
     return response.data;
   },
 };
@@ -115,7 +115,7 @@ export const appointments = {
     const response = await api.put<Appointment>(`/appointments/${id}`, appointmentData);
     return response.data;
   },
-  delete: async (id: string): Promise<void> => {
+  cancel: async (id: string): Promise<void> => {
     await api.delete(`/appointments/${id}`);
   },
 };

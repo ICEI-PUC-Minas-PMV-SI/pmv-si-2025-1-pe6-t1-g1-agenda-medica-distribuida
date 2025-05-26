@@ -1,43 +1,100 @@
-# Agenda Médica Distribuída
+# MedAgenda - Sistema de Agendamento Médico
 
-`CURSO: Sistemas de Informação`
+## Configuração do Ambiente
 
-`DISCIPLINA: Projeto - Arquitetura de Sistemas Distribuídos`
+### Backend (Node.js)
 
-`SEMESTRE: 6º`
+1. Navegue até a pasta do backend:
+```bash
+cd src/MedAgenda_backend
+```
 
-Agenda Médica Distribuída – Sistema que permite o agendamento de consultas médicas de diferentes clínicas e profissionais de saúde, garantindo sincronização e disponibilidade.
+2. Instale as dependências:
+```bash
+npm install
+```
 
-## Integrantes
+3. Crie um arquivo `.env` baseado no `.env.example` e configure suas variáveis de ambiente:
+```
+PORT=5000
+MONGODB_URI=sua_uri_do_mongodb
+JWT_SECRET=sua_chave_secreta
+JWT_EXPIRES_IN=7d
+```
 
-* Breno de Oliveira Pereira
-* Diego Calado Freitas
-* Maurício Martins dos Santos
-* Rodrigo Pena Furtado
-* Samara Mariah dos Santos
-* Sílvia de Oliveira Cunha
+4. Inicie o servidor:
+```bash
+npm start
+```
 
-## Orientador
+### Frontend (React Native)
 
-* Kleber Jacques Ferreira de Souza
+1. Navegue até a pasta do frontend:
+```bash
+cd src/MedAgenda_mobile
+```
 
-# Planejamento
+2. Instale as dependências:
+```bash
+npm install
+```
 
-| Etapa         | Atividades |
-|  :----:   | ----------- |
-| ETAPA 1         |[Documentação de Contexto](docs/contexto.md) <br> |
-| ETAPA 2         |[Planejar, desenvolver e gerenciar APIs e Web Services](docs/backend-apis.md) <br> |
-| ETAPA 3         |[Planejar, desenvolver e gerenciar uma aplicação Web](docs/frontend-web.md) |
-| ETAPA 4        |[Planejar, desenvolver e gerenciar uma aplicação Móvel](docs/frontend-mobile.md) <br>  |
-| ETAPA 5         | [Apresentação](presentation/README.md) |
-## Instruções de utilização
+3. Inicie o aplicativo:
+```bash
+npx expo start
+```
 
-Assim que a primeira versão do sistema estiver disponível, deverá complementar com as instruções de utilização. Descreva como instalar eventuais dependências e como executar a aplicação.
+## Funcionalidades
 
-# Código
+### Médicos
+- Lista de médicos por especialidade
+- Detalhes do médico
+- Gerenciamento de disponibilidade
+- Perfil com foto, especialidade e experiência
 
-<li><a href="src/README.md"> Código Fonte</a></li>
+### Agendamentos
+- Criação de novos agendamentos
+- Listagem de agendamentos
+- Cancelamento de agendamentos
+- Filtro por status
 
-# Apresentação
+### Usuários
+- Cadastro
+- Login
+- Atualização de perfil
 
-<li><a href="presentation/README.md"> Apresentação da solução</a></li>
+## Dados Iniciais
+
+O sistema já vem com alguns dados pré-cadastrados:
+
+### Especialidades
+- Cardiologia
+- Clínico Geral
+- Dermatologia
+- Ortopedia
+- Pediatria
+- Ginecologia
+- Oftalmologia
+- Neurologia
+
+### Médicos
+- Dra. Maria Silva (Cardiologia)
+- Dr. João Santos (Clínico Geral)
+- Dra. Ana Oliveira (Dermatologia)
+- Dr. Pedro Costa (Ortopedia)
+
+## Tecnologias Utilizadas
+
+### Backend
+- Node.js
+- Express
+- MongoDB
+- JWT para autenticação
+- Joi para validação
+
+### Frontend
+- React Native
+- Expo
+- Axios
+- AsyncStorage
+- React Navigation

@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
-import { Button, Card, HelperText, TextInput, Text, ActivityIndicator } from 'react-native-paper';
-import { COLORS } from '../constants/theme';
+import { Button, Card, HelperText, TextInput, Text, ActivityIndicator, Snackbar } from 'react-native-paper';
+import { COLORS } from '../../constants/theme';
 import { router } from 'expo-router';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import { appointments, doctors as doctorsApi } from '../../services/api';
+import { AppointmentType } from '../../types/api';
 
 interface FormErrors {
   specialty?: string;
@@ -20,15 +22,42 @@ export default function NewAppointmentScreen() {
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [specialties, setSpecialties] = useState<string[]>([]);
+  const [doctors, setDoctors] = useState<any[]>([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showError, setShowError] = useState(false);
 
-  // Mock data - replace with API data
-  const specialties = ['Cardiologia', 'Clínico Geral', 'Dermatologia', 'Ortopedia'];
-  const doctors = [
-    'Dr. Maria Silva',
-    'Dr. João Santos',
-    'Dra. Ana Oliveira',
-    'Dr. Pedro Costa'
-  ];
+  useEffect(() => {
+    loadSpecialties();
+  }, []);
+
+  useEffect(() => {
+    if (specialty) {
+      loadDoctors(specialty);
+    }
+  }, [specialty]);
+
+  const loadSpecialties = async () => {
+    try {
+      const data = await doctorsApi.getSpecialties();
+      setSpecialties(data);
+    } catch (error) {
+      console.error('Error loading specialties:', error);
+      setErrorMessage('Erro ao carregar especialidades');
+      setShowError(true);
+    }
+  };
+
+  const loadDoctors = async (specialty: string) => {
+    try {
+      const data = await doctorsApi.getAll(specialty);
+      setDoctors(data);
+    } catch (error) {
+      console.error('Error loading doctors:', error);
+      setErrorMessage('Erro ao carregar médicos');
+      setShowError(true);
+    }
+  };
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -58,21 +87,19 @@ export default function NewAppointmentScreen() {
 
     setLoading(true);
     try {
-      // TODO: Implement appointment creation logic
-      // Simulating API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      console.log('Create appointment:', {
-        specialty,
-        doctor,
-        date,
+      await appointments.create({
+        doctorId: doctor,
+        date: date.toISOString().split('T')[0],
+        time: date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+        type: AppointmentType.CONSULTATION,
         notes,
       });
       
-      router.back();
+      router.push('/(tabs)/appointments');
     } catch (error) {
       console.error('Error creating appointment:', error);
-      // TODO: Show error message to user
+      setErrorMessage('Erro ao criar consulta');
+      setShowError(true);
     } finally {
       setLoading(false);
     }
@@ -108,22 +135,6 @@ export default function NewAppointmentScreen() {
         <Card style={{ marginBottom: 16 }}>
           <Card.Title title="Especialidade" />
           <Card.Content>
-            <TextInput
-              mode="outlined"
-              label="Selecione a especialidade"
-              value={specialty}
-              onChangeText={(value) => {
-                setSpecialty(value);
-                setErrors(prev => ({ ...prev, specialty: undefined }));
-              }}
-              error={!!errors.specialty}
-              style={{ marginBottom: 8 }}
-            />
-            {errors.specialty && (
-              <HelperText type="error" visible={!!errors.specialty}>
-                {errors.specialty}
-              </HelperText>
-            )}
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
               {specialties.map((item) => (
                 <Button
@@ -131,6 +142,7 @@ export default function NewAppointmentScreen() {
                   mode={specialty === item ? 'contained' : 'outlined'}
                   onPress={() => {
                     setSpecialty(item);
+                    setDoctor('');
                     setErrors(prev => ({ ...prev, specialty: undefined }));
                   }}
                   style={{ marginBottom: 8 }}
@@ -139,46 +151,42 @@ export default function NewAppointmentScreen() {
                 </Button>
               ))}
             </View>
+            {errors.specialty && (
+              <HelperText type="error" visible={!!errors.specialty}>
+                {errors.specialty}
+              </HelperText>
+            )}
           </Card.Content>
         </Card>
 
         {/* Doctor Selection */}
-        <Card style={{ marginBottom: 16 }}>
-          <Card.Title title="Médico" />
-          <Card.Content>
-            <TextInput
-              mode="outlined"
-              label="Selecione o médico"
-              value={doctor}
-              onChangeText={(value) => {
-                setDoctor(value);
-                setErrors(prev => ({ ...prev, doctor: undefined }));
-              }}
-              error={!!errors.doctor}
-              style={{ marginBottom: 8 }}
-            />
-            {errors.doctor && (
-              <HelperText type="error" visible={!!errors.doctor}>
-                {errors.doctor}
-              </HelperText>
-            )}
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-              {doctors.map((item) => (
-                <Button
-                  key={item}
-                  mode={doctor === item ? 'contained' : 'outlined'}
-                  onPress={() => {
-                    setDoctor(item);
-                    setErrors(prev => ({ ...prev, doctor: undefined }));
-                  }}
-                  style={{ marginBottom: 8 }}
-                >
-                  {item}
-                </Button>
-              ))}
-            </View>
-          </Card.Content>
-        </Card>
+        {specialty && (
+          <Card style={{ marginBottom: 16 }}>
+            <Card.Title title="Médico" />
+            <Card.Content>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                {doctors.map((item) => (
+                  <Button
+                    key={item.id}
+                    mode={doctor === item.id ? 'contained' : 'outlined'}
+                    onPress={() => {
+                      setDoctor(item.id);
+                      setErrors(prev => ({ ...prev, doctor: undefined }));
+                    }}
+                    style={{ marginBottom: 8 }}
+                  >
+                    {item.name}
+                  </Button>
+                ))}
+              </View>
+              {errors.doctor && (
+                <HelperText type="error" visible={!!errors.doctor}>
+                  {errors.doctor}
+                </HelperText>
+              )}
+            </Card.Content>
+          </Card>
+        )}
 
         {/* Date and Time Selection */}
         <Card style={{ marginBottom: 16 }}>
@@ -252,6 +260,17 @@ export default function NewAppointmentScreen() {
           )}
         </Button>
       </View>
+
+      <Snackbar
+        visible={showError}
+        onDismiss={() => setShowError(false)}
+        action={{
+          label: 'OK',
+          onPress: () => setShowError(false),
+        }}
+      >
+        {errorMessage}
+      </Snackbar>
     </ScrollView>
   );
 } 
