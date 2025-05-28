@@ -121,9 +121,8 @@ export default function ProfileScreen() {
           onPress: async () => {
             try {
               setLoading(true);
+              // Just sign out - let the _layout useEffect handle navigation
               await signOut();
-              // Use replace para evitar problemas de navegação
-              router.replace('/(auth)/login');
             } catch (error) {
               console.error('Erro ao fazer logout:', error);
               Alert.alert('Erro', 'Erro ao fazer logout. Tente novamente.');

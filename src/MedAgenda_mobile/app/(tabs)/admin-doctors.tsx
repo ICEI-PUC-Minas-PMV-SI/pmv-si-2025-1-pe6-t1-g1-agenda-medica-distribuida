@@ -63,7 +63,7 @@ export default function AdminDoctorsScreen() {
       Alert.alert(
         'Acesso Negado',
         'Apenas administradores podem acessar esta tela.',
-        [{ text: 'OK', onPress: () => router.back() }]
+        [{ text: 'OK', onPress: () => router.replace('/(tabs)') }]
       );
       return;
     }

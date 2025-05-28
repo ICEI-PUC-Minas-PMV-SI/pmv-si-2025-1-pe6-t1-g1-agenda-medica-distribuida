@@ -132,7 +132,14 @@ export default function NewAppointmentScreen() {
         [
           {
             text: 'OK',
-            onPress: () => router.back()
+            onPress: () => {
+              try {
+                router.back();
+              } catch (error) {
+                // If back navigation fails, go to appointments tab
+                router.replace('/(tabs)/appointments');
+              }
+            }
           }
         ]
       );
