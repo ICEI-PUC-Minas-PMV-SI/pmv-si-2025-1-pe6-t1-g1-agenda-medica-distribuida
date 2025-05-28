@@ -1,6 +1,6 @@
 import { ScrollView, View } from 'react-native';
 import { Avatar, Button, Card, Divider, List, Text, ActivityIndicator } from 'react-native-paper';
-import { COLORS } from '../constants/theme';
+import { COLORS } from '../../constants/theme';
 import { router } from 'expo-router';
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -61,38 +61,38 @@ export default function HomeScreen() {
       const data = await response.json();
       const userAppointments = data.appointments || [];
       
-              // Filtrar apenas agendamentos futuros e ordenar por data
-        const now = new Date();
-        const futureAppointments = userAppointments
-          .filter((appointment: any) => {
-            const appointmentDate = new Date(appointment.slotDate || appointment.date);
-            return appointmentDate >= now && !appointment.cancelled;
-          })
-          .sort((a: any, b: any) => new Date(a.slotDate || a.date).getTime() - new Date(b.slotDate || b.date).getTime())
-          .slice(0, 3); // Mostrar apenas os próximos 3
+      // Filtrar apenas agendamentos futuros e ordenar por data
+      const now = new Date();
+      const futureAppointments = userAppointments
+        .filter((appointment: any) => {
+          const appointmentDate = new Date(appointment.slotDate || appointment.date);
+          return appointmentDate >= now && !appointment.cancelled;
+        })
+        .sort((a: any, b: any) => new Date(a.slotDate || a.date).getTime() - new Date(b.slotDate || b.date).getTime())
+        .slice(0, 3); // Mostrar apenas os próximos 3
 
-        // Carregar dados dos médicos para cada agendamento
-        const appointmentsWithDoctors = await Promise.all(
-          futureAppointments.map(async (appointment: any) => {
-                      try {
-              const doctor = await doctors.getById(appointment.doctor || appointment.doctorId);
-              return {
-                id: appointment._id || appointment.id,
-                doctor: doctor.name,
-                specialty: doctor.specialty,
-                date: new Date(appointment.slotDate || appointment.date).toLocaleDateString('pt-BR'),
-                time: appointment.slotTime || appointment.time,
-              };
-            } catch (error) {
-              // Se não conseguir carregar o médico, usar dados básicos
-              return {
-                id: appointment._id || appointment.id,
-                doctor: `Médico: ${appointment.doctor || appointment.doctorId}`,
-                specialty: 'Não informado',
-                date: new Date(appointment.slotDate || appointment.date).toLocaleDateString('pt-BR'),
-                time: appointment.slotTime || appointment.time,
-              };
-            }
+      // Carregar dados dos médicos para cada agendamento
+      const appointmentsWithDoctors = await Promise.all(
+        futureAppointments.map(async (appointment: any) => {
+          try {
+            const doctor = await doctors.getById(appointment.doctor || appointment.doctorId);
+            return {
+              id: appointment._id || appointment.id,
+              doctor: doctor.name,
+              specialty: doctor.specialty,
+              date: new Date(appointment.slotDate || appointment.date).toLocaleDateString('pt-BR'),
+              time: appointment.slotTime || appointment.time,
+            };
+          } catch (error) {
+            // Se não conseguir carregar o médico, usar dados básicos
+            return {
+              id: appointment._id || appointment.id,
+              doctor: `Médico: ${appointment.doctor || appointment.doctorId}`,
+              specialty: 'Não informado',
+              date: new Date(appointment.slotDate || appointment.date).toLocaleDateString('pt-BR'),
+              time: appointment.slotTime || appointment.time,
+            };
+          }
         })
       );
 

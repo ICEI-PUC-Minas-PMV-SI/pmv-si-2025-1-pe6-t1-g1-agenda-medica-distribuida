@@ -45,13 +45,32 @@ exports.signup = async (req, res) => {
 
     const result = await newUser.save();
     result.password = undefined;
+
+    const token = jwt.sign(
+      {
+        userId: result._id,
+        email: result.email,
+        verified: result.verified,
+        isAdmin: result.isAdmin,
+      },
+      process.env.TOKEN_SECRET,
+      {
+        expiresIn: "8h",
+      }
+    );
+
     res.status(201).json({
       success: true,
       message: "Your account has been created successfully",
-      result,
+      token,
+      user: result,
     });
   } catch (error) {
     console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Error creating account",
+    });
   }
 };
 

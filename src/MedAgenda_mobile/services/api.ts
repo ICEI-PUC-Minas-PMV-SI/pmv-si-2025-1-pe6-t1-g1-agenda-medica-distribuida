@@ -11,7 +11,22 @@ import {
   ProfileUpdateData,
   ApiError,
   AppointmentStatus,
+  AppointmentType,
 } from '../types/api';
+
+// Export types for use in other files
+export type { 
+  User, 
+  Doctor, 
+  Appointment, 
+  AppointmentStatus, 
+  AppointmentType, 
+  LoginResponse, 
+  RegisterData, 
+  AppointmentData, 
+  ProfileUpdateData, 
+  ApiError 
+};
 
 interface ErrorResponse {
   message: string;
@@ -77,7 +92,7 @@ api.interceptors.request.use(
     return config;
   },
   (error: AxiosError) => {
-    return Promise.reject(error);
+    return Promise.reject(handleApiError(error as AxiosError<ErrorResponse>));
   }
 );
 
@@ -122,9 +137,17 @@ const handleApiError = (error: AxiosError<ErrorResponse>): ApiError => {
 export const auth = {
   login: async (email: string, password: string): Promise<LoginResponse> => {
     const response = await api.post<{ token: string }>('/auth/signin', { email, password });
-    return { token: response.data.token, user: { id: '', email, name: '', createdAt: '', updatedAt: '' } };
+    await AsyncStorage.setItem('@MedAgenda:token', response.data.token);
+    return { 
+      success: true,
+      message: 'Login successful',
+      token: response.data.token, 
+      user: { id: '', email, name: '', createdAt: '', updatedAt: '' } 
+    };
   },
   logout: async (): Promise<{ success: boolean; message: string }> => {
+    await AsyncStorage.removeItem('@MedAgenda:token');
+    await AsyncStorage.removeItem('@MedAgenda:user');
     const response = await api.post<{ success: boolean; message: string }>('/auth/signout');
     return response.data;
   },
@@ -345,7 +368,7 @@ export const appointments = {
   },
 };
 
-// Patients endpoints (mantidos para compatibilidade)
+// Patients endpoints
 export const patients = {
   getAll: async (): Promise<Patient[]> => {
     const response = await api.get<Patient[]>('/patients');
@@ -361,7 +384,7 @@ export const patients = {
   },
 };
 
-// Profile service (pode não existir no backend atual, mantido para compatibilidade)
+// Profile service
 export const profileService = {
   getProfile: async (): Promise<User> => {
     const response = await api.get<User>('/profile');

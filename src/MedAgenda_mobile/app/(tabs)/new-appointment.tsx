@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { ScrollView, View, Alert } from 'react-native';
-import { Button, Card, HelperText, TextInput, Text, ActivityIndicator } from 'react-native-paper';
-import { COLORS } from '../constants/theme';
+import { Button, Card, HelperText, TextInput, Text, ActivityIndicator, Snackbar } from 'react-native-paper';
+import { COLORS } from '../../constants/theme';
 import { router } from 'expo-router';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { doctors, appointments } from '../../services/api';
-import { useAuth } from '../../context/AuthContext';
+import { AppointmentType } from '../../types/api';
 
 interface FormErrors {
   specialty?: string;
@@ -29,8 +29,8 @@ export default function NewAppointmentScreen() {
   const [specialties, setSpecialties] = useState<string[]>([]);
   const [doctorsList, setDoctorsList] = useState<any[]>([]);
   const [filteredDoctors, setFilteredDoctors] = useState<any[]>([]);
-  
-  const { user } = useAuth();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showError, setShowError] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -60,7 +60,8 @@ export default function NewAppointmentScreen() {
       
     } catch (error) {
       console.error('Error loading data:', error);
-      Alert.alert('Erro', 'Erro ao carregar dados. Tente novamente.');
+      setErrorMessage('Erro ao carregar dados. Tente novamente.');
+      setShowError(true);
     } finally {
       setLoadingData(false);
     }
@@ -120,9 +121,10 @@ export default function NewAppointmentScreen() {
       // Prepare appointment data
       const appointmentData = {
         patientId: userId,
-        doctorId: selectedDoctor.crm, // Use CRM as doctor ID
+        doctorId: selectedDoctor.crm || selectedDoctor.id, // Use CRM as doctor ID or fallback to id
         date: date.toISOString().split('T')[0], // YYYY-MM-DD format
         time: date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }), // HH:MM format
+        type: AppointmentType.CONSULTATION,
         notes: notes,
       };
 
@@ -169,7 +171,8 @@ export default function NewAppointmentScreen() {
     } catch (error: any) {
       console.error('Error creating appointment:', error);
       const errorMessage = error.message || 'Erro ao agendar consulta. Tente novamente.';
-      Alert.alert('Erro', errorMessage);
+      setErrorMessage(errorMessage);
+      setShowError(true);
     } finally {
       setLoading(false);
     }
@@ -214,22 +217,6 @@ export default function NewAppointmentScreen() {
         <Card style={{ marginBottom: 16 }}>
           <Card.Title title="Especialidade" />
           <Card.Content>
-            <TextInput
-              mode="outlined"
-              label="Selecione a especialidade"
-              value={specialty}
-              onChangeText={(value) => {
-                setSpecialty(value);
-                setErrors(prev => ({ ...prev, specialty: undefined }));
-              }}
-              error={!!errors.specialty}
-              style={{ marginBottom: 8 }}
-            />
-            {errors.specialty && (
-              <HelperText type="error" visible={!!errors.specialty}>
-                {errors.specialty}
-              </HelperText>
-            )}
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
               {specialties.map((item) => (
                 <Button
@@ -237,6 +224,7 @@ export default function NewAppointmentScreen() {
                   mode={specialty === item ? 'contained' : 'outlined'}
                   onPress={() => {
                     setSpecialty(item);
+                    setSelectedDoctor(null);
                     setErrors(prev => ({ ...prev, specialty: undefined }));
                   }}
                   style={{ marginBottom: 8 }}
@@ -245,6 +233,11 @@ export default function NewAppointmentScreen() {
                 </Button>
               ))}
             </View>
+            {errors.specialty && (
+              <HelperText type="error" visible={!!errors.specialty}>
+                {errors.specialty}
+              </HelperText>
+            )}
           </Card.Content>
         </Card>
 
@@ -360,6 +353,17 @@ export default function NewAppointmentScreen() {
           )}
         </Button>
       </View>
+
+      <Snackbar
+        visible={showError}
+        onDismiss={() => setShowError(false)}
+        action={{
+          label: 'OK',
+          onPress: () => setShowError(false),
+        }}
+      >
+        {errorMessage}
+      </Snackbar>
     </ScrollView>
   );
 } 

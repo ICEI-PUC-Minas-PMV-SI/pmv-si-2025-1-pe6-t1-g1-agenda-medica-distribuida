@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, View, StyleSheet } from 'react-native';
-import { Button, Card, Chip, FAB, Searchbar, SegmentedButtons, Text } from 'react-native-paper';
+import { ScrollView, View, StyleSheet, Alert } from 'react-native';
+import { Button, Card, Chip, FAB, Searchbar, SegmentedButtons, Text, ActivityIndicator, Snackbar } from 'react-native-paper';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { appointments } from '../../../services/api';
-import { Appointment } from '../../../types/api';
+import { Appointment, AppointmentStatus } from '../../../types/api';
+import { COLORS } from '../../../constants/theme';
 import { useAuth } from '../../../context/AuthContext';
 
 export default function AppointmentsScreen() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterStatus, setFilterStatus] = useState('upcoming');
-  const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
+  const [filterStatus, setFilterStatus] = useState<AppointmentStatus | 'all'>('all');
   const [appointmentsList, setAppointmentsList] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showError, setShowError] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -48,38 +49,86 @@ export default function AppointmentsScreen() {
     } catch (err: any) {
       const errorMessage = err.message || 'Erro ao carregar consultas';
       setError(errorMessage);
+      setShowError(true);
       console.error('Error loading appointments:', err);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleStatusChange = async (status: AppointmentStatus | 'all') => {
+    setFilterStatus(status);
+    // For now, just filter locally since the backend might not support status filtering
+    // In the future, this could make a new API call with status filter
+  };
+
+  const handleCancelAppointment = async (id: string) => {
+    try {
+      Alert.alert(
+        'Cancelar Consulta',
+        'Tem certeza que deseja cancelar esta consulta?',
+        [
+          { text: 'Não', style: 'cancel' },
+          {
+            text: 'Sim',
+            style: 'destructive',
+            onPress: async () => {
+              try {
+                await appointments.cancel(id);
+                loadAppointments();
+              } catch (err) {
+                const message = 'Erro ao cancelar consulta';
+                setError(message);
+                setShowError(true);
+                console.error('Error canceling appointment:', err);
+              }
+            }
+          }
+        ]
+      );
+    } catch (err) {
+      console.error('Error in cancel appointment:', err);
+    }
+  };
+
   const filteredAppointments = appointmentsList.filter((appointment) => {
-    const matchesSearch = appointment.doctorId.toLowerCase().includes(searchQuery.toLowerCase());
+    const searchLower = searchQuery.toLowerCase();
+    const matchesSearch = appointment.doctorId?.toLowerCase().includes(searchLower) || 
+                         appointment.notes?.toLowerCase().includes(searchLower) ||
+                         false;
+    
     const matchesStatus = filterStatus === 'all' || appointment.status === filterStatus;
+    
     return matchesSearch && matchesStatus;
   });
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: AppointmentStatus) => {
     switch (status) {
-      case 'scheduled':
-        return '#2196F3';
-      case 'completed':
-        return '#4CAF50';
-      case 'cancelled':
-        return '#F44336';
+      case AppointmentStatus.PENDING:
+        return COLORS.warning || '#FFC107';
+      case AppointmentStatus.CONFIRMED:
+      case AppointmentStatus.SCHEDULED:
+        return COLORS.primary || '#2196F3';
+      case AppointmentStatus.COMPLETED:
+        return COLORS.success || '#4CAF50';
+      case AppointmentStatus.CANCELLED:
+        return COLORS.error || '#F44336';
       default:
         return '#757575';
     }
   };
 
-  const getStatusText = (status: string) => {
+  const getStatusText = (status: AppointmentStatus) => {
     switch (status) {
-      case 'scheduled':
+      case AppointmentStatus.PENDING:
+        return 'Pendente';
+      case AppointmentStatus.CONFIRMED:
+        return 'Confirmada';
+      case AppointmentStatus.SCHEDULED:
         return 'Agendada';
-      case 'completed':
+      case AppointmentStatus.COMPLETED:
         return 'Realizada';
-      case 'cancelled':
+      case AppointmentStatus.CANCELLED:
         return 'Cancelada';
       default:
         return status;
@@ -88,19 +137,9 @@ export default function AppointmentsScreen() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <Text>Carregando consultas...</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.error}>{error}</Text>
-        <Button mode="contained" onPress={loadAppointments} style={styles.retryButton}>
-          Tentar novamente
-        </Button>
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+        <Text style={{ marginTop: 16 }}>Carregando consultas...</Text>
       </View>
     );
   }
@@ -108,67 +147,108 @@ export default function AppointmentsScreen() {
   return (
     <View style={styles.container}>
       <ScrollView>
-        {/* Search and Filters */}
-        <View style={styles.filtersContainer}>
-          <Searchbar
-            placeholder="Buscar consultas..."
-            onChangeText={setSearchQuery}
-            value={searchQuery}
-            style={styles.searchBar}
-          />
+        {/* Search Bar */}
+        <Searchbar
+          placeholder="Buscar consultas..."
+          onChangeText={setSearchQuery}
+          value={searchQuery}
+          style={styles.searchbar}
+        />
 
-          <SegmentedButtons
-            value={filterStatus}
-            onValueChange={setFilterStatus}
-            buttons={[
-              { value: 'all', label: 'Todas' },
-              { value: 'scheduled', label: 'Agendadas' },
-              { value: 'completed', label: 'Realizadas' },
-            ]}
-            style={styles.segmentedButtons}
-          />
-        </View>
+        {/* Status Filter */}
+        <SegmentedButtons
+          value={filterStatus}
+          onValueChange={handleStatusChange}
+          buttons={[
+            { value: 'all', label: 'Todas' },
+            { value: AppointmentStatus.SCHEDULED, label: 'Agendadas' },
+            { value: AppointmentStatus.COMPLETED, label: 'Realizadas' },
+            { value: AppointmentStatus.CANCELLED, label: 'Canceladas' },
+          ]}
+          style={styles.segmentedButtons}
+        />
 
         {/* Appointments List */}
-        <View style={styles.appointmentsList}>
-          {filteredAppointments.map((appointment) => (
-            <Card
-              key={appointment.id}
-              style={styles.card}
-              onPress={() => {
-                router.push({
-                  pathname: '/(tabs)/appointments/[id]',
-                  params: { id: appointment.id }
-                });
-              }}
+        {filteredAppointments.length === 0 ? (
+          <View style={styles.centerContent}>
+            <Text style={styles.emptyText}>
+              {appointmentsList.length === 0 
+                ? 'Você não tem consultas agendadas' 
+                : 'Nenhuma consulta encontrada com os filtros aplicados'
+              }
+            </Text>
+            <Button 
+              mode="contained" 
+              onPress={() => router.push('/(tabs)/new-appointment')}
+              style={styles.newAppointmentButton}
             >
+              Agendar Nova Consulta
+            </Button>
+          </View>
+        ) : (
+          filteredAppointments.map((appointment) => (
+            <Card key={appointment.id} style={styles.appointmentCard}>
               <Card.Content>
-                <Text variant="titleMedium">Consulta #{appointment.id}</Text>
-                <Text variant="bodyMedium">Data: {appointment.date}</Text>
-                <Text variant="bodyMedium">Horário: {appointment.time}</Text>
-                <View style={styles.statusContainer}>
-                  <Text
-                    variant="bodySmall"
-                    style={[styles.statusText, { color: getStatusColor(appointment.status) }]}
+                <View style={styles.appointmentHeader}>
+                  <Text variant="titleMedium">
+                    Médico: {appointment.doctorId}
+                  </Text>
+                  <Chip 
+                    style={{ backgroundColor: getStatusColor(appointment.status) }}
+                    textStyle={{ color: 'white' }}
                   >
                     {getStatusText(appointment.status)}
-                  </Text>
+                  </Chip>
                 </View>
+                
+                <Text variant="bodyMedium" style={styles.appointmentDate}>
+                  📅 {new Date(appointment.date).toLocaleDateString('pt-BR')} às {appointment.time}
+                </Text>
+                
+                {appointment.notes && (
+                  <Text variant="bodySmall" style={styles.appointmentNotes}>
+                    📝 {appointment.notes}
+                  </Text>
+                )}
               </Card.Content>
+              
+              <Card.Actions>
+                {appointment.status === AppointmentStatus.SCHEDULED && (
+                  <Button 
+                    mode="outlined" 
+                    onPress={() => handleCancelAppointment(appointment.id)}
+                    textColor={COLORS.error}
+                  >
+                    Cancelar
+                  </Button>
+                )}
+                <Button mode="text">
+                  Detalhes
+                </Button>
+              </Card.Actions>
             </Card>
-          ))}
-        </View>
+          ))
+        )}
       </ScrollView>
 
-      {/* FAB for new appointment */}
+      {/* Floating Action Button */}
       <FAB
         icon="plus"
-        label="Nova Consulta"
         style={styles.fab}
-        onPress={() => {
-          router.push('/(tabs)/new-appointment');
-        }}
+        onPress={() => router.push('/(tabs)/new-appointment')}
       />
+
+      {/* Error Snackbar */}
+      <Snackbar
+        visible={showError}
+        onDismiss={() => setShowError(false)}
+        action={{
+          label: 'Tentar novamente',
+          onPress: loadAppointments,
+        }}
+      >
+        {error}
+      </Snackbar>
     </View>
   );
 }
@@ -176,43 +256,50 @@ export default function AppointmentsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: COLORS.background || '#f5f5f5',
   },
-  filtersContainer: {
-    padding: 16,
+  centerContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
   },
-  searchBar: {
-    marginBottom: 16,
+  searchbar: {
+    margin: 16,
   },
   segmentedButtons: {
-    marginBottom: 16,
+    margin: 16,
   },
-  appointmentsList: {
-    padding: 16,
-  },
-  card: {
-    marginBottom: 16,
-  },
-  statusContainer: {
+  appointmentCard: {
+    margin: 16,
     marginTop: 8,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
   },
-  statusText: {
-    fontWeight: 'bold',
+  appointmentHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  appointmentDate: {
+    marginBottom: 4,
+  },
+  appointmentNotes: {
+    marginTop: 8,
+    fontStyle: 'italic',
+  },
+  emptyText: {
+    textAlign: 'center',
+    marginBottom: 16,
+    opacity: 0.7,
+  },
+  newAppointmentButton: {
+    marginTop: 8,
   },
   fab: {
     position: 'absolute',
     margin: 16,
     right: 0,
     bottom: 0,
-  },
-  error: {
-    color: 'red',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  retryButton: {
-    marginHorizontal: 16,
+    backgroundColor: COLORS.primary,
   },
 }); 

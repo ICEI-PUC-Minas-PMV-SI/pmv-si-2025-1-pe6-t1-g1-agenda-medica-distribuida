@@ -39,21 +39,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   async function signIn(email: string, password: string) {
     try {
       const response = await auth.login(email, password);
-      const { token } = response;
-
-      // A API só retorna o token, não os dados do usuário
-      // Vamos criar um objeto básico do usuário com o email
-      const userData = {
-        email: email,
-        name: email.split('@')[0], // Nome temporário baseado no email
-        id: 'temp-id' // ID temporário
-      };
-
-      await AsyncStorage.setItem('@MedAgenda:token', token);
-      await AsyncStorage.setItem('@MedAgenda:user', JSON.stringify(userData));
-
-      setUser(userData as User);
+      
+      if (response.token) {
+        await AsyncStorage.setItem('@MedAgenda:token', response.token);
+        if (response.user) {
+          await AsyncStorage.setItem('@MedAgenda:user', JSON.stringify(response.user));
+          setUser(response.user);
+        } else {
+          // Fallback: create basic user object if API doesn't return user data
+          const userData = {
+            email: email,
+            name: email.split('@')[0],
+            id: 'temp-id',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          };
+          await AsyncStorage.setItem('@MedAgenda:user', JSON.stringify(userData));
+          setUser(userData as User);
+        }
+      }
     } catch (error) {
+      console.error('Sign in error:', error);
       throw error;
     }
   }
@@ -62,10 +68,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const response = await auth.register(userData);
       
-      // A API de registro retorna apenas success, não token nem user
-      // Após o registro, fazer login automaticamente
-      await signIn(userData.email, userData.password);
+      // Check if register returns token and user, otherwise login after registration
+      if (response.success) {
+        // Auto-login after successful registration
+        await signIn(userData.email, userData.password);
+      }
     } catch (error) {
+      console.error('Sign up error:', error);
       throw error;
     }
   }

@@ -1,9 +1,9 @@
 import { ScrollView, View, Alert } from 'react-native';
-import { Button, Text, TextInput } from 'react-native-paper';
+import { Button, Text, TextInput, HelperText } from 'react-native-paper';
 import { Link, router } from 'expo-router';
 import { useState } from 'react';
-import { COLORS } from '../constants/theme';
-import { auth } from '../../services/api';
+import { COLORS } from '../../constants/theme';
+import { useAuth } from '../../context/AuthContext';
 
 export default function RegisterScreen() {
   const [name, setName] = useState('');
@@ -13,41 +13,40 @@ export default function RegisterScreen() {
   const [phone, setPhone] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const { signUp } = useAuth();
 
   const validateForm = () => {
     if (!name.trim()) {
-      Alert.alert('Erro', 'Por favor, insira seu nome completo');
+      setError('Por favor, insira seu nome completo');
       return false;
     }
     
     if (!email.trim()) {
-      Alert.alert('Erro', 'Por favor, insira seu email');
+      setError('Por favor, insira seu email');
       return false;
     }
     
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      Alert.alert('Erro', 'Por favor, insira um email válido');
+      setError('Por favor, insira um email válido');
       return false;
     }
     
     if (!password) {
-      Alert.alert('Erro', 'Por favor, insira uma senha');
+      setError('Por favor, insira uma senha');
       return false;
     }
     
     // Validação da senha conforme requisitos do backend
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
     if (!passwordRegex.test(password)) {
-      Alert.alert(
-        'Senha Inválida', 
-        'A senha deve ter pelo menos 8 caracteres e conter:\n• Uma letra minúscula\n• Uma letra maiúscula\n• Um número'
-      );
+      setError('A senha deve ter pelo menos 8 caracteres e conter:\n• Uma letra minúscula\n• Uma letra maiúscula\n• Um número');
       return false;
     }
     
     if (password !== confirmPassword) {
-      Alert.alert('Erro', 'As senhas não coincidem');
+      setError('As senhas não coincidem');
       return false;
     }
     
@@ -60,6 +59,7 @@ export default function RegisterScreen() {
     }
 
     setLoading(true);
+    setError('');
     
     try {
       const userData = {
@@ -71,9 +71,9 @@ export default function RegisterScreen() {
 
       console.log('Tentando cadastrar usuário:', { ...userData, password: '[HIDDEN]' });
       
-      const user = await auth.register(userData);
+      await signUp(userData);
       
-      console.log('Cadastro realizado com sucesso:', user.name);
+      console.log('Cadastro realizado com sucesso');
       
       Alert.alert(
         'Sucesso!', 
@@ -92,7 +92,7 @@ export default function RegisterScreen() {
       let errorMessage = 'Erro ao criar conta. Tente novamente.';
       
       if (error.status === 504) {
-        errorMessage = 'O servidor está temporariamente indisponível. Isso pode ser devido a:\n\n• Problemas de conexão com o banco de dados\n• Timeout do servidor\n\nTente novamente em alguns minutos.';
+        errorMessage = 'O servidor está temporariamente indisponível. Tente novamente em alguns minutos.';
       } else if (error.message) {
         errorMessage = error.message;
       } else if (error.response?.data?.message) {
@@ -101,7 +101,7 @@ export default function RegisterScreen() {
         errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
       }
       
-      Alert.alert('Erro no Cadastro', errorMessage);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -156,14 +156,14 @@ export default function RegisterScreen() {
         value={password}
         onChangeText={setPassword}
         secureTextEntry={!showPassword}
+        style={{ marginBottom: 16 }}
+        disabled={loading}
         right={
-          <TextInput.Icon
-            icon={showPassword ? 'eye-off' : 'eye'}
+          <TextInput.Icon 
+            icon={showPassword ? "eye-off" : "eye"} 
             onPress={() => setShowPassword(!showPassword)}
           />
         }
-        style={{ marginBottom: 16 }}
-        disabled={loading}
       />
 
       <TextInput
@@ -172,26 +172,30 @@ export default function RegisterScreen() {
         value={confirmPassword}
         onChangeText={setConfirmPassword}
         secureTextEntry={!showPassword}
-        style={{ marginBottom: 24 }}
+        style={{ marginBottom: 16 }}
         disabled={loading}
       />
+
+      {error ? (
+        <HelperText type="error" visible={!!error} style={{ marginBottom: 16 }}>
+          {error}
+        </HelperText>
+      ) : null}
 
       <Button
         mode="contained"
         onPress={handleRegister}
-        style={{ marginBottom: 16 }}
         loading={loading}
         disabled={loading}
+        style={{ marginBottom: 16 }}
       >
-        {loading ? 'Cadastrando...' : 'Cadastrar'}
+        Criar Conta
       </Button>
 
-      <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 4 }}>
-        <Text variant="bodyMedium">Já tem uma conta?</Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Já tem uma conta? </Text>
         <Link href="/(auth)/login" asChild>
-          <Text variant="bodyMedium" style={{ color: COLORS.primary }}>
-            Faça login
-          </Text>
+          <Button mode="text">Fazer Login</Button>
         </Link>
       </View>
     </ScrollView>
