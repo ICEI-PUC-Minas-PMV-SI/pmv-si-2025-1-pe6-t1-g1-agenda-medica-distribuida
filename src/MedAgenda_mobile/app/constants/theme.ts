@@ -12,25 +12,14 @@ export const COLORS = {
   white: '#FFFFFF',
   black: '#000000',
   gray: '#8E8E93',
-};
+} as const;
 
-// ... existing FONTS, SHADOWS, SIZES definitions ...
-
-export const theme = {
+const theme = {
   ...MD3LightTheme,
   colors: {
     ...MD3LightTheme.colors,
-    primary: COLORS.primary,
-    secondary: COLORS.secondary,
-    accent: COLORS.accent,
-    background: COLORS.background,
-    error: COLORS.error,
-    text: COLORS.text,
-  },
-  fonts: {
-    regular: FONTS.regular,
-    medium: FONTS.medium,
-    light: FONTS.regular,
-    thin: FONTS.regular,
+    ...COLORS,
   },
 };
+
+export default theme; 

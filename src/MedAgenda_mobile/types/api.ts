@@ -12,14 +12,20 @@ export interface Doctor {
   id: string;
   name: string;
   specialty: string;
-  experience: string;
-  rating: number;
-  patients: string;
-  about: string;
+  email?: string;
+  phone?: string;
+  crm?: string;
+  pricePerAppointment?: number;
+  experience?: string;
+  rating?: number;
+  patients?: string;
+  about?: string;
   profileImage?: string;
-  education: Education[];
-  availability: Availability[];
-  location: string;
+  education?: Education[];
+  availability?: Availability[];
+  location?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Education {
@@ -38,14 +44,15 @@ export interface Availability {
 export interface Appointment {
   id: string;
   doctorId: string;
-  userId: string;
+  patientId?: string;
+  userId?: string;
   date: string;
   time: string;
   status: AppointmentStatus;
-  type: AppointmentType;
+  type?: AppointmentType;
   notes?: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
   doctor?: Doctor;
   user?: User;
 }
@@ -53,6 +60,7 @@ export interface Appointment {
 export enum AppointmentStatus {
   PENDING = 'pending',
   CONFIRMED = 'confirmed',
+  SCHEDULED = 'scheduled',
   COMPLETED = 'completed',
   CANCELLED = 'cancelled'
 }
@@ -77,9 +85,10 @@ export interface RegisterData {
 
 export interface AppointmentData {
   doctorId: string;
+  patientId?: string;
   date: string;
   time: string;
-  type: AppointmentType;
+  type?: AppointmentType;
   notes?: string;
 }
 

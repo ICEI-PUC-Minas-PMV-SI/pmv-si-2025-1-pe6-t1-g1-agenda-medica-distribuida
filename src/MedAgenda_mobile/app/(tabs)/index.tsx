@@ -1,233 +1,226 @@
-import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  TouchableOpacity,
-  RefreshControl,
-  Alert,
-  ActivityIndicator,
-} from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import { appointmentService } from '../../services/api';
+import { ScrollView, View } from 'react-native';
+import { Avatar, Button, Card, Divider, List, Text, ActivityIndicator } from 'react-native-paper';
+import { COLORS } from '../constants/theme';
+import { router } from 'expo-router';
+import { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { appointments, doctors } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
-type Appointment = {
-  id: string;
-  doctorName: string;
-  specialty: string;
-  date: string;
-  time: string;
-  status: 'scheduled' | 'completed' | 'cancelled';
-};
+export default function HomeScreen() {
+  const { user } = useAuth();
+  const [upcomingAppointments, setUpcomingAppointments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-export default function AppointmentsScreen() {
-  const [refreshing, setRefreshing] = React.useState(false);
-  const [loading, setLoading] = React.useState(true);
-  const [appointments, setAppointments] = React.useState<Appointment[]>([]);
-  const [error, setError] = React.useState<string | null>(null);
+  useEffect(() => {
+    loadUserAppointments();
+  }, []);
 
-  const fetchAppointments = async () => {
+  const loadUserAppointments = async () => {
     try {
-      const data = await appointmentService.getAppointments();
-      setAppointments(data);
-      setError(null);
-    } catch (err) {
-      setError('Failed to load appointments');
-      Alert.alert('Error', 'Failed to load appointments. Please try again.');
+      setLoading(true);
+      setError('');
+      
+      // Extrair userId do token armazenado
+      const token = await AsyncStorage.getItem('@MedAgenda:token');
+      let userId = null;
+      
+      if (token) {
+        try {
+          const base64Url = token.split('.')[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          }).join(''));
+          const decoded = JSON.parse(jsonPayload);
+          userId = decoded.userId;
+        } catch (decodeError) {
+          console.error('Error decoding token:', decodeError);
+        }
+      }
+      
+      if (!userId) {
+        setError('Usuário não autenticado');
+        return;
+      }
+
+      // Carregar agendamentos do usuário usando a API diretamente com token
+      const response = await fetch(`https://med-agenda-backend.vercel.app/api/appointment?_id=${userId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'client': 'not-browser',
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erro ao carregar agendamentos');
+      }
+      
+      const data = await response.json();
+      const userAppointments = data.appointments || [];
+      
+              // Filtrar apenas agendamentos futuros e ordenar por data
+        const now = new Date();
+        const futureAppointments = userAppointments
+          .filter((appointment: any) => {
+            const appointmentDate = new Date(appointment.slotDate || appointment.date);
+            return appointmentDate >= now && !appointment.cancelled;
+          })
+          .sort((a: any, b: any) => new Date(a.slotDate || a.date).getTime() - new Date(b.slotDate || b.date).getTime())
+          .slice(0, 3); // Mostrar apenas os próximos 3
+
+        // Carregar dados dos médicos para cada agendamento
+        const appointmentsWithDoctors = await Promise.all(
+          futureAppointments.map(async (appointment: any) => {
+                      try {
+              const doctor = await doctors.getById(appointment.doctor || appointment.doctorId);
+              return {
+                id: appointment._id || appointment.id,
+                doctor: doctor.name,
+                specialty: doctor.specialty,
+                date: new Date(appointment.slotDate || appointment.date).toLocaleDateString('pt-BR'),
+                time: appointment.slotTime || appointment.time,
+              };
+            } catch (error) {
+              // Se não conseguir carregar o médico, usar dados básicos
+              return {
+                id: appointment._id || appointment.id,
+                doctor: `Médico: ${appointment.doctor || appointment.doctorId}`,
+                specialty: 'Não informado',
+                date: new Date(appointment.slotDate || appointment.date).toLocaleDateString('pt-BR'),
+                time: appointment.slotTime || appointment.time,
+              };
+            }
+        })
+      );
+
+      setUpcomingAppointments(appointmentsWithDoctors);
+      
+    } catch (err: any) {
+      console.error('Error loading appointments:', err);
+      setError('Erro ao carregar agendamentos');
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchAppointments();
-  }, []);
-
-  const onRefresh = React.useCallback(async () => {
-    setRefreshing(true);
-    try {
-      await fetchAppointments();
-    } finally {
-      setRefreshing(false);
-    }
-  }, []);
-
-  const handleCancelAppointment = async (id: string) => {
-    try {
-      await appointmentService.cancelAppointment(id);
-      // Refresh the appointments list
-      fetchAppointments();
-      Alert.alert('Success', 'Appointment cancelled successfully');
-    } catch (err) {
-      Alert.alert('Error', 'Failed to cancel appointment. Please try again.');
-    }
-  };
-
-  const renderAppointment = ({ item }: { item: Appointment }) => (
-    <TouchableOpacity style={styles.appointmentCard}>
-      <View style={styles.appointmentHeader}>
-        <Text style={styles.doctorName}>{item.doctorName}</Text>
-        <Text style={[styles.status, styles[item.status]]}>{item.status}</Text>
-      </View>
-      <Text style={styles.specialty}>{item.specialty}</Text>
-      <View style={styles.appointmentFooter}>
-        <View style={styles.dateTimeContainer}>
-          <MaterialIcons name="event" size={16} color="#666" />
-          <Text style={styles.dateTime}>{item.date}</Text>
-        </View>
-        <View style={styles.dateTimeContainer}>
-          <MaterialIcons name="access-time" size={16} color="#666" />
-          <Text style={styles.dateTime}>{item.time}</Text>
-        </View>
-      </View>
-      {item.status === 'scheduled' && (
-        <TouchableOpacity
-          style={styles.cancelButton}
-          onPress={() => {
-            Alert.alert(
-              'Cancel Appointment',
-              'Are you sure you want to cancel this appointment?',
-              [
-                { text: 'No', style: 'cancel' },
-                { text: 'Yes', onPress: () => handleCancelAppointment(item.id) },
-              ]
-            );
-          }}
-        >
-          <MaterialIcons name="cancel" size={16} color="#c62828" />
-          <Text style={styles.cancelButtonText}>Cancel Appointment</Text>
-        </TouchableOpacity>
-      )}
-    </TouchableOpacity>
-  );
-
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
-      </View>
-    );
-  }
+  const notifications = [
+    {
+      id: '1',
+      title: 'Bem-vindo ao MedAgenda!',
+      description: 'Gerencie suas consultas médicas de forma fácil e prática',
+      time: 'Agora',
+    },
+  ];
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={appointments}
-        renderItem={renderAppointment}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContainer}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>
-              {error || 'No appointments scheduled'}
-            </Text>
+    <ScrollView style={{ flex: 1, backgroundColor: COLORS.background }}>
+      {/* Welcome Section */}
+      <View style={{ padding: 16, backgroundColor: COLORS.primary }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
+          <Avatar.Text 
+            size={48} 
+            label={user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) : 'U'} 
+            style={{ backgroundColor: COLORS.accent }} 
+          />
+          <View style={{ marginLeft: 12 }}>
+            <Text variant="titleMedium" style={{ color: 'white' }}>Bem-vindo(a),</Text>
+            <Text variant="headlineSmall" style={{ color: 'white' }}>{user?.name || 'Usuário'}</Text>
           </View>
-        }
-      />
-    </View>
-  );
-}
+        </View>
+      </View>
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-  listContainer: {
-    padding: 16,
-  },
-  appointmentCard: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  appointmentHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  doctorName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-  },
-  specialty: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 12,
-  },
-  appointmentFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  dateTimeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  dateTime: {
-    marginLeft: 4,
-    fontSize: 14,
-    color: '#666',
-  },
-  status: {
-    fontSize: 12,
-    fontWeight: '500',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  scheduled: {
-    backgroundColor: '#e3f2fd',
-    color: '#1976d2',
-  },
-  completed: {
-    backgroundColor: '#e8f5e9',
-    color: '#2e7d32',
-  },
-  cancelled: {
-    backgroundColor: '#ffebee',
-    color: '#c62828',
-  },
-  cancelButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-    marginTop: 8,
-  },
-  cancelButtonText: {
-    marginLeft: 8,
-    color: '#c62828',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 32,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#666',
-  },
-});
+      {/* Quick Actions */}
+      <View style={{ padding: 16, flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Button
+          mode="contained"
+          icon="calendar-plus"
+          onPress={() => router.push('/(tabs)/new-appointment')}
+          style={{ flex: 1, marginRight: 8 }}
+        >
+          Nova Consulta
+        </Button>
+        <Button
+          mode="contained-tonal"
+          icon="history"
+          onPress={() => router.push('/(tabs)/appointments')}
+          style={{ flex: 1, marginLeft: 8 }}
+        >
+          Histórico
+        </Button>
+      </View>
+
+      {/* Upcoming Appointments */}
+      <Card style={{ margin: 16 }}>
+        <Card.Title 
+          title="Próximas Consultas" 
+          right={() => loading ? <ActivityIndicator size="small" /> : null}
+        />
+        <Card.Content>
+          {loading ? (
+            <View style={{ alignItems: 'center', padding: 20 }}>
+              <ActivityIndicator size="large" />
+              <Text style={{ marginTop: 8 }}>Carregando agendamentos...</Text>
+            </View>
+          ) : error ? (
+            <View style={{ alignItems: 'center', padding: 20 }}>
+              <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
+              <Button mode="outlined" onPress={loadUserAppointments} style={{ marginTop: 8 }}>
+                Tentar novamente
+              </Button>
+            </View>
+          ) : upcomingAppointments.length === 0 ? (
+            <View style={{ alignItems: 'center', padding: 20 }}>
+              <Text style={{ textAlign: 'center', opacity: 0.7 }}>
+                Você não tem consultas agendadas
+              </Text>
+              <Button 
+                mode="contained" 
+                onPress={() => router.push('/(tabs)/new-appointment')} 
+                style={{ marginTop: 8 }}
+              >
+                Agendar Consulta
+              </Button>
+            </View>
+          ) : (
+            upcomingAppointments.map((appointment) => (
+              <View key={appointment.id} style={{ marginBottom: 12 }}>
+                <Text variant="titleMedium">{appointment.doctor}</Text>
+                <Text variant="bodyMedium">{appointment.specialty}</Text>
+                <Text variant="bodySmall" style={{ color: COLORS.primary }}>
+                  {appointment.date} às {appointment.time}
+                </Text>
+                {appointment.id !== upcomingAppointments[upcomingAppointments.length - 1].id && (
+                  <Divider style={{ marginTop: 8 }} />
+                )}
+              </View>
+            ))
+          )}
+        </Card.Content>
+        {upcomingAppointments.length > 0 && (
+          <Card.Actions>
+            <Button onPress={() => router.push('/(tabs)/appointments')}>Ver Todas</Button>
+          </Card.Actions>
+        )}
+      </Card>
+
+      {/* Notifications */}
+      <Card style={{ margin: 16 }}>
+        <Card.Title title="Notificações" />
+        <Card.Content>
+          {notifications.map((notification) => (
+            <List.Item
+              key={notification.id}
+              title={notification.title}
+              description={notification.description}
+              right={() => <Text variant="bodySmall">{notification.time}</Text>}
+              style={{ marginBottom: 8 }}
+            />
+          ))}
+        </Card.Content>
+      </Card>
+    </ScrollView>
+  );
+} 
