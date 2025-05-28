@@ -23,8 +23,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   async function loadStoredData() {
     try {
-      const storedUser = await AsyncStorage.getItem('@MedAgenda:user');
-      const storedToken = await AsyncStorage.getItem('@MedAgenda:token');
+      const storedUser = await AsyncStorage.getItem('user');
+      const storedToken = await AsyncStorage.getItem('authToken');
 
       if (storedUser && storedToken) {
         setUser(JSON.parse(storedUser));
@@ -40,23 +40,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const response = await auth.login(email, password);
       
-      if (response.token) {
-        await AsyncStorage.setItem('@MedAgenda:token', response.token);
-        if (response.user) {
-          await AsyncStorage.setItem('@MedAgenda:user', JSON.stringify(response.user));
-          setUser(response.user);
-        } else {
-          // Fallback: create basic user object if API doesn't return user data
-          const userData = {
-            email: email,
-            name: email.split('@')[0],
-            id: 'temp-id',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          };
-          await AsyncStorage.setItem('@MedAgenda:user', JSON.stringify(userData));
-          setUser(userData as User);
-        }
+      if (response.token && response.user) {
+        await AsyncStorage.setItem('authToken', response.token);
+        await AsyncStorage.setItem('user', JSON.stringify(response.user));
+        setUser(response.user);
+      } else {
+        throw new Error('Login failed: No token or user data received');
       }
     } catch (error) {
       console.error('Sign in error:', error);
@@ -68,11 +57,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const response = await auth.register(userData);
       
-      // Check if register returns token and user, otherwise login after registration
-      if (response.success) {
-        // Auto-login after successful registration
-        await signIn(userData.email, userData.password);
-      }
+      // Auto-login after successful registration
+      await signIn(userData.email, userData.password);
     } catch (error) {
       console.error('Sign up error:', error);
       throw error;
@@ -81,11 +67,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   async function signOut() {
     try {
-      await AsyncStorage.removeItem('@MedAgenda:token');
-      await AsyncStorage.removeItem('@MedAgenda:user');
-      setUser(null);
+      // Call API logout first
+      await auth.logout();
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error('Error calling API logout:', error);
+      // Continue with local logout even if API call fails
+    } finally {
+      // Always clear local storage
+      try {
+        await AsyncStorage.removeItem('authToken');
+        await AsyncStorage.removeItem('user');
+        setUser(null);
+      } catch (error) {
+        console.error('Error clearing local storage:', error);
+      }
     }
   }
 

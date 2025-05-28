@@ -45,181 +45,271 @@ interface Patient {
   updatedAt: string;
 }
 
-// Interfaces específicas do backend
+// Backend data structures based on actual API responses
+interface BackendUser {
+  _id: string;
+  name: string;
+  email: string;
+  gender?: string;
+  birthdate?: string;
+  userImage?: string;
+  isAdmin?: boolean;
+  verified?: boolean;
+}
+
 interface BackendDoctor {
   _id: string;
   name: string;
-  speciality: string;
+  email: string;
+  password: string;
+  image: string;
+  speciality: string; // Note: backend uses 'speciality' not 'specialty'
+  degree: string;
+  experience: string;
+  about: string;
+  fees: number;
+  address: {
+    line1: string;
+    line2: string;
+  };
+  date: number;
+  slots_booked: Record<string, string[]>;
+  available: boolean;
   crm: string;
-  pricePerAppointment: number;
-  createdAt: string;
-  updatedAt: string;
 }
 
 interface BackendAppointment {
   _id: string;
-  user: string;
-  doctor: string;
+  user: BackendUser[];
+  doctor: BackendDoctor[];
   slotDate: string;
   slotTime: string;
-  cancelled: boolean;
-  createdAt: string;
-  updatedAt: string;
+  amount?: number;
+  date?: number;
+  cancelled?: boolean;
+  payment?: boolean;
+  isCompleted?: boolean;
+  __v?: number;
 }
 
-const env = getEnvVars();
+const { API_URL, API_TIMEOUT } = getEnvVars();
 
 const api = axios.create({
-  baseURL: env.API_URL,
-  timeout: env.API_TIMEOUT,
+  baseURL: API_URL,
+  timeout: API_TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
-    'client': 'not-browser',
   },
 });
 
-// Request interceptor for adding auth token
+// Request interceptor to add auth token
 api.interceptors.request.use(
-  async (config: InternalAxiosRequestConfig) => {
-    try {
-      const token = await AsyncStorage.getItem('@MedAgenda:token');
-      if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-    } catch (error) {
-      console.error('Error getting token from storage:', error);
+  async (config) => {
+    const token = await AsyncStorage.getItem('authToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
+    // Header necessário para o middleware de identificação do backend
+    config.headers.client = 'not-browser';
     return config;
   },
-  (error: AxiosError) => {
-    return Promise.reject(handleApiError(error as AxiosError<ErrorResponse>));
+  (error) => {
+    return Promise.reject(error);
   }
 );
 
-// Response interceptor for handling errors
+// Response interceptor for error handling
 api.interceptors.response.use(
   (response) => response,
-  async (error: AxiosError<ErrorResponse>) => {
+  (error) => {
     if (error.response?.status === 401) {
-      await AsyncStorage.removeItem('@MedAgenda:token');
-      await AsyncStorage.removeItem('@MedAgenda:user');
-      // Redirect to login screen
+      // Token expired or invalid
+      AsyncStorage.removeItem('authToken');
+      AsyncStorage.removeItem('user');
     }
     return Promise.reject(error);
   }
 );
 
+// Error handler
 const handleApiError = (error: AxiosError<ErrorResponse>): ApiError => {
   if (error.response) {
-    // The request was made and the server responded with a status code
-    // that falls out of the range of 2xx
     return {
       message: error.response.data?.message || 'An error occurred',
-      code: error.response.data?.code,
       status: error.response.status,
     };
   } else if (error.request) {
-    // The request was made but no response was received
     return {
       message: 'Network error. Please check your connection.',
-      code: 'NETWORK_ERROR',
+      status: 0,
     };
   } else {
-    // Something happened in setting up the request that triggered an Error
     return {
       message: error.message || 'An unexpected error occurred',
-      code: 'UNKNOWN_ERROR',
+      status: 0,
     };
   }
 };
 
-// Auth endpoints
+// Transform backend user to frontend user
+const transformUser = (backendUser: BackendUser): User => ({
+  id: backendUser._id,
+  name: backendUser.name,
+  email: backendUser.email,
+  gender: backendUser.gender,
+  birthdate: backendUser.birthdate,
+  image: backendUser.userImage,
+  isAdmin: backendUser.isAdmin || false,
+  verified: backendUser.verified || false,
+});
+
+// Transform backend doctor to frontend doctor
+const transformDoctor = (backendDoctor: BackendDoctor): Doctor => ({
+  id: backendDoctor._id,
+  name: backendDoctor.name,
+  email: backendDoctor.email,
+  image: backendDoctor.image,
+  specialty: backendDoctor.speciality, // Map speciality to specialty
+  degree: backendDoctor.degree,
+  experience: backendDoctor.experience,
+  about: backendDoctor.about,
+  fees: backendDoctor.fees,
+  address: backendDoctor.address,
+  available: backendDoctor.available,
+  crm: backendDoctor.crm,
+  education: [], // Backend doesn't have education array, so provide empty array
+  slotsBooked: backendDoctor.slots_booked || {},
+});
+
+// Transform backend appointment to frontend appointment
+const transformAppointment = (backendAppointment: BackendAppointment): Appointment => ({
+  id: backendAppointment._id,
+  userId: backendAppointment.user[0]._id,
+  doctorId: backendAppointment.doctor[0]._id,
+  date: backendAppointment.slotDate,
+  time: backendAppointment.slotTime,
+  status: backendAppointment.cancelled ? 'cancelled' : 
+          backendAppointment.isCompleted ? 'completed' : 'scheduled',
+  type: 'consultation' as AppointmentType,
+  notes: '',
+  doctor: backendAppointment.doctor.length > 0 ? transformDoctor(backendAppointment.doctor[0]) : undefined,
+  user: backendAppointment.user.length > 0 ? transformUser(backendAppointment.user[0]) : undefined,
+  amount: backendAppointment.amount,
+  payment: backendAppointment.payment || false,
+});
+
+// Authentication API
 export const auth = {
-  login: async (email: string, password: string): Promise<LoginResponse> => {
-    const response = await api.post<{ token: string }>('/auth/signin', { email, password });
-    await AsyncStorage.setItem('@MedAgenda:token', response.data.token);
-    return { 
-      success: true,
-      message: 'Login successful',
-      token: response.data.token, 
-      user: { id: '', email, name: '', createdAt: '', updatedAt: '' } 
-    };
+  async login(email: string, password: string): Promise<LoginResponse> {
+    try {
+      const response = await api.post('/auth/signin', { email, password });
+      const { token, message } = response.data;
+      
+      if (token) {
+        await AsyncStorage.setItem('authToken', token);
+        
+        // Decode token to get user info
+        try {
+          const base64Url = token.split('.')[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          }).join(''));
+          const decoded = JSON.parse(jsonPayload);
+          
+          const user: User = {
+            id: decoded.userId,
+            name: decoded.name || 'User',
+            email: decoded.email,
+            isAdmin: decoded.isAdmin || false,
+            verified: decoded.verified || false,
+          };
+          
+          await AsyncStorage.setItem('user', JSON.stringify(user));
+          
+          return {
+            token,
+            user,
+            message: message || 'Login successful',
+          };
+        } catch (decodeError) {
+          // If token decode fails, still return success but with minimal user info
+          const user: User = {
+            id: 'unknown',
+            name: 'User',
+            email: email,
+            isAdmin: false,
+            verified: false,
+          };
+          
+          await AsyncStorage.setItem('user', JSON.stringify(user));
+          
+          return {
+            token,
+            user,
+            message: message || 'Login successful',
+          };
+        }
+      }
+      
+      throw new Error('No token received');
+    } catch (error) {
+      throw handleApiError(error as AxiosError<ErrorResponse>);
+    }
   },
-  logout: async (): Promise<{ success: boolean; message: string }> => {
-    await AsyncStorage.removeItem('@MedAgenda:token');
-    await AsyncStorage.removeItem('@MedAgenda:user');
-    const response = await api.post<{ success: boolean; message: string }>('/auth/signout');
-    return response.data;
+
+  async register(data: RegisterData): Promise<LoginResponse> {
+    try {
+      const response = await api.post('/auth/signup', data);
+      
+      // After successful registration, automatically login
+      return await this.login(data.email, data.password);
+    } catch (error) {
+      throw handleApiError(error as AxiosError<ErrorResponse>);
+    }
   },
-  register: async (userData: RegisterData): Promise<{ success: boolean; email: string }> => {
-    const response = await api.post<{ success: boolean; email: string }>('/auth/signup', userData);
-    return response.data;
+
+  async logout(): Promise<void> {
+    try {
+      await api.post('/auth/signout');
+    } catch (error) {
+      // Continue with logout even if API call fails
+      console.warn('Logout API call failed:', error);
+    } finally {
+      await AsyncStorage.removeItem('authToken');
+      await AsyncStorage.removeItem('user');
+    }
   },
-  sendVerificationCode: async (email: string): Promise<{ success: boolean; message: string }> => {
-    const response = await api.patch<{ success: boolean; message: string }>('/auth/send-verification-code', { email });
-    return response.data;
+
+  async getCurrentUser(): Promise<User | null> {
+    try {
+      const userString = await AsyncStorage.getItem('user');
+      return userString ? JSON.parse(userString) : null;
+    } catch (error) {
+      console.error('Error getting current user:', error);
+      return null;
+    }
   },
-  verifyCode: async (email: string, code: string): Promise<{ success: boolean; message: string }> => {
-    const response = await api.patch<{ success: boolean; message: string }>('/auth/verify-code', { email, code });
-    return response.data;
-  },
-  changePassword: async (oldPassword: string, newPassword: string): Promise<{ success: boolean; message: string }> => {
-    const response = await api.patch<{ success: boolean; message: string }>('/auth/change-password', {
-      oldPassword,
-      newPassword,
-    });
-    return response.data;
-  },
-  sendForgotPasswordCode: async (email: string): Promise<{ success: boolean; message: string }> => {
-    const response = await api.patch('/auth/send-forgot-password-code', { email });
-    return response.data;
-  },
-  resetPassword: async (email: string, code: string, newPassword: string): Promise<{ success: boolean; message: string }> => {
-    const response = await api.patch<{ success: boolean; message: string }>('/auth/reset-password', {
-      email,
-      code,
-      newPassword,
-    });
-    return response.data;
+
+  async changePassword(oldPassword: string, newPassword: string): Promise<void> {
+    try {
+      await api.post('/auth/change-password', { 
+        oldPassword, 
+        newPassword 
+      });
+    } catch (error) {
+      throw handleApiError(error as AxiosError<ErrorResponse>);
+    }
   },
 };
 
-// Funções de transformação de dados
-function transformBackendDoctor(backendDoctor: BackendDoctor): Doctor {
-  return {
-    id: backendDoctor._id,
-    name: backendDoctor.name,
-    specialty: backendDoctor.speciality,
-    email: 'N/A',
-    phone: 'N/A',
-    crm: backendDoctor.crm,
-    pricePerAppointment: backendDoctor.pricePerAppointment,
-    createdAt: backendDoctor.createdAt,
-    updatedAt: backendDoctor.updatedAt,
-  };
-}
-
-function transformBackendAppointment(backendAppointment: BackendAppointment): Appointment {
-  return {
-    id: backendAppointment._id,
-    doctorId: backendAppointment.doctor,
-    patientId: backendAppointment.user,
-    date: backendAppointment.slotDate,
-    time: backendAppointment.slotTime,
-    status: backendAppointment.cancelled ? AppointmentStatus.CANCELLED : AppointmentStatus.SCHEDULED,
-    notes: '',
-    createdAt: backendAppointment.createdAt,
-    updatedAt: backendAppointment.updatedAt,
-  };
-}
-
-// Doctors endpoints (corrigidos para a estrutura real do backend)
+// Doctors API
 export const doctors = {
   async getAll(): Promise<Doctor[]> {
     try {
       const response = await api.get('/doctors');
-      const backendDoctors: BackendDoctor[] = response.data.doctors;
-      return backendDoctors.map(transformBackendDoctor);
+      const doctorsData = response.data.doctors || response.data;
+      return doctorsData.map(transformDoctor);
     } catch (error) {
       throw handleApiError(error as AxiosError<ErrorResponse>);
     }
@@ -228,7 +318,8 @@ export const doctors = {
   async getById(id: string): Promise<Doctor> {
     try {
       const response = await api.get(`/doctors/${id}`);
-      return transformBackendDoctor(response.data.doctor);
+      const doctorData = response.data.doctor || response.data;
+      return transformDoctor(doctorData);
     } catch (error) {
       throw handleApiError(error as AxiosError<ErrorResponse>);
     }
@@ -236,11 +327,10 @@ export const doctors = {
 
   async getBySpecialty(specialty: string): Promise<Doctor[]> {
     try {
-      const response = await api.get('/doctors', {
-        params: { speciality: specialty }
-      });
-      const backendDoctors: BackendDoctor[] = response.data.doctors;
-      return backendDoctors.map(transformBackendDoctor);
+      const allDoctors = await this.getAll();
+      return allDoctors.filter(doctor => 
+        doctor.specialty?.toLowerCase().includes(specialty.toLowerCase())
+      );
     } catch (error) {
       throw handleApiError(error as AxiosError<ErrorResponse>);
     }
@@ -248,64 +338,86 @@ export const doctors = {
 
   async getSpecialties(): Promise<string[]> {
     try {
-      // Como não existe endpoint específico, vamos extrair das especialidades dos médicos
-      const response = await api.get('/doctors');
-      const backendDoctors: BackendDoctor[] = response.data.doctors;
-      const specialties = [...new Set(backendDoctors.map(doctor => doctor.speciality))];
+      const allDoctors = await this.getAll();
+      const specialties = allDoctors
+        .map(doctor => doctor.specialty)
+        .filter((specialty): specialty is string => !!specialty)
+        .filter((specialty, index, array) => array.indexOf(specialty) === index) // Remove duplicates
+        .sort();
       return specialties;
     } catch (error) {
       throw handleApiError(error as AxiosError<ErrorResponse>);
     }
   },
 
-  async search(query: string): Promise<Doctor[]> {
-    try {
-      const response = await api.get('/doctors', {
-        params: { search: query }
-      });
-      const backendDoctors: BackendDoctor[] = response.data.doctors;
-      return backendDoctors.map(transformBackendDoctor);
-    } catch (error) {
-      throw handleApiError(error as AxiosError<ErrorResponse>);
-    }
-  },
-
-  create: async (doctorData: {
+  // Admin methods - require admin privileges
+  async createDoctor(doctorData: {
     name: string;
     speciality: string;
     crm: string;
     pricePerAppointment: number;
     doctorImage?: string;
     about: string;
-  }): Promise<BackendDoctor> => {
-    const response = await api.post<{ success: boolean; result: BackendDoctor }>('/doctors', doctorData);
-    return response.data.result;
+  }): Promise<Doctor> {
+    try {
+      const response = await api.post('/doctors', doctorData);
+      const newDoctor = response.data.result || response.data.doctor || response.data;
+      return transformDoctor(newDoctor);
+    } catch (error) {
+      throw handleApiError(error as AxiosError<ErrorResponse>);
+    }
   },
 
-  update: async (crm: string, updates: {
+  async updateDoctor(crm: string, doctorData: {
+    name?: string;
     speciality?: string;
     pricePerAppointment?: number;
     doctorImage?: string;
     about?: string;
-  }): Promise<{ success: boolean; message: string }> => {
-    const response = await api.patch(`/doctors/${crm}`, updates);
-    return response.data;
+  }): Promise<Doctor> {
+    try {
+      const response = await api.patch(`/doctors/${crm}`, doctorData);
+      const updatedDoctor = response.data.doctor || response.data;
+      return transformDoctor(updatedDoctor);
+    } catch (error) {
+      throw handleApiError(error as AxiosError<ErrorResponse>);
+    }
   },
 
-  delete: async (crm: string): Promise<{ success: boolean; message: string }> => {
-    const response = await api.delete(`/doctors/${crm}`);
-    return response.data;
+  async deleteDoctor(crm: string): Promise<void> {
+    try {
+      await api.delete(`/doctors/${crm}`);
+    } catch (error) {
+      throw handleApiError(error as AxiosError<ErrorResponse>);
+    }
   },
 };
 
-// Appointments endpoints (corrigidos para usar /appointment no singular)
+// Appointments API
 export const appointments = {
-  async getAll(userId?: string): Promise<Appointment[]> {
+  async create(data: AppointmentData): Promise<Appointment> {
     try {
-      const params = userId ? { _id: userId } : {};
-      const response = await api.get('/appointment', { params });
-      const backendAppointments: BackendAppointment[] = response.data.appointments;
-      return backendAppointments.map(transformBackendAppointment);
+      const appointmentData = {
+        userId: data.userId,
+        docId: data.doctorId,
+        slotDate: data.date,
+        slotTime: data.time,
+      };
+
+      const response = await api.post('/appointment', appointmentData);
+      const appointmentResult = response.data.newAppointment || response.data.appointment || response.data;
+      return transformAppointment(appointmentResult);
+    } catch (error) {
+      throw handleApiError(error as AxiosError<ErrorResponse>);
+    }
+  },
+
+  async getByUserId(userId: string): Promise<Appointment[]> {
+    try {
+      // Use the correct endpoint discovered: /appointment with ?_id= parameter
+      const response = await api.get(`/appointment?_id=${userId}`);
+      const appointmentsData = response.data.appointments || response.data;
+      return appointmentsData.map(transformAppointment);
     } catch (error) {
       throw handleApiError(error as AxiosError<ErrorResponse>);
     }
@@ -314,93 +426,66 @@ export const appointments = {
   async getById(id: string): Promise<Appointment> {
     try {
       const response = await api.get(`/appointment/${id}`);
-      return transformBackendAppointment(response.data.appointment);
+      const appointmentData = response.data.appointment || response.data;
+      return transformAppointment(appointmentData);
     } catch (error) {
-      throw handleApiError(error as AxiosError<ErrorResponse>);
-    }
-  },
-
-  async create(data: AppointmentData): Promise<Appointment> {
-    try {
-      // Transformar dados do frontend para o formato da API
-      const backendData = {
-        userId: data.patientId,
-        docId: data.doctorId, // Assumindo que é o CRM
-        slotDate: data.date,
-        slotTime: data.time,
-      };
-      
-      console.log('API: Enviando dados para criação:', backendData);
-      
-      const response = await api.post('/appointment', backendData, {
-        timeout: 20000, // 20 segundos timeout
-        headers: {
-          'Authorization': `Bearer ${await AsyncStorage.getItem('@MedAgenda:token')}`,
-        }
-      });
-      
-      console.log('API: Resposta da criação:', response.data);
-      return transformBackendAppointment(response.data.appointment);
-    } catch (error) {
-      console.error('API: Erro na criação:', error);
       throw handleApiError(error as AxiosError<ErrorResponse>);
     }
   },
 
   async cancel(id: string): Promise<void> {
     try {
-      await api.patch(`/appointment/${id}`, { cancelled: true });
-    } catch (error) {
-      throw handleApiError(error as AxiosError<ErrorResponse>);
-    }
-  },
-
-  async getByPatient(patientId: string): Promise<Appointment[]> {
-    try {
-      const response = await api.get('/appointment', {
-        params: { _id: patientId }
+      // Get current user to include userId in the request
+      const user = await auth.getCurrentUser();
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+      
+      await api.post('/appointment/cancel', { 
+        appointmentId: id,
+        userId: user.id 
       });
-      const backendAppointments: BackendAppointment[] = response.data.appointments;
-      return backendAppointments.map(transformBackendAppointment);
+    } catch (error) {
+      throw handleApiError(error as AxiosError<ErrorResponse>);
+    }
+  },
+
+  async updateStatus(id: string, status: AppointmentStatus): Promise<Appointment> {
+    try {
+      const response = await api.put(`/appointment/${id}`, { status });
+      const appointmentData = response.data.appointment || response.data;
+      return transformAppointment(appointmentData);
     } catch (error) {
       throw handleApiError(error as AxiosError<ErrorResponse>);
     }
   },
 };
 
-// Patients endpoints
-export const patients = {
-  getAll: async (): Promise<Patient[]> => {
-    const response = await api.get<Patient[]>('/patients');
-    return response.data;
+// Users API
+export const users = {
+  async updateProfile(data: ProfileUpdateData): Promise<User> {
+    try {
+      const response = await api.put('/users/profile', data);
+      const userData = response.data.user || response.data;
+      const updatedUser = transformUser(userData);
+      
+      // Update stored user data
+      await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
+      
+      return updatedUser;
+    } catch (error) {
+      throw handleApiError(error as AxiosError<ErrorResponse>);
+    }
   },
-  getById: async (id: string): Promise<Patient> => {
-    const response = await api.get<Patient>(`/patients/${id}`);
-    return response.data;
-  },
-  update: async (id: string, patientData: Partial<Patient>): Promise<Patient> => {
-    const response = await api.put<Patient>(`/patients/${id}`, patientData);
-    return response.data;
-  },
-};
 
-// Profile service
-export const profileService = {
-  getProfile: async (): Promise<User> => {
-    const response = await api.get<User>('/profile');
-    return response.data;
-  },
-  updateProfile: async (profileData: ProfileUpdateData): Promise<User> => {
-    const response = await api.put<User>('/profile', profileData);
-    return response.data;
-  },
-  updateProfileImage: async (imageFile: FormData): Promise<User> => {
-    const response = await api.put<User>('/profile/image', imageFile, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data;
+  async getProfile(): Promise<User> {
+    try {
+      const response = await api.get('/users/profile');
+      const userData = response.data.user || response.data;
+      return transformUser(userData);
+    } catch (error) {
+      throw handleApiError(error as AxiosError<ErrorResponse>);
+    }
   },
 };
 

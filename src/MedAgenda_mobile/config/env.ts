@@ -9,26 +9,31 @@ interface EnvConfig {
 type Environment = EnvConfig;
 
 const ENV: { [key: string]: Environment } = {
+  dev: {
+    API_URL: 'https://med-agenda-backend.vercel.app/api',
+    API_TIMEOUT: 15000,
+    IMAGE_BASE_URL: 'https://med-agenda-backend.vercel.app/uploads'
+  },
   development: {
-    API_URL: 'http://localhost:3000/api',
-    API_TIMEOUT: 10000,
-    IMAGE_BASE_URL: 'http://localhost:3000/uploads'
+    API_URL: 'https://med-agenda-backend.vercel.app/api',
+    API_TIMEOUT: 15000,
+    IMAGE_BASE_URL: 'https://med-agenda-backend.vercel.app/uploads'
   },
   staging: {
-    API_URL: 'https://staging-api.medagenda.com/api',
-    API_TIMEOUT: 10000,
-    IMAGE_BASE_URL: 'https://staging-api.medagenda.com/uploads'
+    API_URL: 'https://med-agenda-backend.vercel.app/api',
+    API_TIMEOUT: 15000,
+    IMAGE_BASE_URL: 'https://med-agenda-backend.vercel.app/uploads'
   },
   production: {
-    API_URL: 'https://api.medagenda.com/api',
-    API_TIMEOUT: 10000,
-    IMAGE_BASE_URL: 'https://api.medagenda.com/uploads'
+    API_URL: 'https://med-agenda-backend.vercel.app/api',
+    API_TIMEOUT: 15000,
+    IMAGE_BASE_URL: 'https://med-agenda-backend.vercel.app/uploads'
   }
 };
 
 const getEnvVars = (): EnvConfig => {
-  const env = Constants.expoConfig?.extra?.env || 'dev';
-  return ENV[env];
+  const env = Constants.expoConfig?.extra?.env || 'development';
+  return ENV[env] || ENV.development;
 };
 
 export default getEnvVars; 

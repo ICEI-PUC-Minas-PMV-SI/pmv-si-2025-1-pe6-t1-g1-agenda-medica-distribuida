@@ -4,9 +4,9 @@ import { Button, Card, HelperText, TextInput, Text, ActivityIndicator, Snackbar 
 import { COLORS } from '../../constants/theme';
 import { router } from 'expo-router';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { doctors, appointments } from '../../services/api';
-import { AppointmentType } from '../../types/api';
+import { AppointmentType, Doctor } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 interface FormErrors {
   specialty?: string;
@@ -15,8 +15,9 @@ interface FormErrors {
 }
 
 export default function NewAppointmentScreen() {
+  const { user } = useAuth();
   const [specialty, setSpecialty] = useState('');
-  const [selectedDoctor, setSelectedDoctor] = useState<any>(null);
+  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -27,8 +28,8 @@ export default function NewAppointmentScreen() {
   
   // Data from API
   const [specialties, setSpecialties] = useState<string[]>([]);
-  const [doctorsList, setDoctorsList] = useState<any[]>([]);
-  const [filteredDoctors, setFilteredDoctors] = useState<any[]>([]);
+  const [doctorsList, setDoctorsList] = useState<Doctor[]>([]);
+  const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [showError, setShowError] = useState(false);
 
@@ -39,7 +40,9 @@ export default function NewAppointmentScreen() {
   useEffect(() => {
     // Filter doctors by specialty
     if (specialty) {
-      const filtered = doctorsList.filter(doc => doc.specialty === specialty);
+      const filtered = doctorsList.filter(doc => 
+        doc.specialty?.toLowerCase() === specialty.toLowerCase()
+      );
       setFilteredDoctors(filtered);
     } else {
       setFilteredDoctors([]);
@@ -50,17 +53,23 @@ export default function NewAppointmentScreen() {
   const loadData = async () => {
     try {
       setLoadingData(true);
+      setErrorMessage('');
+      
+      console.log('Loading doctors and specialties...');
       
       // Load doctors and specialties
       const doctorsData = await doctors.getAll();
       const specialtiesData = await doctors.getSpecialties();
       
+      console.log('Doctors loaded:', doctorsData.length);
+      console.log('Specialties loaded:', specialtiesData);
+      
       setDoctorsList(doctorsData);
       setSpecialties(specialtiesData);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading data:', error);
-      setErrorMessage('Erro ao carregar dados. Tente novamente.');
+      setErrorMessage(`Erro ao carregar dados: ${error.message || 'Tente novamente.'}`);
       setShowError(true);
     } finally {
       setLoadingData(false);
@@ -80,8 +89,9 @@ export default function NewAppointmentScreen() {
 
     // Check if date is in the future
     const now = new Date();
-    if (date < now) {
-      newErrors.date = 'A data deve ser no futuro';
+    const selectedDateTime = new Date(date);
+    if (selectedDateTime <= now) {
+      newErrors.date = 'A data e horário devem ser no futuro';
     }
 
     setErrors(newErrors);
@@ -93,80 +103,39 @@ export default function NewAppointmentScreen() {
       return;
     }
 
+    if (!user?.id) {
+      Alert.alert('Erro', 'Usuário não autenticado. Faça login novamente.');
+      return;
+    }
+
     setLoading(true);
     try {
-      // Extract userId from token
-      const token = await AsyncStorage.getItem('@MedAgenda:token');
-      let userId = null;
-      
-      if (token) {
-        try {
-          const base64Url = token.split('.')[1];
-          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-          const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-          }).join(''));
-          const decoded = JSON.parse(jsonPayload);
-          userId = decoded.userId;
-        } catch (decodeError) {
-          console.error('Error decoding token:', decodeError);
-        }
-      }
-
-      if (!userId) {
-        Alert.alert('Erro', 'Usuário não autenticado. Faça login novamente.');
-        return;
-      }
-
       // Prepare appointment data
       const appointmentData = {
-        patientId: userId,
-        doctorId: selectedDoctor.crm || selectedDoctor.id, // Use CRM as doctor ID or fallback to id
+        userId: user.id,
+        doctorId: selectedDoctor!.id,
         date: date.toISOString().split('T')[0], // YYYY-MM-DD format
         time: date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }), // HH:MM format
-        type: AppointmentType.CONSULTATION,
+        type: 'consultation' as AppointmentType,
         notes: notes,
       };
 
       console.log('Creating appointment with data:', appointmentData);
       
       // Call API to create appointment
-      try {
-        const result = await appointments.create(appointmentData);
-        console.log('Appointment created successfully:', result);
-        
-        Alert.alert(
-          'Sucesso!', 
-          'Consulta agendada com sucesso!',
-          [
-            {
-              text: 'OK',
-              onPress: () => router.back()
-            }
-          ]
-        );
-      } catch (apiError: any) {
-        // Se for erro 504 (timeout do backend), mostrar mensagem específica
-        if (apiError.status === 504 || apiError.message?.includes('504')) {
-          Alert.alert(
-            'Problema Temporário',
-            'O servidor está temporariamente indisponível para criar agendamentos. Seus dados foram salvos localmente e serão sincronizados quando o servidor estiver disponível.',
-            [
-              {
-                text: 'OK',
-                onPress: () => router.back()
-              }
-            ]
-          );
-          
-          // TODO: Implementar salvamento local para sincronização posterior
-          console.log('Appointment saved locally for later sync:', appointmentData);
-          
-        } else {
-          // Outros erros
-          throw apiError;
-        }
-      }
+      const result = await appointments.create(appointmentData);
+      console.log('Appointment created successfully:', result);
+      
+      Alert.alert(
+        'Sucesso!', 
+        'Consulta agendada com sucesso!',
+        [
+          {
+            text: 'OK',
+            onPress: () => router.back()
+          }
+        ]
+      );
       
     } catch (error: any) {
       console.error('Error creating appointment:', error);
@@ -200,8 +169,8 @@ export default function NewAppointmentScreen() {
   if (loadingData) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background }}>
-        <ActivityIndicator size="large" />
-        <Text style={{ marginTop: 16 }}>Carregando dados...</Text>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+        <Text style={{ marginTop: 16, color: COLORS.textSecondary }}>Carregando especialidades e médicos...</Text>
       </View>
     );
   }
@@ -209,30 +178,45 @@ export default function NewAppointmentScreen() {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: COLORS.background }}>
       <View style={{ padding: 16 }}>
-        <Text variant="headlineMedium" style={{ marginBottom: 24 }}>
+        <Text variant="headlineMedium" style={{ marginBottom: 24, color: COLORS.textPrimary }}>
           Nova Consulta
         </Text>
 
         {/* Specialty Selection */}
-        <Card style={{ marginBottom: 16 }}>
-          <Card.Title title="Especialidade" />
+        <Card style={{ marginBottom: 16, backgroundColor: COLORS.surface }}>
+          <Card.Title title="Especialidade" titleStyle={{ color: COLORS.textPrimary }} />
           <Card.Content>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-              {specialties.map((item) => (
-                <Button
-                  key={item}
-                  mode={specialty === item ? 'contained' : 'outlined'}
-                  onPress={() => {
-                    setSpecialty(item);
-                    setSelectedDoctor(null);
-                    setErrors(prev => ({ ...prev, specialty: undefined }));
-                  }}
-                  style={{ marginBottom: 8 }}
+            {specialties.length === 0 ? (
+              <View style={{ padding: 16, alignItems: 'center' }}>
+                <Text style={{ color: COLORS.textSecondary, textAlign: 'center' }}>
+                  Nenhuma especialidade encontrada.
+                </Text>
+                <Button 
+                  mode="outlined" 
+                  onPress={loadData}
+                  style={{ marginTop: 8 }}
                 >
-                  {item}
+                  Tentar novamente
                 </Button>
-              ))}
-            </View>
+              </View>
+            ) : (
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                {specialties.map((item) => (
+                  <Button
+                    key={item}
+                    mode={specialty === item ? 'contained' : 'outlined'}
+                    onPress={() => {
+                      setSpecialty(item);
+                      setSelectedDoctor(null);
+                      setErrors(prev => ({ ...prev, specialty: undefined }));
+                    }}
+                    style={{ marginBottom: 8 }}
+                  >
+                    {item}
+                  </Button>
+                ))}
+              </View>
+            )}
             {errors.specialty && (
               <HelperText type="error" visible={!!errors.specialty}>
                 {errors.specialty}
@@ -242,8 +226,8 @@ export default function NewAppointmentScreen() {
         </Card>
 
         {/* Doctor Selection */}
-        <Card style={{ marginBottom: 16 }}>
-          <Card.Title title="Médico" />
+        <Card style={{ marginBottom: 16, backgroundColor: COLORS.surface }}>
+          <Card.Title title="Médico" titleStyle={{ color: COLORS.textPrimary }} />
           <Card.Content>
             <TextInput
               mode="outlined"
@@ -259,8 +243,13 @@ export default function NewAppointmentScreen() {
               </HelperText>
             )}
             {!specialty && (
-              <Text variant="bodySmall" style={{ marginBottom: 8, opacity: 0.7 }}>
+              <Text variant="bodySmall" style={{ marginBottom: 8, opacity: 0.7, color: COLORS.textSecondary }}>
                 Selecione uma especialidade primeiro
+              </Text>
+            )}
+            {specialty && filteredDoctors.length === 0 && (
+              <Text variant="bodySmall" style={{ marginBottom: 8, color: COLORS.textSecondary }}>
+                Nenhum médico encontrado para esta especialidade
               </Text>
             )}
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
@@ -282,22 +271,22 @@ export default function NewAppointmentScreen() {
         </Card>
 
         {/* Date and Time Selection */}
-        <Card style={{ marginBottom: 16 }}>
-          <Card.Title title="Data e Horário" />
+        <Card style={{ marginBottom: 16, backgroundColor: COLORS.surface }}>
+          <Card.Title title="Data e Horário" titleStyle={{ color: COLORS.textPrimary }} />
           <Card.Content>
             <Button
               mode="outlined"
               onPress={() => setShowDatePicker(true)}
               style={{ marginBottom: 8 }}
             >
-              {date.toLocaleDateString('pt-BR')}
+              📅 {date.toLocaleDateString('pt-BR')}
             </Button>
             <Button
               mode="outlined"
               onPress={() => setShowTimePicker(true)}
               style={{ marginBottom: 8 }}
             >
-              {date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+              🕐 {date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
             </Button>
             {errors.date && (
               <HelperText type="error" visible={!!errors.date}>
@@ -325,8 +314,8 @@ export default function NewAppointmentScreen() {
         </Card>
 
         {/* Notes */}
-        <Card style={{ marginBottom: 24 }}>
-          <Card.Title title="Observações" />
+        <Card style={{ marginBottom: 24, backgroundColor: COLORS.surface }}>
+          <Card.Title title="Observações" titleStyle={{ color: COLORS.textPrimary }} />
           <Card.Content>
             <TextInput
               mode="outlined"
@@ -343,7 +332,7 @@ export default function NewAppointmentScreen() {
         <Button
           mode="contained"
           onPress={handleCreateAppointment}
-          style={{ marginBottom: 24 }}
+          style={{ marginBottom: 24, backgroundColor: COLORS.primary }}
           disabled={loading}
         >
           {loading ? (

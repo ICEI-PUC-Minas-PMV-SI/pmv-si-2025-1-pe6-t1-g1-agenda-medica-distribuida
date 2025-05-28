@@ -54,6 +54,9 @@ exports.getDoctors = async (req, res) => {
   }
 };
 
+// Alias for getDoctors (usado pelo router)
+exports.viewDoctors = exports.getDoctors;
+
 exports.getDoctorById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -78,7 +81,7 @@ exports.getDoctorById = async (req, res) => {
 };
 
 exports.newDoctor = async (req, res) => {
-  const { name, specialty, crm, profileImage, experience, about, education, availability, location } = req.body;
+  const { name, speciality, crm, doctorImage, experience, about, location } = req.body;
   const { isAdmin } = req.user;
   
   if (!isAdmin) {
@@ -96,33 +99,32 @@ exports.newDoctor = async (req, res) => {
 
     const newDoctor = new Doctor({
       name,
-      specialty,
+      specialty: speciality, // Map speciality to specialty
       crm,
-      profileImage,
-      experience,
+      profileImage: doctorImage || 'https://via.placeholder.com/150',
+      experience: experience || '1 ano',
       about,
-      education,
-      availability,
-      location,
+      location: location || 'Não informado',
     });
 
     const result = await newDoctor.save();
     return res.status(201).json({
       success: true,
       message: "Doctor created successfully",
-      doctor: result,
+      result: result,
     });
   } catch (error) {
     console.error('Error creating doctor:', error);
     return res.status(500).json({
       success: false,
       message: 'Error creating doctor',
+      error: error.message,
     });
   }
 };
 
 exports.updateDoctor = async (req, res) => {
-  const { id } = req.params;
+  const { crm } = req.params;
   const { isAdmin } = req.user;
   
   if (!isAdmin) {
@@ -130,7 +132,18 @@ exports.updateDoctor = async (req, res) => {
   }
 
   try {
-    const doctor = await Doctor.findByIdAndUpdate(id, req.body, {
+    // Map frontend fields to backend fields
+    const updateData = { ...req.body };
+    if (updateData.speciality) {
+      updateData.specialty = updateData.speciality;
+      delete updateData.speciality;
+    }
+    if (updateData.doctorImage) {
+      updateData.profileImage = updateData.doctorImage;
+      delete updateData.doctorImage;
+    }
+
+    const doctor = await Doctor.findOneAndUpdate({ crm }, updateData, {
       new: true,
       runValidators: true,
     });
@@ -157,7 +170,7 @@ exports.updateDoctor = async (req, res) => {
 };
 
 exports.deleteDoctor = async (req, res) => {
-  const { id } = req.params;
+  const { crm } = req.params;
   const { isAdmin } = req.user;
 
   if (!isAdmin) {
@@ -165,7 +178,7 @@ exports.deleteDoctor = async (req, res) => {
   }
 
   try {
-    const doctor = await Doctor.findByIdAndDelete(id);
+    const doctor = await Doctor.findOneAndDelete({ crm });
     if (!doctor) {
       return res.status(404).json({
         success: false,
@@ -176,6 +189,7 @@ exports.deleteDoctor = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Doctor deleted successfully",
+      doctorToDelete: doctor,
     });
   } catch (error) {
     console.error('Error deleting doctor:', error);

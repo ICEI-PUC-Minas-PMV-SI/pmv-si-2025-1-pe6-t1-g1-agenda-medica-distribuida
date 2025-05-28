@@ -120,10 +120,15 @@ export default function ProfileScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
+              setLoading(true);
               await signOut();
+              // Use replace para evitar problemas de navegação
               router.replace('/(auth)/login');
             } catch (error) {
               console.error('Erro ao fazer logout:', error);
+              Alert.alert('Erro', 'Erro ao fazer logout. Tente novamente.');
+            } finally {
+              setLoading(false);
             }
           }
         }

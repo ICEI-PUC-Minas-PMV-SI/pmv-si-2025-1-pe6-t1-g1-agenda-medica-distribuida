@@ -1,5 +1,4 @@
-import { auth, doctors, appointments, patients, profileService } from '../services/api';
-import { testApiConnection, testAvailableEndpoints } from '../services/apiTest';
+import { auth, doctors, appointments } from '../services/api';
 import { AppointmentType } from '../types/api';
 
 /**
@@ -7,194 +6,189 @@ import { AppointmentType } from '../types/api';
  * Connected to: https://med-agenda-backend.vercel.app/
  */
 
-// Test API connection
-export const checkConnection = async () => {
-  console.log('Testing API connection...');
-  const isConnected = await testApiConnection();
-  
-  if (isConnected) {
-    console.log('✅ Successfully connected to backend!');
-    await testAvailableEndpoints();
-  } else {
-    console.log('❌ Failed to connect to backend');
-  }
+// Example usage of the API services
+export const apiUsageExamples = {
+  // Authentication examples
+  authentication: {
+    async login() {
+      try {
+        const result = await auth.login('user@example.com', 'password123');
+        console.log('Login successful:', result.user);
+        return result;
+      } catch (error) {
+        console.error('Login failed:', error);
+        throw error;
+      }
+    },
+
+    async register() {
+      try {
+        const userData = {
+          name: 'John Doe',
+          email: 'john@example.com',
+          password: 'password123',
+          phone: '+1234567890',
+        };
+        
+        const result = await auth.register(userData);
+        console.log('Registration successful:', result.user);
+        return result;
+      } catch (error) {
+        console.error('Registration failed:', error);
+        throw error;
+      }
+    },
+
+    async logout() {
+      try {
+        await auth.logout();
+        console.log('Logout successful');
+      } catch (error) {
+        console.error('Logout failed:', error);
+        throw error;
+      }
+    },
+
+    async getCurrentUser() {
+      try {
+        const user = await auth.getCurrentUser();
+        console.log('Current user:', user);
+        return user;
+      } catch (error) {
+        console.error('Get current user failed:', error);
+        throw error;
+      }
+    },
+
+    async changePassword() {
+      try {
+        await auth.changePassword('oldPassword123', 'newPassword456');
+        console.log('Password changed successfully');
+      } catch (error) {
+        console.error('Change password failed:', error);
+        throw error;
+      }
+    },
+  },
+
+  // Doctors examples
+  doctors: {
+    async getAllDoctors() {
+      try {
+        const doctorsList = await doctors.getAll();
+        console.log('Doctors list:', doctorsList);
+        return doctorsList;
+      } catch (error) {
+        console.error('Get doctors failed:', error);
+        throw error;
+      }
+    },
+
+    async getDoctorById() {
+      try {
+        const doctor = await doctors.getById('doctor-id-123');
+        console.log('Doctor details:', doctor);
+        return doctor;
+      } catch (error) {
+        console.error('Get doctor by ID failed:', error);
+        throw error;
+      }
+    },
+
+    async getDoctorsBySpecialty() {
+      try {
+        const specialty = 'Cardiologia';
+        const doctorsList = await doctors.getBySpecialty(specialty);
+        console.log(`Doctors in ${specialty}:`, doctorsList);
+        return doctorsList;
+      } catch (error) {
+        console.error('Get doctors by specialty failed:', error);
+        throw error;
+      }
+    },
+
+    async getSpecialties() {
+      try {
+        const specialties = await doctors.getSpecialties();
+        console.log('Available specialties:', specialties);
+        return specialties;
+      } catch (error) {
+        console.error('Get specialties failed:', error);
+        throw error;
+      }
+    },
+  },
+
+  // Appointments examples
+  appointments: {
+    async createAppointment() {
+      try {
+        const appointmentData = {
+          userId: 'user-id-123',
+          doctorId: 'doctor-id-456',
+          date: '2024-01-15',
+          time: '14:30',
+          type: 'consultation' as AppointmentType,
+          notes: 'Regular checkup',
+        };
+
+        const appointment = await appointments.create(appointmentData);
+        console.log('Appointment created:', appointment);
+        return appointment;
+      } catch (error) {
+        console.error('Create appointment failed:', error);
+        throw error;
+      }
+    },
+
+    async getUserAppointments() {
+      try {
+        const userId = 'user-id-123';
+        const appointmentsList = await appointments.getByUserId(userId);
+        console.log('User appointments:', appointmentsList);
+        return appointmentsList;
+      } catch (error) {
+        console.error('Get user appointments failed:', error);
+        throw error;
+      }
+    },
+
+    async getAppointmentById() {
+      try {
+        const appointmentId = 'appointment-id-789';
+        const appointment = await appointments.getById(appointmentId);
+        console.log('Appointment details:', appointment);
+        return appointment;
+      } catch (error) {
+        console.error('Get appointment by ID failed:', error);
+        throw error;
+      }
+    },
+
+    async updateAppointmentStatus() {
+      try {
+        const appointmentId = 'appointment-id-789';
+        const newStatus = 'completed';
+        const updatedAppointment = await appointments.updateStatus(appointmentId, newStatus);
+        console.log('Appointment updated:', updatedAppointment);
+        return updatedAppointment;
+      } catch (error) {
+        console.error('Update appointment status failed:', error);
+        throw error;
+      }
+    },
+
+    async cancelAppointment() {
+      try {
+        const appointmentId = 'appointment-id-789';
+        await appointments.cancel(appointmentId);
+        console.log('Appointment cancelled successfully');
+      } catch (error) {
+        console.error('Cancel appointment failed:', error);
+        throw error;
+      }
+    },
+  },
 };
 
-// Authentication examples
-export const authExamples = {
-  // Login user
-  login: async (email: string, password: string) => {
-    try {
-      const response = await auth.login(email, password);
-      console.log('Login successful:', response.user.name);
-      return response;
-    } catch (error) {
-      console.error('Login failed:', error);
-      throw error;
-    }
-  },
-
-  // Register new user
-  register: async (userData: {
-    email: string;
-    password: string;
-    name: string;
-    phone?: string;
-  }) => {
-    try {
-      const user = await auth.register(userData);
-      console.log('Registration successful:', user.name);
-      return user;
-    } catch (error) {
-      console.error('Registration failed:', error);
-      throw error;
-    }
-  },
-
-  // Logout
-  logout: async () => {
-    try {
-      await auth.logout();
-      console.log('Logout successful');
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
-  }
-};
-
-// Doctors examples
-export const doctorsExamples = {
-  // Get all doctors
-  getAllDoctors: async () => {
-    try {
-      const doctorsList = await doctors.getAll();
-      console.log(`Found ${doctorsList.length} doctors`);
-      return doctorsList;
-    } catch (error) {
-      console.error('Failed to fetch doctors:', error);
-      throw error;
-    }
-  },
-
-  // Search doctors by specialty
-  searchBySpecialty: async (specialty: string) => {
-    try {
-      const doctorsList = await doctors.getAll(specialty);
-      console.log(`Found ${doctorsList.length} doctors in ${specialty}`);
-      return doctorsList;
-    } catch (error) {
-      console.error('Failed to search doctors:', error);
-      throw error;
-    }
-  },
-
-  // Get doctor details
-  getDoctorDetails: async (doctorId: string) => {
-    try {
-      const doctor = await doctors.getById(doctorId);
-      console.log(`Doctor details: ${doctor.name} - ${doctor.specialty}`);
-      return doctor;
-    } catch (error) {
-      console.error('Failed to fetch doctor details:', error);
-      throw error;
-    }
-  },
-
-  // Get available specialties
-  getSpecialties: async () => {
-    try {
-      const specialties = await doctors.getSpecialties();
-      console.log('Available specialties:', specialties);
-      return specialties;
-    } catch (error) {
-      console.error('Failed to fetch specialties:', error);
-      throw error;
-    }
-  }
-};
-
-// Appointments examples
-export const appointmentsExamples = {
-  // Create new appointment
-  createAppointment: async (appointmentData: {
-    doctorId: string;
-    date: string;
-    time: string;
-    notes?: string;
-  }) => {
-    try {
-      const appointment = await appointments.create({
-        ...appointmentData,
-        type: AppointmentType.CONSULTATION
-      });
-      console.log('Appointment created:', appointment.id);
-      return appointment;
-    } catch (error) {
-      console.error('Failed to create appointment:', error);
-      throw error;
-    }
-  },
-
-  // Get user appointments
-  getUserAppointments: async () => {
-    try {
-      const appointmentsList = await appointments.getAll();
-      console.log(`Found ${appointmentsList.length} appointments`);
-      return appointmentsList;
-    } catch (error) {
-      console.error('Failed to fetch appointments:', error);
-      throw error;
-    }
-  },
-
-  // Update appointment
-  updateAppointment: async (appointmentId: string, updates: any) => {
-    try {
-      const updatedAppointment = await appointments.update(appointmentId, updates);
-      console.log('Appointment updated:', updatedAppointment.id);
-      return updatedAppointment;
-    } catch (error) {
-      console.error('Failed to update appointment:', error);
-      throw error;
-    }
-  }
-};
-
-// Profile examples
-export const profileExamples = {
-  // Get user profile
-  getProfile: async () => {
-    try {
-      const profile = await profileService.getProfile();
-      console.log('Profile loaded:', profile.name);
-      return profile;
-    } catch (error) {
-      console.error('Failed to fetch profile:', error);
-      throw error;
-    }
-  },
-
-  // Update profile
-  updateProfile: async (updates: {
-    name?: string;
-    phone?: string;
-    email?: string;
-  }) => {
-    try {
-      const updatedProfile = await profileService.updateProfile(updates);
-      console.log('Profile updated:', updatedProfile.name);
-      return updatedProfile;
-    } catch (error) {
-      console.error('Failed to update profile:', error);
-      throw error;
-    }
-  }
-};
-
-export default {
-  checkConnection,
-  authExamples,
-  doctorsExamples,
-  appointmentsExamples,
-  profileExamples
-}; 
+export default apiUsageExamples; 

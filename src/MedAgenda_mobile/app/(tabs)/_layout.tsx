@@ -10,9 +10,9 @@ export default function TabLayout() {
 
   useEffect(() => {
     if (!loading) {
-      const inAuthGroup = segments[0] === 'auth';
+      const inAuthGroup = segments[0] === '(auth)';
       if (!user && !inAuthGroup) {
-        router.replace('/auth/login');
+        router.replace('/(auth)/login');
       } else if (user && inAuthGroup) {
         router.replace('/(tabs)');
       }
@@ -23,6 +23,46 @@ export default function TabLayout() {
     return null;
   }
 
+  // Definir as tabs dinamicamente baseado no usuário
+  const tabScreens = [
+    {
+      name: "index",
+      title: 'Início',
+      icon: 'home'
+    },
+    {
+      name: "appointments",
+      title: 'Consultas',
+      icon: 'calendar'
+    },
+    {
+      name: "doctors",
+      title: 'Médicos',
+      icon: 'doctor'
+    },
+    {
+      name: "new-appointment",
+      title: 'Nova Consulta',
+      icon: 'plus'
+    }
+  ];
+
+  // Adicionar tab de admin apenas se o usuário for admin
+  if (user?.isAdmin) {
+    tabScreens.push({
+      name: "admin-doctors",
+      title: 'Admin Médicos',
+      icon: 'account-cog'
+    });
+  }
+
+  // Adicionar tab de perfil por último
+  tabScreens.push({
+    name: "profile",
+    title: 'Perfil',
+    icon: 'account'
+  });
+
   return (
     <Tabs
       screenOptions={{
@@ -30,42 +70,18 @@ export default function TabLayout() {
         headerShown: false,
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Início',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="appointments"
-        options={{
-          title: 'Consultas',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="calendar" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="doctors"
-        options={{
-          title: 'Médicos',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="doctor" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Perfil',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="account" size={size} color={color} />
-          ),
-        }}
-      />
+      {tabScreens.map((tab) => (
+        <Tabs.Screen
+          key={tab.name}
+          name={tab.name}
+          options={{
+            title: tab.title,
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name={tab.icon as any} size={size} color={color} />
+            ),
+          }}
+        />
+      ))}
     </Tabs>
   );
 } 
