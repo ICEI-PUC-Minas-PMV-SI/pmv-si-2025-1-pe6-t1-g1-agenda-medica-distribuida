@@ -112,7 +112,7 @@ Node.js v18+
 
 Banco de dados: MongoDB, PostgreSQL ou similar
 
-3. Plataforma de Hospedagem
+2. Plataforma de Hospedagem
    
 Backend/API: Render, Railway, Heroku, Vercel ou AWS (Elastic Beanstalk ou EC2)
 
@@ -122,7 +122,7 @@ Mobile:
 
 Android: Google Play Store ou distribuição via APK
 
-5. Configuração do Ambiente de Implantação
+3. Configuração do Ambiente de Implantação
    
 Instalar Node.js no servidor
 
@@ -146,7 +146,7 @@ Gerar builds com:
 
 flutter build apk (Android)
 
-7. Deploy da Aplicação
+4. Deploy da Aplicação
    
 No backend:
 
@@ -162,7 +162,7 @@ Submeter para Google Play ou Apple Store
 
 Ou distribuir manualmente via APK (Android) e TestFlight (iOS)
 
-9. Testes em Produção
+5. Testes em Produção
     
 Funcional: Testar todos os fluxos do app (login, cadastro, agendamento, etc.)
 
@@ -197,13 +197,13 @@ Plano de Teste:
 
 1. Criar casos de teste para cada funcionalidade
    
-3. Implementar testes unitários (backend e, opcionalmente, mobile)
+2. Implementar testes unitários (backend e, opcionalmente, mobile)
    
 3.Realizar testes de integração entre API e mobile
 
-5. Executar testes de carga na API usando ferramentas como Postman ou JMeter
+4. Executar testes de carga na API usando ferramentas como Postman ou JMeter
    
-7. Usar Flutter Test (flutter test) para testes de widgets e lógica no ap.
+5. Usar Flutter Test (flutter test) para testes de widgets e lógica no ap.
 
    
 1. Crie casos de teste para cobrir todos os requisitos funcionais e não funcionais da aplicação.
