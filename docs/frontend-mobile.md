@@ -199,7 +199,7 @@ Plano de Teste:
    
 2. Implementar testes unitários (backend e, opcionalmente, mobile)
    
-3.Realizar testes de integração entre API e mobile
+3. Realizar testes de integração entre API e mobile
 
 4. Executar testes de carga na API usando ferramentas como Postman ou JMeter
    
