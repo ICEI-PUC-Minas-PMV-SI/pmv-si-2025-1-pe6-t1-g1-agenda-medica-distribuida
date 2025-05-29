@@ -175,6 +175,7 @@ Performance: Avaliar tempo de resposta e estabilidade
 Cross-Plataforma: Verificar compatibilidade em diferentes versões de Android e iOS
 
 
+
 1. Defina os requisitos de hardware e software necessários para implantar a aplicação em um ambiente de produção.
 2. Escolha uma plataforma de hospedagem adequada, como um provedor de nuvem ou um servidor dedicado.
 3. Configure o ambiente de implantação, incluindo a instalação de dependências e configuração de variáveis de ambiente.
@@ -205,6 +206,8 @@ Plano de Teste:
    
 5. Usar Flutter Test (flutter test) para testes de widgets e lógica no ap.
 
+
+--------------------------------------------------------
    
 1. Crie casos de teste para cobrir todos os requisitos funcionais e não funcionais da aplicação.
 2. Implemente testes unitários para testar unidades individuais de código, como funções e classes.
