@@ -221,7 +221,7 @@ Inclua todas as referências (livros, artigos, sites, etc) utilizados no desenvo
 
 Flutter Docs
 
-Dart Language
+React-Native Language
 
 Provider Package
 
