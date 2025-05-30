@@ -54,7 +54,7 @@ Token ➝ Agendamentos, Consultas, Perfil ➝ Respostas da API ➝ Renderizaçã
 
 [Lista das tecnologias principais que serão utilizadas no projeto.]
 
-Linguagem: Dart
+Linguagem: React-Native
 
 Framework: Flutter
 
