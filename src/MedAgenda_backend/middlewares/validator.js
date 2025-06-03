@@ -75,51 +75,18 @@ exports.acceptForgotPasswordCodeSchema = joi.object({
 
 exports.newDoctorSchema = joi.object({
   name: joi.string().required(),
-  specialty: joi.string().required(),
+  speciality: joi.string().required(),
   crm: joi.string().required(),
-  profileImage: joi.string().uri(),
-  experience: joi.string().required(),
-  rating: joi.number().min(0).max(5),
-  about: joi.string().required(),
-  education: joi.array().items(
-    joi.object({
-      degree: joi.string().required(),
-      institution: joi.string().required(),
-      year: joi.string().required(),
-    })
-  ),
-  availability: joi.array().items(
-    joi.object({
-      day: joi.string().required(),
-      startTime: joi.string().required(),
-      endTime: joi.string().required(),
-    })
-  ),
-  location: joi.string().required(),
+  pricePerAppointment: joi.number().required(),
+  doctorImage: joi.string().base64(),
+  about: joi.string(),
 });
 
 exports.updateDoctorSchema = joi.object({
-  name: joi.string(),
-  specialty: joi.string(),
-  profileImage: joi.string().uri(),
-  experience: joi.string(),
-  rating: joi.number().min(0).max(5),
+  speciality: joi.string().required(),
+  pricePerAppointment: joi.number().required(),
+  doctorImage: joi.string().base64(),
   about: joi.string(),
-  education: joi.array().items(
-    joi.object({
-      degree: joi.string().required(),
-      institution: joi.string().required(),
-      year: joi.string().required(),
-    })
-  ),
-  availability: joi.array().items(
-    joi.object({
-      day: joi.string().required(),
-      startTime: joi.string().required(),
-      endTime: joi.string().required(),
-    })
-  ),
-  location: joi.string(),
 });
 
 exports.newAppointmentSchema = joi.object({

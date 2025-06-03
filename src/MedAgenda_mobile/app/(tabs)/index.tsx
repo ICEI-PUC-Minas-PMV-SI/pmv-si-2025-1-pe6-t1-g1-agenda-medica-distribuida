@@ -3,100 +3,172 @@ import { Avatar, Button, Card, Divider, List, Text, ActivityIndicator } from 're
 import { COLORS } from '../../constants/theme';
 import { router } from 'expo-router';
 import { useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { appointments, doctors } from '../../services/api';
+import { appointments, doctors, users } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HomeScreen() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [upcomingAppointments, setUpcomingAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [userName, setUserName] = useState<string>('Usuário');
+
+  // Log user data for debugging
+  console.log('🏠 Home Screen - User object from context:', user);
+  console.log('🏠 Home Screen - User name from context:', user?.name);
+  console.log('🏠 Home Screen - User ID from context:', user?.id);
+  console.log('🏠 Home Screen - Local userName state:', userName);
 
   useEffect(() => {
-    loadUserAppointments();
-  }, []);
+    checkStoredUserData();
+    
+    // Update local userName state when user changes
+    if (user?.name && user.name !== 'Usuário') {
+      console.log('🔄 Updating local userName state to:', user.name);
+      setUserName(user.name);
+    } else if (user?.id) {
+      console.log('🔍 User name is missing or default, attempting to fetch profile...');
+      fetchUserProfile();
+    }
+    
+    if (user?.id) {
+      loadUserAppointments();
+    }
+  }, [user?.id, user?.name]);
+
+  const checkStoredUserData = async () => {
+    try {
+      const storedUser = await AsyncStorage.getItem('user');
+      const storedToken = await AsyncStorage.getItem('authToken');
+      
+      console.log('💾 Stored user data:', storedUser);
+      console.log('💾 Stored token exists:', !!storedToken);
+      
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        console.log('💾 Parsed stored user:', parsedUser);
+        console.log('💾 Parsed stored user name:', parsedUser.name);
+        
+        // If stored user has a valid name, use it
+        if (parsedUser.name && parsedUser.name !== 'Usuário') {
+          console.log('🔄 Using stored user name:', parsedUser.name);
+          setUserName(parsedUser.name);
+        }
+      }
+      
+      // If we still don't have a name, try to extract from token
+      if (storedToken && userName === 'Usuário') {
+        console.log('🔍 Attempting to extract name from token...');
+        tryExtractNameFromToken(storedToken);
+      }
+    } catch (error) {
+      console.error('❌ Error checking stored data:', error);
+    }
+  };
+
+  const tryExtractNameFromToken = (token: string) => {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      const decoded = JSON.parse(jsonPayload);
+      
+      console.log('🔍 Decoded token for name extraction:', decoded);
+      
+      const extractedName = decoded.name || decoded.fullName || decoded.firstName || decoded.username;
+      if (extractedName && extractedName !== 'Usuário') {
+        console.log('✅ Extracted name from token:', extractedName);
+        setUserName(extractedName);
+      }
+    } catch (error) {
+      console.error('❌ Error extracting name from token:', error);
+    }
+  };
+
+  const fetchUserProfile = async () => {
+    try {
+      console.log('🔍 Attempting to fetch user profile for name...');
+      const profileData = await users.getProfile();
+      console.log('✅ Fetched profile data:', profileData);
+      
+      if (profileData.name && profileData.name !== 'Usuário') {
+        console.log('🔄 Updating user name from profile:', profileData.name);
+        setUserName(profileData.name);
+        await updateUser({ name: profileData.name });
+      } else {
+        console.log('⚠️ Profile data does not contain a valid name:', profileData.name);
+      }
+    } catch (error: any) {
+      console.warn('❌ Could not fetch user profile (this is normal if endpoint does not exist):', error.message);
+      // Don't throw error - this is a fallback mechanism
+      // If API doesn't exist, we'll use other strategies
+    }
+  };
 
   const loadUserAppointments = async () => {
+    if (!user?.id) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       setError('');
       
-      // Extrair userId do token armazenado
-      const token = await AsyncStorage.getItem('@MedAgenda:token');
-      let userId = null;
+      console.log('Loading appointments for user:', user.id);
       
-      if (token) {
-        try {
-          const base64Url = token.split('.')[1];
-          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-          const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-          }).join(''));
-          const decoded = JSON.parse(jsonPayload);
-          userId = decoded.userId;
-        } catch (decodeError) {
-          console.error('Error decoding token:', decodeError);
-        }
-      }
+      // Usar a API do serviço que já está configurada corretamente
+      const userAppointments = await appointments.getByUserId(user.id);
       
-      if (!userId) {
-        setError('Usuário não autenticado');
-        return;
-      }
-
-      // Carregar agendamentos do usuário usando a API diretamente com token
-      const response = await fetch(`https://med-agenda-backend.vercel.app/api/appointment?_id=${userId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'client': 'not-browser',
+      console.log('Raw appointments from API:', userAppointments);
+      
+      // Log each appointment to check doctor data
+      userAppointments.forEach((appointment, index) => {
+        console.log(`Home - Appointment ${index + 1}:`, {
+          id: appointment.id,
+          doctorId: appointment.doctorId,
+          doctorObject: appointment.doctor,
+          doctorName: appointment.doctor?.name,
+          doctorSpecialty: appointment.doctor?.specialty,
+          date: appointment.date,
+          time: appointment.time,
+          status: appointment.status
+        });
+        
+        // Log the complete doctor object structure
+        if (appointment.doctor) {
+          console.log(`Home - Doctor object for appointment ${index + 1}:`, appointment.doctor);
+        } else {
+          console.log(`Home - No doctor object for appointment ${index + 1}, doctorId:`, appointment.doctorId);
         }
       });
-      
-      if (!response.ok) {
-        throw new Error('Erro ao carregar agendamentos');
-      }
-      
-      const data = await response.json();
-      const userAppointments = data.appointments || [];
       
       // Filtrar apenas agendamentos futuros e ordenar por data
       const now = new Date();
       const futureAppointments = userAppointments
-        .filter((appointment: any) => {
-          const appointmentDate = new Date(appointment.slotDate || appointment.date);
-          return appointmentDate >= now && !appointment.cancelled;
+        .filter((appointment) => {
+          const appointmentDate = new Date(appointment.date);
+          return appointmentDate >= now && appointment.status !== 'cancelled';
         })
-        .sort((a: any, b: any) => new Date(a.slotDate || a.date).getTime() - new Date(b.slotDate || b.date).getTime())
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
         .slice(0, 3); // Mostrar apenas os próximos 3
 
-      // Carregar dados dos médicos para cada agendamento
-      const appointmentsWithDoctors = await Promise.all(
-        futureAppointments.map(async (appointment: any) => {
-          try {
-            const doctor = await doctors.getById(appointment.doctor || appointment.doctorId);
-            return {
-              id: appointment._id || appointment.id,
-              doctor: doctor.name,
-              specialty: doctor.specialty,
-              date: new Date(appointment.slotDate || appointment.date).toLocaleDateString('pt-BR'),
-              time: appointment.slotTime || appointment.time,
-            };
-          } catch (error) {
-            // Se não conseguir carregar o médico, usar dados básicos
-            return {
-              id: appointment._id || appointment.id,
-              doctor: `Médico: ${appointment.doctor || appointment.doctorId}`,
-              specialty: 'Não informado',
-              date: new Date(appointment.slotDate || appointment.date).toLocaleDateString('pt-BR'),
-              time: appointment.slotTime || appointment.time,
-            };
-          }
-        })
-      );
+      console.log('Filtered future appointments:', futureAppointments);
 
-      setUpcomingAppointments(appointmentsWithDoctors);
+      // Transformar para o formato esperado pela UI
+      const appointmentsForUI = futureAppointments.map((appointment) => ({
+        id: appointment.id,
+        doctor: appointment.doctor?.name || 'Médico não informado',
+        specialty: appointment.doctor?.specialty || 'Especialidade não informada',
+        date: new Date(appointment.date).toLocaleDateString('pt-BR'),
+        time: appointment.time,
+      }));
+
+      console.log('Final appointments for UI:', appointmentsForUI);
+      setUpcomingAppointments(appointmentsForUI);
       
     } catch (err: any) {
       console.error('Error loading appointments:', err);
@@ -122,12 +194,12 @@ export default function HomeScreen() {
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}>
           <Avatar.Text 
             size={48} 
-            label={user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) : 'U'} 
+            label={userName !== 'Usuário' ? userName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) : 'U'} 
             style={{ backgroundColor: COLORS.accent }} 
           />
           <View style={{ marginLeft: 12 }}>
             <Text variant="titleMedium" style={{ color: 'white' }}>Bem-vindo(a),</Text>
-            <Text variant="headlineSmall" style={{ color: 'white' }}>{user?.name || 'Usuário'}</Text>
+            <Text variant="headlineSmall" style={{ color: 'white' }}>{userName}</Text>
           </View>
         </View>
       </View>

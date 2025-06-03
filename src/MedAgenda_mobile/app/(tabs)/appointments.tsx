@@ -40,6 +40,29 @@ export default function AppointmentsScreen() {
       console.log('Loading appointments for user:', user.id);
       const data = await appointments.getByUserId(user.id);
       console.log('Appointments loaded:', data.length);
+      console.log('Appointments data:', data);
+      
+      // Log each appointment to check doctor data
+      data.forEach((appointment, index) => {
+        console.log(`Appointment ${index + 1}:`, {
+          id: appointment.id,
+          doctorId: appointment.doctorId,
+          doctorObject: appointment.doctor,
+          doctorName: appointment.doctor?.name,
+          doctorSpecialty: appointment.doctor?.specialty,
+          date: appointment.date,
+          time: appointment.time,
+          status: appointment.status
+        });
+        
+        // Log the complete doctor object structure
+        if (appointment.doctor) {
+          console.log(`Appointments - Doctor object for appointment ${index + 1}:`, appointment.doctor);
+        } else {
+          console.log(`Appointments - No doctor object for appointment ${index + 1}, doctorId:`, appointment.doctorId);
+        }
+      });
+      
       setAppointmentsList(data || []);
     } catch (error: any) {
       console.error('Error loading appointments:', error);

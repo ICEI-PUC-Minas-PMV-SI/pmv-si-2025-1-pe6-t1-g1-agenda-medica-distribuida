@@ -13,16 +13,18 @@ import {
   ActivityIndicator
 } from 'react-native-paper';
 import { useAuth } from '../../context/AuthContext';
-import { auth } from '../../services/api';
+import { auth, users } from '../../services/api';
 import { router } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ProfileScreen() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, updateUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   
-  // Estados para edição de perfil
+  // Estados para edição de perfil com fallback para nome
+  const [userName, setUserName] = useState<string>(user?.name || 'Usuário');
   const [name, setName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
   const [phone, setPhone] = useState(user?.phone || '');
@@ -32,13 +34,104 @@ export default function ProfileScreen() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  // Log user data for debugging
+  console.log('👤 Profile Screen - User object from context:', user);
+  console.log('👤 Profile Screen - User name from context:', user?.name);
+  console.log('👤 Profile Screen - Local userName state:', userName);
+
   useEffect(() => {
+    checkStoredUserData();
+    
     if (user) {
-      setName(user.name);
+      // Update local states
       setEmail(user.email);
       setPhone(user.phone || '');
+      
+      // Handle name with fallback logic
+      if (user.name && user.name !== 'Usuário') {
+        console.log('🔄 Profile - Using user name from context:', user.name);
+        setUserName(user.name);
+        setName(user.name);
+      } else if (user.id) {
+        console.log('🔍 Profile - User name is missing, attempting to fetch profile...');
+        fetchUserProfile();
+      }
     }
   }, [user]);
+
+  const checkStoredUserData = async () => {
+    try {
+      const storedUser = await AsyncStorage.getItem('user');
+      const storedToken = await AsyncStorage.getItem('authToken');
+      
+      console.log('💾 Profile - Stored user data:', storedUser);
+      console.log('💾 Profile - Stored token exists:', !!storedToken);
+      
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        console.log('💾 Profile - Parsed stored user:', parsedUser);
+        console.log('💾 Profile - Parsed stored user name:', parsedUser.name);
+        
+        // If stored user has a valid name, use it
+        if (parsedUser.name && parsedUser.name !== 'Usuário') {
+          console.log('🔄 Profile - Using stored user name:', parsedUser.name);
+          setUserName(parsedUser.name);
+          setName(parsedUser.name);
+        }
+      }
+      
+      // If we still don't have a name, try to extract from token
+      if (storedToken && userName === 'Usuário') {
+        console.log('🔍 Profile - Attempting to extract name from token...');
+        tryExtractNameFromToken(storedToken);
+      }
+    } catch (error) {
+      console.error('❌ Profile - Error checking stored data:', error);
+    }
+  };
+
+  const tryExtractNameFromToken = (token: string) => {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      const decoded = JSON.parse(jsonPayload);
+      
+      console.log('🔍 Profile - Decoded token for name extraction:', decoded);
+      
+      const extractedName = decoded.name || decoded.fullName || decoded.firstName || decoded.username;
+      if (extractedName && extractedName !== 'Usuário') {
+        console.log('✅ Profile - Extracted name from token:', extractedName);
+        setUserName(extractedName);
+        setName(extractedName);
+      }
+    } catch (error) {
+      console.error('❌ Profile - Error extracting name from token:', error);
+    }
+  };
+
+  const fetchUserProfile = async () => {
+    try {
+      console.log('🔍 Profile - Attempting to fetch user profile for name...');
+      const profileData = await users.getProfile();
+      console.log('✅ Profile - Fetched profile data:', profileData);
+      
+      if (profileData.name && profileData.name !== 'Usuário') {
+        console.log('🔄 Profile - Updating user name from profile:', profileData.name);
+        setUserName(profileData.name);
+        setName(profileData.name);
+        await updateUser({ name: profileData.name });
+      } else {
+        console.log('⚠️ Profile - Profile data does not contain a valid name:', profileData.name);
+      }
+    } catch (error: any) {
+      console.warn('❌ Profile - Could not fetch user profile (this is normal if endpoint does not exist):', error.message);
+      // Don't throw error - this is a fallback mechanism
+      // If API doesn't exist, we'll use other strategies
+    }
+  };
 
   const handleSaveProfile = async () => {
     if (!name.trim()) {
@@ -136,6 +229,7 @@ export default function ProfileScreen() {
   };
 
   const getInitials = (name: string) => {
+    if (!name || name === 'Usuário') return 'U';
     return name
       .split(' ')
       .map(word => word.charAt(0))
@@ -158,13 +252,13 @@ export default function ProfileScreen() {
       {/* Header com Avatar */}
       <Card style={styles.headerCard}>
         <Card.Content style={styles.headerContent}>
-          <Avatar.Text 
-            size={80} 
-            label={getInitials(user.name)} 
+          <Avatar.Text
+            size={80}
+            label={getInitials(userName)}
             style={styles.avatar}
           />
           <Text variant="headlineSmall" style={styles.userName}>
-            {user.name}
+            {userName}
           </Text>
           <Text variant="bodyMedium" style={styles.userEmail}>
             {user.email}
@@ -228,7 +322,7 @@ export default function ProfileScreen() {
             <>
               <List.Item
                 title="Nome"
-                description={user.name}
+                description={userName}
                 left={props => <List.Icon {...props} icon="account" />}
               />
               <Divider />

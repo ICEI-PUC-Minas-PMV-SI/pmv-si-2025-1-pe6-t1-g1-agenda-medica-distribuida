@@ -58,8 +58,8 @@ export default function AdminDoctorsScreen() {
   const [snackbarMessage, setSnackbarMessage] = useState('');
 
   useEffect(() => {
-    // Verificar se o usuário é admin
-    if (!user?.isAdmin) {
+    // Verificar se o usuário é admin - só mostrar alerta se usuário existe e não é admin
+    if (user && !user.isAdmin) {
       Alert.alert(
         'Acesso Negado',
         'Apenas administradores podem acessar esta tela.',
@@ -68,7 +68,10 @@ export default function AdminDoctorsScreen() {
       return;
     }
     
-    loadDoctors();
+    // Só carregar médicos se o usuário for admin
+    if (user?.isAdmin) {
+      loadDoctors();
+    }
   }, [user]);
 
   const loadDoctors = async () => {
@@ -221,7 +224,12 @@ export default function AdminDoctorsScreen() {
     setShowModal(true);
   };
 
-  if (!user?.isAdmin) {
+  if (!user) {
+    // Usuário não carregado ainda ou fez logout - não mostrar nada
+    return null;
+  }
+
+  if (!user.isAdmin) {
     return (
       <View style={[styles.container, styles.centered]}>
         <Text style={styles.errorText}>Acesso negado</Text>

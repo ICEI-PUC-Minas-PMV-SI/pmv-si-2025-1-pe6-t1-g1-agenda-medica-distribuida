@@ -3,199 +3,129 @@ const {
   updateDoctorSchema,
 } = require("../middlewares/validator");
 const Doctor = require("../models/doctorModel");
-const { doctors, specialties } = require("../data/doctors");
-
-// Initialize doctors if none exist
-const initializeDoctors = async () => {
-  try {
-    const count = await Doctor.countDocuments();
-    if (count === 0) {
-      await Doctor.insertMany(doctors);
-      console.log('Doctors initialized successfully');
-    }
-  } catch (error) {
-    console.error('Error initializing doctors:', error);
-  }
-};
-
-// Call initialization
-initializeDoctors();
-
-exports.getSpecialties = async (req, res) => {
-  try {
-    return res.status(200).json({
-      success: true,
-      specialties,
-    });
-  } catch (error) {
-    console.error('Error getting specialties:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Error getting specialties',
-    });
-  }
-};
-
-exports.getDoctors = async (req, res) => {
-  try {
-    const { specialty } = req.query;
-    const query = specialty ? { specialty } : {};
-    const doctors = await Doctor.find(query);
-    return res.status(200).json({
-      success: true,
-      doctors,
-    });
-  } catch (error) {
-    console.error('Error getting doctors:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Error getting doctors',
-    });
-  }
-};
-
-// Alias for getDoctors (usado pelo router)
-exports.viewDoctors = exports.getDoctors;
-
-exports.getDoctorById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const doctor = await Doctor.findById(id);
-    if (!doctor) {
-      return res.status(404).json({
-        success: false,
-        message: 'Doctor not found',
-      });
-    }
-    return res.status(200).json({
-      success: true,
-      doctor,
-    });
-  } catch (error) {
-    console.error('Error getting doctor:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Error getting doctor',
-    });
-  }
-};
-
 exports.newDoctor = async (req, res) => {
-  const { name, speciality, crm, doctorImage, experience, about, location } = req.body;
-  const { isAdmin } = req.user;
-  
+  const {name, speciality, crm, pricePerAppointment, doctorImage, about} =
+    req.body;
+  const {isAdmin} = req.user;
   if (!isAdmin) {
-    return res.status(401).json({ success: false, message: "Unauthorized" });
+    return res.status(401).json({success: false, message: "Unauthorized"});
   }
-
   try {
-    const existingDoctor = await Doctor.findOne({ crm });
-    if (existingDoctor) {
-      return res.status(400).json({
+    const {error, value} = newDoctorSchema.validate({
+      name,
+      speciality,
+      crm,
+      pricePerAppointment,
+      doctorImage,
+      about,
+    });
+
+    if (error) {
+      return res.status(401).json({
         success: false,
-        message: "Doctor already exists!",
+        message: error.details[0].message,
       });
+    }
+
+    const existingDoctor = await Doctor.findOne({crm});
+    if (existingDoctor) {
+      return res
+        .status(401)
+        .json({success: false, message: "Doctor already exists!"});
     }
 
     const newDoctor = new Doctor({
       name,
-      specialty: speciality, // Map speciality to specialty
+      speciality,
       crm,
-      profileImage: doctorImage || 'https://via.placeholder.com/150',
-      experience: experience || '1 ano',
+      pricePerAppointment,
+      doctorImage,
       about,
-      location: location || 'Não informado',
     });
 
     const result = await newDoctor.save();
-    return res.status(201).json({
+    res.status(201).json({
       success: true,
-      message: "Doctor created successfully",
-      result: result,
+      message: "The doctor has been created successfully",
+      result,
     });
   } catch (error) {
-    console.error('Error creating doctor:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Error creating doctor',
-      error: error.message,
-    });
+    console.log(error);
   }
 };
 
 exports.updateDoctor = async (req, res) => {
-  const { crm } = req.params;
-  const { isAdmin } = req.user;
-  
+  const {speciality, pricePerAppointment, doctorImage, about} = req.body;
+  const {crm} = req.params;
+  const {isAdmin} = req.user;
   if (!isAdmin) {
-    return res.status(401).json({ success: false, message: "Unauthorized" });
+    return res.status(401).json({success: false, message: "Unauthorized"});
   }
 
-  try {
-    // Map frontend fields to backend fields
-    const updateData = { ...req.body };
-    if (updateData.speciality) {
-      updateData.specialty = updateData.speciality;
-      delete updateData.speciality;
-    }
-    if (updateData.doctorImage) {
-      updateData.profileImage = updateData.doctorImage;
-      delete updateData.doctorImage;
-    }
-
-    const doctor = await Doctor.findOneAndUpdate({ crm }, updateData, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!doctor) {
-      return res.status(404).json({
-        success: false,
-        message: "Doctor not found",
-      });
-    }
-
-    return res.status(200).json({
-      success: true,
-      message: "Doctor updated successfully",
-      doctor,
-    });
-  } catch (error) {
-    console.error('Error updating doctor:', error);
-    return res.status(500).json({
+  const {error, value} = updateDoctorSchema.validate({
+    speciality,
+    pricePerAppointment,
+    doctorImage,
+    about,
+  });
+  if (error) {
+    return res.status(401).json({
       success: false,
-      message: 'Error updating doctor',
+      message: error.details[0].message,
     });
   }
+  const existingDoctor = await Doctor.findOne({crm});
+
+  const fieldsToUpdate = {
+    speciality,
+    pricePerAppointment,
+    doctorImage,
+    about,
+  };
+
+  const updateDoctor = Object.assign(existingDoctor, fieldsToUpdate);
+
+  updateDoctor.save();
+  return res.status(200).json({
+    success: true,
+    message: "Doctor has been updated successfully!",
+  });
 };
 
 exports.deleteDoctor = async (req, res) => {
-  const { crm } = req.params;
-  const { isAdmin } = req.user;
+  const {crm} = req.params;
+  const {isAdmin} = req.user;
 
   if (!isAdmin) {
-    return res.status(401).json({ success: false, message: "Unauthorized" });
+    return res.status(401).json({success: false, message: "Unauthorized"});
   }
 
   try {
-    const doctor = await Doctor.findOneAndDelete({ crm });
-    if (!doctor) {
-      return res.status(404).json({
-        success: false,
-        message: "Doctor not found",
-      });
+    const doctorToDelete = await Doctor.deleteOne({crm});
+    if (doctorToDelete.deletedCount < 1) {
+      return res
+        .status(403)
+        .json({success: false, message: "Unable to delete doctor!"});
     }
-
     return res.status(200).json({
       success: true,
-      message: "Doctor deleted successfully",
-      doctorToDelete: doctor,
+      message: "Doctor deleted successfully!",
+      doctorToDelete,
     });
   } catch (error) {
-    console.error('Error deleting doctor:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Error deleting doctor',
-    });
+    console.log(error);
   }
+};
+
+exports.viewDoctors = async (req, res) => {
+  let query = {};
+  for (const [key, value] of Object.entries(req.query)) {
+    query[key] = value;
+  }
+
+  const doctors = await Doctor.find(query);
+  return res.status(200).json({
+    success: true,
+    doctors,
+  });
 };
