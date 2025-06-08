@@ -2,6 +2,7 @@ import { Tabs, useRouter, useSegments } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useEffect, useState, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { COLORS } from '../../constants/theme';
 
 export default function TabLayout() {
   const { user, loading } = useAuth();
@@ -56,7 +57,7 @@ export default function TabLayout() {
     console.log('🔄 Recalculando tabs para usuário:', user?.name, 'isAdmin:', user?.isAdmin);
     
     // TABS BASE QUE SEMPRE APARECEM
-    const baseScreens = [
+    const screens = [
       {
         name: "index",
         title: 'Início',
@@ -79,131 +80,60 @@ export default function TabLayout() {
       }
     ];
 
-    // LISTA EXPANDIDA DE EMAILS QUE NUNCA DEVEM TER ACESSO ADMIN (BLACKLIST ABSOLUTA)
-    const nonAdminEmails = [
-      'filo@gmail.com',
-      'user@test.com',
-      'teste@gmail.com',
-      'normal@user.com',
-      'test@test.com',
-      'usuario@teste.com'
-    ];
-
-    // VERIFICAÇÃO ULTRA RIGOROSA PARA ADMIN
+    // VERIFICAÇÃO ESPECÍFICA PARA ADMIN
     const userEmail = user?.email?.toLowerCase()?.trim() || '';
-    const isBlacklistedUser = nonAdminEmails.includes(userEmail);
-    const hasValidAdminFlag = user && user.isAdmin === true && typeof user.isAdmin === 'boolean';
     
-    // REGRA ABSOLUTA: NUNCA mostrar admin para usuários blacklistados
-    // APENAS usuários com isAdmin === true E que NÃO estão na blacklist podem ser admin
-    const finalAdminCheck = hasValidAdminFlag && !isBlacklistedUser;
+    // Email específico do administrador
+    const adminEmail = 'medagendaapi@gmail.com';
     
-    // VERIFICAÇÃO DE EMERGÊNCIA: Se for filo@gmail.com, FORÇAR bloqueio
-    const isFiloEmergency = userEmail === 'filo@gmail.com';
-    const emergencyBlock = isFiloEmergency;
+    // Verificar se é o usuário admin específico E tem flag isAdmin
+    const isSpecificAdmin = userEmail === adminEmail && user?.isAdmin === true;
     
-    // DECISÃO FINAL: Admin tab só aparece se passar em TODAS as verificações E não for emergência
-    const showAdminTab = finalAdminCheck && !emergencyBlock;
-    
-    console.log('🔒 VERIFICAÇÃO ULTRA RIGOROSA DE ADMIN:', {
-      userExists: !!user,
+    console.log('🔒 VERIFICAÇÃO DE ADMIN ESPECÍFICO:', {
       userEmail: userEmail,
-      isAdminValue: user?.isAdmin,
-      isAdminType: typeof user?.isAdmin,
-      isAdminStrictCheck: user?.isAdmin === true,
-      isAdminTypeCheck: typeof user?.isAdmin === 'boolean',
-      isBlacklistedUser: isBlacklistedUser,
-      hasValidAdminFlag: hasValidAdminFlag,
-      isFiloEmergency: isFiloEmergency,
-      emergencyBlock: emergencyBlock,
-      finalCheck: finalAdminCheck,
-      showAdminTab: showAdminTab,
-      blacklistEmails: nonAdminEmails
+      adminEmail: adminEmail,
+      isEmailMatch: userEmail === adminEmail,
+      hasAdminFlag: user?.isAdmin === true,
+      isSpecificAdmin: isSpecificAdmin
     });
 
-    // LOGS DE BLOQUEIO
-    if (isBlacklistedUser) {
-      console.log('🚫 USUÁRIO NA BLACKLIST - ADMIN TAB BLOQUEADA PERMANENTEMENTE');
-      console.log('🚫 Email bloqueado:', userEmail);
-    }
-    
-    if (isFiloEmergency) {
-      console.log('🚨 BLOQUEIO DE EMERGÊNCIA ATIVADO PARA FILO@GMAIL.COM');
-      console.log('🚨 Admin tab será FORÇADAMENTE removida');
-    }
-
-    // DECISÃO FINAL: Adicionar tab de admin APENAS se passar em TODAS as verificações
-    if (showAdminTab) {
-      console.log('✅ ADMIN TAB SERÁ ADICIONADA para usuário:', user?.name);
-      baseScreens.push({
+    // Adicionar tab admin apenas para o usuário específico
+    if (isSpecificAdmin) {
+      console.log('✅ ADMIN TAB SERÁ ADICIONADA para usuário admin:', user?.name);
+      screens.push({
         name: "admin-doctors",
         title: 'Admin Médicos',
         icon: 'account-cog'
       });
     } else {
-      console.log('❌ ADMIN TAB NÃO SERÁ ADICIONADA. Motivos:');
-      console.log('   - Usuário existe?', !!user);
-      console.log('   - Email do usuário:', userEmail);
-      console.log('   - Está na blacklist?', isBlacklistedUser);
-      console.log('   - É filo@gmail.com (emergência)?', isFiloEmergency);
-      console.log('   - isAdmin value:', user?.isAdmin);
-      console.log('   - isAdmin === true?', user?.isAdmin === true);
-      console.log('   - isAdmin é boolean?', typeof user?.isAdmin === 'boolean');
-      console.log('   - Tem flag admin válido?', hasValidAdminFlag);
-      console.log('   - Verificação final passou?', finalAdminCheck);
-      console.log('   - Bloqueio de emergência?', emergencyBlock);
-      console.log('   - Decisão final (mostrar admin)?', showAdminTab);
+      console.log('❌ ADMIN TAB NÃO SERÁ ADICIONADA para usuário:', user?.name, 'email:', userEmail);
     }
 
     // Adicionar tab de perfil por último
-    baseScreens.push({
+    screens.push({
       name: "profile",
       title: 'Perfil',
       icon: 'account'
     });
-
-    console.log('📋 Tabs finais calculadas:', baseScreens.map(tab => tab.name));
-    console.log('🎯 Total de tabs:', baseScreens.length);
     
-    // VERIFICAÇÃO FINAL DE SEGURANÇA
-    const hasAdminTab = baseScreens.some(tab => tab.name === 'admin-doctors');
-    console.log('🔍 VERIFICAÇÃO FINAL DE SEGURANÇA:');
-    console.log('   - Contém admin-doctors?', hasAdminTab ? 'SIM ❌' : 'NÃO ✅');
+    console.log('📋 Tabs finais:', screens.map(tab => tab.name));
     
-    // Log específico para filo@gmail.com
-    if (userEmail === 'filo@gmail.com') {
-      console.log('🎯 VERIFICAÇÃO ESPECÍFICA PARA FILO@GMAIL.COM:');
-      console.log('   - Tabs que serão mostradas:', baseScreens.map(tab => tab.title));
-      console.log('   - Admin tab incluída?', hasAdminTab ? 'SIM ❌ ERRO!' : 'NÃO ✅ CORRETO!');
-      
-      if (hasAdminTab) {
-        console.error('🚨 ERRO CRÍTICO: Admin tab ainda está presente para filo@gmail.com!');
-      }
-    }
-    
-    // FILTRO DE EMERGÊNCIA: Remover qualquer tab admin que possa ter passado
-    const finalScreens = baseScreens.filter(tab => {
-      if (tab.name === 'admin-doctors' && (isBlacklistedUser || isFiloEmergency)) {
-        console.log('🚨 FILTRO DE EMERGÊNCIA: Removendo admin tab que passou incorretamente');
-        return false;
-      }
-      return true;
-    });
-    
-    console.log('🛡️ TABS APÓS FILTRO DE EMERGÊNCIA:', finalScreens.map(tab => tab.name));
-    console.log('🛡️ Total final:', finalScreens.length);
-    
-    return finalScreens;
-  }, [user, forceUpdate]); // Dependências incluem forceUpdate para garantir recálculo
+    return screens;
+  }, [user, forceUpdate]);
 
   console.log('🎬 Renderizando TabLayout com', tabScreens.length, 'tabs');
   console.log('🎬 Tabs sendo renderizadas:', tabScreens.map(tab => tab.name));
 
   return (
     <Tabs
-      key={`tabs-${forceUpdate}-${user?.email || 'no-user'}`} // Força re-renderização completa incluindo email
+      key={`tabs-${forceUpdate}-${user?.email || 'no-user'}`}
       screenOptions={{
-        tabBarActiveTintColor: '#2196F3',
+        tabBarActiveTintColor: COLORS.primary,
+        tabBarInactiveTintColor: COLORS.textSecondary,
+        tabBarStyle: {
+          backgroundColor: COLORS.surface,
+          borderTopColor: COLORS.border,
+        },
         headerShown: false,
       }}
     >

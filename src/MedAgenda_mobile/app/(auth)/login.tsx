@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Image } from 'react-native';
 import { TextInput, Button, Text } from 'react-native-paper';
 import { router } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
+import { COLORS } from '../../constants/theme';
+import { assets } from '../../assets/images/assets';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -31,6 +33,8 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
+      <Image source={assets.logo} style={styles.logo} resizeMode="contain" />
+      
       <Text variant="headlineMedium" style={styles.title}>
         MedAgenda
       </Text>
@@ -42,6 +46,7 @@ export default function LoginScreen() {
         autoCapitalize="none"
         keyboardType="email-address"
         style={styles.input}
+        mode="outlined"
       />
 
       <TextInput
@@ -50,6 +55,7 @@ export default function LoginScreen() {
         onChangeText={setPassword}
         secureTextEntry
         style={styles.input}
+        mode="outlined"
       />
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -60,6 +66,7 @@ export default function LoginScreen() {
         loading={loading}
         disabled={loading}
         style={styles.button}
+        buttonColor={COLORS.primary}
       >
         Entrar
       </Button>
@@ -68,6 +75,7 @@ export default function LoginScreen() {
         mode="text"
         onPress={() => router.push('/register')}
         style={styles.button}
+        textColor={COLORS.secondary}
       >
         Criar conta
       </Button>
@@ -80,10 +88,18 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     justifyContent: 'center',
+    backgroundColor: COLORS.background,
+  },
+  logo: {
+    width: 120,
+    height: 60,
+    alignSelf: 'center',
+    marginBottom: 16,
   },
   title: {
     textAlign: 'center',
     marginBottom: 32,
+    color: COLORS.primary,
   },
   input: {
     marginBottom: 16,
@@ -92,7 +108,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   error: {
-    color: 'red',
+    color: COLORS.error,
     marginBottom: 16,
     textAlign: 'center',
   },

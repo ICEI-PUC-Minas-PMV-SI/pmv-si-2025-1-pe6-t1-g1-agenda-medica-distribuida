@@ -19,6 +19,7 @@ import { doctors } from '../../services/api';
 import { Doctor } from '../../services/api';
 import { COLORS } from '../../constants/theme';
 import { useAuth } from '../../context/AuthContext';
+import ImageUploader from '../../components/ImageUploader';
 
 interface DoctorFormData {
   name: string;
@@ -385,12 +386,13 @@ export default function AdminDoctorsScreen() {
               <HelperText type="error">{formErrors.pricePerAppointment}</HelperText>
             )}
 
-            <TextInput
-              mode="outlined"
-              label="URL da Imagem"
+            <Text variant="titleSmall" style={styles.sectionTitle}>
+              Imagem do Médico
+            </Text>
+            <ImageUploader
               value={formData.doctorImage}
-              onChangeText={(text) => setFormData(prev => ({ ...prev, doctorImage: text }))}
-              style={styles.input}
+              onImageSelected={(imageUri) => setFormData(prev => ({ ...prev, doctorImage: imageUri }))}
+              placeholder="Selecionar Foto do Médico"
             />
 
             <TextInput
@@ -402,6 +404,7 @@ export default function AdminDoctorsScreen() {
               multiline
               numberOfLines={4}
               style={styles.input}
+              placeholder="Descreva a experiência, formação e especialidades do médico..."
             />
             {formErrors.about && (
               <HelperText type="error">{formErrors.about}</HelperText>
@@ -553,5 +556,11 @@ const styles = StyleSheet.create({
   },
   retryButton: {
     backgroundColor: COLORS.primary,
+  },
+  sectionTitle: {
+    color: COLORS.textPrimary,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    marginTop: 8,
   },
 }); 

@@ -1,9 +1,10 @@
-import { ScrollView, View, Alert } from 'react-native';
+import { ScrollView, View, Alert, Image, StyleSheet } from 'react-native';
 import { Button, Text, TextInput, HelperText } from 'react-native-paper';
 import { Link, router } from 'expo-router';
 import { useState } from 'react';
 import { COLORS } from '../../constants/theme';
 import { useAuth } from '../../context/AuthContext';
+import { assets } from '../../assets/images/assets';
 
 export default function RegisterScreen() {
   const [name, setName] = useState('');
@@ -109,14 +110,11 @@ export default function RegisterScreen() {
 
   return (
     <ScrollView 
-      contentContainerStyle={{ 
-        flexGrow: 1, 
-        padding: 16, 
-        justifyContent: 'center',
-        backgroundColor: COLORS.background 
-      }}
+      contentContainerStyle={styles.container}
     >
-      <Text variant="headlineMedium" style={{ textAlign: 'center', marginBottom: 24, color: COLORS.primary }}>
+      <Image source={assets.logo} style={styles.logo} resizeMode="contain" />
+      
+      <Text variant="headlineMedium" style={styles.title}>
         Criar Conta
       </Text>
       
@@ -125,7 +123,7 @@ export default function RegisterScreen() {
         label="Nome Completo"
         value={name}
         onChangeText={setName}
-        style={{ marginBottom: 16 }}
+        style={styles.input}
         disabled={loading}
       />
 
@@ -136,7 +134,7 @@ export default function RegisterScreen() {
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
-        style={{ marginBottom: 16 }}
+        style={styles.input}
         disabled={loading}
       />
 
@@ -146,7 +144,7 @@ export default function RegisterScreen() {
         value={phone}
         onChangeText={setPhone}
         keyboardType="phone-pad"
-        style={{ marginBottom: 16 }}
+        style={styles.input}
         disabled={loading}
       />
 
@@ -156,7 +154,7 @@ export default function RegisterScreen() {
         value={password}
         onChangeText={setPassword}
         secureTextEntry={!showPassword}
-        style={{ marginBottom: 16 }}
+        style={styles.input}
         disabled={loading}
         right={
           <TextInput.Icon 
@@ -172,12 +170,12 @@ export default function RegisterScreen() {
         value={confirmPassword}
         onChangeText={setConfirmPassword}
         secureTextEntry={!showPassword}
-        style={{ marginBottom: 16 }}
+        style={styles.input}
         disabled={loading}
       />
 
       {error ? (
-        <HelperText type="error" visible={!!error} style={{ marginBottom: 16 }}>
+        <HelperText type="error" visible={!!error} style={styles.error}>
           {error}
         </HelperText>
       ) : null}
@@ -187,17 +185,52 @@ export default function RegisterScreen() {
         onPress={handleRegister}
         loading={loading}
         disabled={loading}
-        style={{ marginBottom: 16 }}
+        style={styles.button}
+        buttonColor={COLORS.primary}
       >
         Criar Conta
       </Button>
 
-      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+      <View style={styles.loginLink}>
         <Text>Já tem uma conta? </Text>
         <Link href="/(auth)/login" asChild>
-          <Button mode="text">Fazer Login</Button>
+          <Button mode="text" textColor={COLORS.secondary}>Fazer Login</Button>
         </Link>
       </View>
     </ScrollView>
   );
-} 
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flexGrow: 1, 
+    padding: 16, 
+    justifyContent: 'center',
+    backgroundColor: COLORS.background,
+  },
+  logo: {
+    width: 120,
+    height: 60,
+    alignSelf: 'center',
+    marginBottom: 16,
+  },
+  title: {
+    textAlign: 'center', 
+    marginBottom: 24, 
+    color: COLORS.primary,
+  },
+  input: {
+    marginBottom: 16,
+  },
+  error: {
+    marginBottom: 16,
+  },
+  button: {
+    marginBottom: 16,
+  },
+  loginLink: {
+    flexDirection: 'row', 
+    justifyContent: 'center', 
+    alignItems: 'center',
+  },
+}); 

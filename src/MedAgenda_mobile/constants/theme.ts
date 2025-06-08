@@ -1,21 +1,23 @@
 import { MD3LightTheme, MD3DarkTheme } from 'react-native-paper';
 
 export const COLORS = {
-  primary: '#2196F3',
-  secondary: '#03DAC6',
-  accent: '#FF2D55',
-  background: '#F2F2F7',
+  primary: '#1F2937',
+  secondary: '#3B82F6',
+  accent: '#10B981',
+  background: '#F9FAFB',
   surface: '#FFFFFF',
-  text: '#000000',
-  textPrimary: '#000000',
-  textSecondary: '#8E8E93',
-  error: '#B00020',
-  success: '#34C759',
-  warning: '#FFCC00',
+  text: '#111827',
+  textPrimary: '#111827',
+  textSecondary: '#6B7280',
+  error: '#EF4444',
+  success: '#10B981',
+  warning: '#F59E0B',
   white: '#FFFFFF',
   black: '#000000',
-  gray: '#8E8E93',
-  border: '#E5E5EA',
+  gray: '#6B7280',
+  border: '#E5E7EB',
+  cardBackground: '#FFFFFF',
+  headerBackground: '#1F2937',
 } as const;
 
 export const FONTS = {

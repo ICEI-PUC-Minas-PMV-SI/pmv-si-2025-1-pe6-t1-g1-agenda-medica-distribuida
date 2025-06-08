@@ -298,7 +298,12 @@ export const auth = {
           // VERIFICAÇÃO RIGOROSA DO isAdmin - APENAS true explícito é considerado admin
           const isAdminFromResponse = userData?.isAdmin === true;
           const isAdminFromToken = decoded.isAdmin === true;
-          const finalIsAdmin = isAdminFromResponse || isAdminFromToken;
+          
+          // VERIFICAÇÃO ESPECÍFICA PARA O EMAIL ADMIN
+          const isSpecificAdminEmail = email.toLowerCase().trim() === 'medagendaapi@gmail.com';
+          
+          // Se for o email específico do admin, forçar isAdmin = true
+          const finalIsAdmin = isAdminFromResponse || isAdminFromToken || isSpecificAdminEmail;
           
           console.log('🔒 Admin verification:', {
             userDataIsAdmin: userData?.isAdmin,
@@ -307,6 +312,7 @@ export const auth = {
             tokenIsAdminType: typeof decoded.isAdmin,
             isAdminFromResponse,
             isAdminFromToken,
+            isSpecificAdminEmail,
             finalIsAdmin
           });
           
