@@ -14,12 +14,47 @@ import {
   IconButton,
   Chip
 } from 'react-native-paper';
+import { Picker } from '@react-native-picker/picker';
 import { router } from 'expo-router';
 import { doctors } from '../../services/api';
 import { Doctor } from '../../services/api';
 import { COLORS } from '../../constants/theme';
 import { useAuth } from '../../context/AuthContext';
 import ImageUploader from '../../components/ImageUploader';
+
+// Lista abrangente de especialidades médicas
+const MEDICAL_SPECIALTIES = [
+  'Clínico Geral',
+  'Cardiologia',
+  'Dermatologia',
+  'Endocrinologia',
+  'Gastroenterologia',
+  'Ginecologia e Obstetrícia',
+  'Neurologia',
+  'Oftalmologia',
+  'Ortopedia',
+  'Otorrinolaringologia',
+  'Pediatria',
+  'Pneumologia',
+  'Psiquiatria',
+  'Urologia',
+  'Anestesiologia',
+  'Cirurgia Geral',
+  'Cirurgia Plástica',
+  'Cirurgia Vascular',
+  'Geriatria',
+  'Hematologia',
+  'Infectologia',
+  'Mastologia',
+  'Nefrologia',
+  'Neurologia Pediátrica',
+  'Nutrição',
+  'Oncologia',
+  'Proctologia',
+  'Psicologia',
+  'Radiologia',
+  'Reumatologia',
+];
 
 interface DoctorFormData {
   name: string;
@@ -348,14 +383,31 @@ export default function AdminDoctorsScreen() {
               <HelperText type="error">{formErrors.name}</HelperText>
             )}
 
-            <TextInput
-              mode="outlined"
-              label="Especialidade *"
-              value={formData.speciality}
-              onChangeText={(text) => setFormData(prev => ({ ...prev, speciality: text }))}
-              error={!!formErrors.speciality}
-              style={styles.input}
-            />
+            <Text variant="titleSmall" style={styles.sectionTitle}>
+              Especialidade *
+            </Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={formData.speciality}
+                onValueChange={(itemValue: string) => setFormData(prev => ({ ...prev, speciality: itemValue }))}
+                style={[styles.picker, formErrors.speciality && styles.pickerError]}
+                enabled={true}
+              >
+                <Picker.Item 
+                  label="Selecione uma especialidade" 
+                  value="" 
+                  color={COLORS.textSecondary}
+                />
+                {MEDICAL_SPECIALTIES.map((specialty) => (
+                  <Picker.Item 
+                    key={specialty} 
+                    label={specialty} 
+                    value={specialty}
+                    color={COLORS.textPrimary}
+                  />
+                ))}
+              </Picker>
+            </View>
             {formErrors.speciality && (
               <HelperText type="error">{formErrors.speciality}</HelperText>
             )}
@@ -562,5 +614,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 8,
     marginTop: 8,
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 4,
+    marginBottom: 8,
+    backgroundColor: COLORS.surface,
+  },
+  picker: {
+    color: COLORS.textPrimary,
+    backgroundColor: 'transparent',
+  },
+  pickerError: {
+    borderColor: COLORS.error,
   },
 }); 
