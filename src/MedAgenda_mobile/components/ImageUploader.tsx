@@ -82,20 +82,25 @@ export default function ImageUploader({ value, onImageSelected, placeholder = "S
   const uploadImage = async (asset: ImagePicker.ImagePickerAsset) => {
     setUploading(true);
     try {
-      console.log('🚀 Iniciando upload da imagem...');
+      console.log('🚀 [ImageUploader] Iniciando upload da imagem...');
+      console.log('🚀 [ImageUploader] Asset recebido:', {
+        uri: asset.uri,
+        type: asset.type,
+        fileSize: asset.fileSize
+      });
       
       const result = await UploadService.uploadImage(asset);
       
       if (result.success && result.url) {
-        console.log('✅ Upload concluído:', result.url);
+        console.log('✅ [ImageUploader] Upload concluído:', result.url);
         onImageSelected(result.url);
         Alert.alert('Sucesso', 'Imagem carregada com sucesso!');
       } else {
-        console.error('❌ Erro no upload:', result.error);
+        console.error('❌ [ImageUploader] Erro no upload:', result.error);
         Alert.alert('Erro', result.error || 'Erro ao fazer upload da imagem.');
       }
     } catch (error: any) {
-      console.error('❌ Erro inesperado no upload:', error);
+      console.error('❌ [ImageUploader] Erro inesperado no upload:', error);
       Alert.alert('Erro', 'Erro inesperado ao fazer upload. Tente novamente.');
     } finally {
       setUploading(false);

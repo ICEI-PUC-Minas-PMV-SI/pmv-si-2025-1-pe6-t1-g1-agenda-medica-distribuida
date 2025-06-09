@@ -69,20 +69,10 @@ export const useImageUpload = (): UseImageUploadReturn => {
   };
 
   const validateImage = (imageAsset: ImagePicker.ImagePickerAsset): boolean => {
-    console.log('🔍 [useImageUpload] === INICIANDO VALIDAÇÃO ===');
+    console.log('🔍 [useImageUpload] === INICIANDO VALIDAÇÃO ULTRA PERMISSIVA ===');
     console.log('🔍 [useImageUpload] Asset completo recebido:', JSON.stringify(imageAsset, null, 2));
     
     try {
-      console.log('🔍 [useImageUpload] Dados do asset:', {
-        uri: imageAsset.uri,
-        fileSize: imageAsset.fileSize,
-        width: imageAsset.width,
-        height: imageAsset.height,
-        type: imageAsset.type,
-        uriType: typeof imageAsset.uri,
-        typeType: typeof imageAsset.type
-      });
-
       // Verificar se o asset é válido
       if (!imageAsset || !imageAsset.uri) {
         const errorMsg = 'Asset de imagem inválido ou URI ausente';
@@ -91,7 +81,7 @@ export const useImageUpload = (): UseImageUploadReturn => {
         return false;
       }
 
-      // Verificar tamanho do arquivo
+      // Verificar tamanho do arquivo (se disponível)
       if (imageAsset.fileSize && imageAsset.fileSize > UPLOAD_CONFIG.maxFileSize) {
         const maxSizeMB = Math.round(UPLOAD_CONFIG.maxFileSize / (1024 * 1024));
         const fileSizeMB = Math.round(imageAsset.fileSize / (1024 * 1024));
@@ -101,113 +91,15 @@ export const useImageUpload = (): UseImageUploadReturn => {
         return false;
       }
 
-      console.log('📊 [useImageUpload] Configuração de upload:', UPLOAD_CONFIG);
-
-      // NOVA LÓGICA: Priorizar asset.type quando disponível e válido
-      let detectedMimeType: string;
-      let validationSource: string;
-
-      console.log('🎯 [useImageUpload] Verificando asset.type...');
-      console.log('🎯 [useImageUpload] asset.type valor:', imageAsset.type);
-      console.log('🎯 [useImageUpload] asset.type é string?', typeof imageAsset.type === 'string');
-      console.log('🎯 [useImageUpload] asset.type é truthy?', !!imageAsset.type);
+      // VALIDAÇÃO ULTRA PERMISSIVA: Se veio do ImagePicker, é válido!
+      console.log('✅ [useImageUpload] VALIDAÇÃO ULTRA PERMISSIVA ATIVADA');
+      console.log('✅ [useImageUpload] Imagem do ImagePicker sempre aceita');
+      console.log('✅ [useImageUpload] URI da imagem:', imageAsset.uri);
+      console.log('✅ [useImageUpload] Tipo original (se disponível):', imageAsset.type);
+      console.log('🔍 [useImageUpload] === VALIDAÇÃO CONCLUÍDA COM SUCESSO TOTAL ===');
       
-      if (imageAsset.type && typeof imageAsset.type === 'string' && imageAsset.type.startsWith('image/')) {
-        // Usar asset.type se disponível e válido
-        detectedMimeType = imageAsset.type;
-        validationSource = 'asset.type';
-        console.log('🎯 [useImageUpload] Usando asset.type:', detectedMimeType);
-      } else {
-        // Fallback para detecção por URI
-        console.log('🎯 [useImageUpload] asset.type não é válido, usando detecção por URI');
-        console.log('🎯 [useImageUpload] Motivo:', {
-          hasType: !!imageAsset.type,
-          isString: typeof imageAsset.type === 'string',
-          startsWithImage: imageAsset.type && typeof imageAsset.type === 'string' ? imageAsset.type.startsWith('image/') : false
-        });
-        
-        detectedMimeType = getImageTypeFromUri(imageAsset.uri);
-        validationSource = 'URI extension';
-        console.log('🎯 [useImageUpload] Usando detecção por URI:', detectedMimeType);
-      }
-
-      console.log('📋 [useImageUpload] Tipos permitidos:', UPLOAD_CONFIG.allowedTypes);
-      console.log('🔍 [useImageUpload] Fonte da validação:', validationSource);
-      console.log('🎯 [useImageUpload] Tipo MIME detectado:', detectedMimeType);
+      return true; // SEMPRE ACEITAR!
       
-      // Verificar se o tipo detectado é permitido
-      let isValidType = UPLOAD_CONFIG.allowedTypes.includes(detectedMimeType);
-      console.log('📊 [useImageUpload] Validação inicial:', isValidType);
-      
-      // Se não passou na validação inicial, tentar estratégias alternativas
-      if (!isValidType) {
-        console.log('🔄 [useImageUpload] Validação inicial falhou, tentando estratégias alternativas...');
-        
-        // Estratégia 1: URIs especiais sempre aceitas (ImagePicker, content://, ph://)
-        const specialUriPatterns = [
-          'ImagePicker',
-          'expo',
-          'content://',
-          'ph://',
-          '/DCIM/',
-          '/Camera/',
-          'media/external'
-        ];
-        
-        console.log('🔄 [useImageUpload] Verificando padrões de URI especiais:', specialUriPatterns);
-        
-        const isSpecialUri = specialUriPatterns.some(pattern => {
-          const matches = imageAsset.uri.includes(pattern);
-          console.log(`🔄 [useImageUpload] Padrão "${pattern}": ${matches ? 'ENCONTRADO' : 'não encontrado'}`);
-          return matches;
-        });
-        
-        if (isSpecialUri) {
-          console.log('✅ [useImageUpload] URI especial detectada, assumindo tipo válido');
-          isValidType = true;
-        }
-        
-        // Estratégia 2: Se asset.type não foi usado, tentar usá-lo agora
-        if (!isValidType && imageAsset.type && validationSource !== 'asset.type') {
-          console.log('🔄 [useImageUpload] Tentando com asset.type como fallback:', imageAsset.type);
-          const assetTypeValid = UPLOAD_CONFIG.allowedTypes.includes(imageAsset.type);
-          console.log('🔄 [useImageUpload] asset.type é válido?', assetTypeValid);
-          
-          if (assetTypeValid) {
-            detectedMimeType = imageAsset.type;
-            isValidType = true;
-            console.log('✅ [useImageUpload] Validação bem-sucedida com asset.type');
-          }
-        }
-        
-        // Estratégia 3: Para URIs sem extensão clara, assumir JPEG se vier de fonte confiável
-        if (!isValidType && !imageAsset.uri.includes('.')) {
-          console.log('🔄 [useImageUpload] URI sem extensão detectada, assumindo JPEG');
-          detectedMimeType = 'image/jpeg';
-          isValidType = true;
-        }
-      }
-      
-      console.log('📊 [useImageUpload] Resultado final da validação:', isValidType);
-      console.log('📊 [useImageUpload] Tipo MIME final:', detectedMimeType);
-      
-      if (!isValidType) {
-        const errorMsg = 'Tipo de arquivo não suportado. Use JPEG, PNG ou WebP.';
-        console.error('❌ [useImageUpload] Tipo não permitido após todas as tentativas:', { 
-          detectedMimeType, 
-          assetType: imageAsset.type,
-          uri: imageAsset.uri,
-          allowedTypes: UPLOAD_CONFIG.allowedTypes
-        });
-        console.error('❌ [useImageUpload] ERRO FINAL:', errorMsg);
-        setError(errorMsg);
-        return false;
-      }
-
-      console.log('✅ [useImageUpload] Imagem validada com sucesso');
-      console.log('📊 [useImageUpload] Tipo final aceito:', detectedMimeType);
-      console.log('🔍 [useImageUpload] === VALIDAÇÃO CONCLUÍDA COM SUCESSO ===');
-      return true;
     } catch (error) {
       console.error('❌ [useImageUpload] Erro na validação da imagem:', error);
       console.error('❌ [useImageUpload] Stack trace:', error instanceof Error ? error.stack : 'N/A');

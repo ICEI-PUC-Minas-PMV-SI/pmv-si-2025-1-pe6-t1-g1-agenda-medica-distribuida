@@ -67,22 +67,12 @@ export const useImageUploadDebug = (): UseImageUploadReturn => {
   };
 
   const validateImage = (imageAsset: ImagePicker.ImagePickerAsset): boolean => {
-    console.log('DEBUG: === INICIANDO VALIDACAO ===');
+    console.log('DEBUG: === INICIANDO VALIDACAO ULTRA PERMISSIVA ===');
     console.log('DEBUG: Asset completo recebido:');
     console.log(JSON.stringify(imageAsset, null, 2));
     
     try {
-      console.log('DEBUG: Dados do asset:', {
-        uri: imageAsset.uri,
-        fileSize: imageAsset.fileSize,
-        width: imageAsset.width,
-        height: imageAsset.height,
-        type: imageAsset.type,
-        uriType: typeof imageAsset.uri,
-        typeType: typeof imageAsset.type
-      });
-
-      // Verificar se o asset e valido
+      // Verificar se o asset é válido
       if (!imageAsset || !imageAsset.uri) {
         const errorMsg = 'Asset de imagem invalido ou URI ausente';
         console.error('DEBUG: Asset invalido:', errorMsg);
@@ -90,7 +80,7 @@ export const useImageUploadDebug = (): UseImageUploadReturn => {
         return false;
       }
 
-      // Verificar tamanho do arquivo
+      // Verificar tamanho do arquivo (se disponível)
       if (imageAsset.fileSize && imageAsset.fileSize > UPLOAD_CONFIG.maxFileSize) {
         const maxSizeMB = Math.round(UPLOAD_CONFIG.maxFileSize / (1024 * 1024));
         const fileSizeMB = Math.round(imageAsset.fileSize / (1024 * 1024));
@@ -100,141 +90,15 @@ export const useImageUploadDebug = (): UseImageUploadReturn => {
         return false;
       }
 
-      console.log('DEBUG: Configuracao de upload:', UPLOAD_CONFIG);
-
-      // NOVA ESTRATÉGIA: Sempre aceitar imagens do ImagePicker
-      // O ImagePicker já filtra apenas imagens, então podemos confiar nele
-      console.log('DEBUG: Aplicando validacao permissiva para ImagePicker...');
+      // VALIDAÇÃO ULTRA PERMISSIVA: Se veio do ImagePicker, é válido!
+      console.log('DEBUG: ✅ VALIDACAO ULTRA PERMISSIVA ATIVADA');
+      console.log('DEBUG: ✅ Imagem do ImagePicker sempre aceita');
+      console.log('DEBUG: ✅ URI da imagem:', imageAsset.uri);
+      console.log('DEBUG: ✅ Tipo original (se disponível):', imageAsset.type);
+      console.log('DEBUG: === VALIDACAO CONCLUIDA COM SUCESSO TOTAL ===');
       
-      // Se veio do ImagePicker, é uma imagem válida
-      const isFromImagePicker = true; // Já que estamos usando ImagePicker
+      return true; // SEMPRE ACEITAR!
       
-      if (isFromImagePicker) {
-        console.log('DEBUG: Imagem veio do ImagePicker - assumindo tipo valido');
-        
-        // Determinar tipo MIME baseado na URI ou usar JPEG como fallback
-        let detectedMimeType = 'image/jpeg'; // Fallback seguro
-        
-        if (imageAsset.type && 
-            typeof imageAsset.type === 'string' && 
-            imageAsset.type.startsWith('image/') &&
-            UPLOAD_CONFIG.allowedTypes.includes(imageAsset.type)) {
-          detectedMimeType = imageAsset.type;
-          console.log('DEBUG: Usando asset.type valido:', detectedMimeType);
-        } else {
-          // Tentar detectar pela URI
-          const uriType = getImageTypeFromUri(imageAsset.uri);
-          if (UPLOAD_CONFIG.allowedTypes.includes(uriType)) {
-            detectedMimeType = uriType;
-            console.log('DEBUG: Usando tipo detectado pela URI:', detectedMimeType);
-          } else {
-            console.log('DEBUG: Usando fallback JPEG');
-          }
-        }
-        
-        console.log('DEBUG: Tipo MIME final aceito:', detectedMimeType);
-        console.log('DEBUG: === VALIDACAO CONCLUIDA COM SUCESSO (PERMISSIVA) ===');
-        return true;
-      }
-
-      // Código de validação original como fallback (nunca deve chegar aqui)
-      let detectedMimeType: string;
-      let validationSource: string;
-
-      console.log('DEBUG: Verificando asset.type...');
-      console.log('DEBUG: asset.type valor:', imageAsset.type);
-      console.log('DEBUG: asset.type e string?', typeof imageAsset.type === 'string');
-      console.log('DEBUG: asset.type e truthy?', !!imageAsset.type);
-      
-      if (imageAsset.type && typeof imageAsset.type === 'string' && imageAsset.type.startsWith('image/')) {
-        detectedMimeType = imageAsset.type;
-        validationSource = 'asset.type';
-        console.log('DEBUG: Usando asset.type:', detectedMimeType);
-      } else {
-        console.log('DEBUG: asset.type nao e valido, usando deteccao por URI');
-        console.log('DEBUG: Motivo:', {
-          hasType: !!imageAsset.type,
-          isString: typeof imageAsset.type === 'string',
-          startsWithImage: imageAsset.type && typeof imageAsset.type === 'string' ? imageAsset.type.startsWith('image/') : false
-        });
-        
-        detectedMimeType = getImageTypeFromUri(imageAsset.uri);
-        validationSource = 'URI extension';
-        console.log('DEBUG: Usando deteccao por URI:', detectedMimeType);
-      }
-
-      console.log('DEBUG: Tipos permitidos:', UPLOAD_CONFIG.allowedTypes);
-      console.log('DEBUG: Fonte da validacao:', validationSource);
-      console.log('DEBUG: Tipo MIME detectado:', detectedMimeType);
-      
-      let isValidType = UPLOAD_CONFIG.allowedTypes.includes(detectedMimeType);
-      console.log('DEBUG: Validacao inicial:', isValidType);
-      
-      if (!isValidType) {
-        console.log('DEBUG: Validacao inicial falhou, tentando estrategias alternativas...');
-        
-        const specialUriPatterns = [
-          'ImagePicker',
-          'expo',
-          'content://',
-          'ph://',
-          '/DCIM/',
-          '/Camera/',
-          'media/external'
-        ];
-        
-        console.log('DEBUG: Verificando padroes de URI especiais:', specialUriPatterns);
-        
-        const isSpecialUri = specialUriPatterns.some(pattern => {
-          const matches = imageAsset.uri.includes(pattern);
-          console.log(`DEBUG: Padrao "${pattern}": ${matches ? 'ENCONTRADO' : 'nao encontrado'}`);
-          return matches;
-        });
-        
-        if (isSpecialUri) {
-          console.log('DEBUG: URI especial detectada, assumindo tipo valido');
-          isValidType = true;
-        }
-        
-        if (!isValidType && imageAsset.type && validationSource !== 'asset.type') {
-          console.log('DEBUG: Tentando com asset.type como fallback:', imageAsset.type);
-          const assetTypeValid = UPLOAD_CONFIG.allowedTypes.includes(imageAsset.type);
-          console.log('DEBUG: asset.type e valido?', assetTypeValid);
-          
-          if (assetTypeValid) {
-            detectedMimeType = imageAsset.type;
-            isValidType = true;
-            console.log('DEBUG: Validacao bem-sucedida com asset.type');
-          }
-        }
-        
-        if (!isValidType && !imageAsset.uri.includes('.')) {
-          console.log('DEBUG: URI sem extensao detectada, assumindo JPEG');
-          detectedMimeType = 'image/jpeg';
-          isValidType = true;
-        }
-      }
-      
-      console.log('DEBUG: Resultado final da validacao:', isValidType);
-      console.log('DEBUG: Tipo MIME final:', detectedMimeType);
-      
-      if (!isValidType) {
-        const errorMsg = 'Tipo de arquivo nao suportado. Use JPEG, PNG ou WebP.';
-        console.error('DEBUG: Tipo nao permitido apos todas as tentativas:', { 
-          detectedMimeType, 
-          assetType: imageAsset.type,
-          uri: imageAsset.uri,
-          allowedTypes: UPLOAD_CONFIG.allowedTypes
-        });
-        console.error('DEBUG: ERRO FINAL:', errorMsg);
-        setError(errorMsg);
-        return false;
-      }
-
-      console.log('DEBUG: Imagem validada com sucesso');
-      console.log('DEBUG: Tipo final aceito:', detectedMimeType);
-      console.log('DEBUG: === VALIDACAO CONCLUIDA COM SUCESSO ===');
-      return true;
     } catch (error) {
       console.error('DEBUG: Erro na validacao da imagem:', error);
       console.error('DEBUG: Stack trace:', error instanceof Error ? error.stack : 'N/A');

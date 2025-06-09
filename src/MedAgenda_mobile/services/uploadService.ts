@@ -153,35 +153,33 @@ export class UploadService {
   }
 
   /**
-   * Validar imagem antes do upload
+   * Validar imagem antes do upload (VALIDAÇÃO ULTRA PERMISSIVA)
    */
   static validateImage(asset: ImagePicker.ImagePickerAsset): { valid: boolean; error?: string } {
-    // Verificar tamanho
+    console.log('🔍 [UploadService] === VALIDAÇÃO ULTRA PERMISSIVA ===');
+    console.log('🔍 [UploadService] Asset recebido:', {
+      uri: asset.uri,
+      type: asset.type,
+      fileSize: asset.fileSize,
+      width: asset.width,
+      height: asset.height
+    });
+
+    // Verificar tamanho (única validação mantida)
     if (asset.fileSize && asset.fileSize > UPLOAD_CONFIG.maxFileSize) {
+      const errorMsg = `Arquivo muito grande. Máximo: ${UPLOAD_CONFIG.maxFileSize / 1024 / 1024}MB`;
+      console.error('❌ [UploadService] Arquivo muito grande:', errorMsg);
       return {
         valid: false,
-        error: `Arquivo muito grande. Máximo: ${UPLOAD_CONFIG.maxFileSize / 1024 / 1024}MB`,
+        error: errorMsg,
       };
     }
 
-    // Verificar tipo
-    if (asset.type && !UPLOAD_CONFIG.allowedTypes.includes(asset.type)) {
-      return {
-        valid: false,
-        error: 'Tipo de arquivo não suportado. Use JPEG, PNG ou WebP.',
-      };
-    }
-
-    // Verificar dimensões
-    if (asset.width && asset.height) {
-      const { maxDimensions } = UPLOAD_CONFIG;
-      if (asset.width > maxDimensions.width || asset.height > maxDimensions.height) {
-        return {
-          valid: false,
-          error: `Imagem muito grande. Máximo: ${maxDimensions.width}x${maxDimensions.height}px`,
-        };
-      }
-    }
+    // VALIDAÇÃO ULTRA PERMISSIVA: Sempre aceitar imagens do ImagePicker
+    console.log('✅ [UploadService] VALIDAÇÃO ULTRA PERMISSIVA ATIVADA');
+    console.log('✅ [UploadService] Imagem do ImagePicker sempre aceita');
+    console.log('✅ [UploadService] Tipo original ignorado:', asset.type);
+    console.log('🔍 [UploadService] === VALIDAÇÃO CONCLUÍDA COM SUCESSO ===');
 
     return { valid: true };
   }
