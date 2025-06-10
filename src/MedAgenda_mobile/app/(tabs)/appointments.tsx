@@ -16,6 +16,7 @@ import { appointments } from '../../services/api';
 import { Appointment, AppointmentStatus } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { COLORS } from '../../constants/theme';
+import DoctorImage from '../../components/DoctorImage';
 
 export default function AppointmentsScreen() {
   const { user } = useAuth();
@@ -193,59 +194,70 @@ export default function AppointmentsScreen() {
             </Text>
           </View>
         ) : (
-          filteredAppointments.map((appointment) => (
-            <Card key={appointment.id} style={styles.appointmentCard}>
-              <Card.Content>
-                <View style={styles.appointmentHeader}>
-                  <Text style={styles.doctorName}>
-                    {appointment.doctor?.name || 'Médico não informado'}
-                  </Text>
-                  <Chip
-                    style={[styles.statusChip, { backgroundColor: getStatusColor(appointment.status) }]}
-                    textStyle={styles.statusChipText}
-                  >
-                    {getStatusLabel(appointment.status)}
-                  </Chip>
-                </View>
-                
-                <Text style={styles.specialty}>
-                  {appointment.doctor?.specialty || 'Especialidade não informada'}
-                </Text>
-                
-                <View style={styles.appointmentDetails}>
-                  <Text style={styles.dateTime}>
-                    📅 {appointment.date} às {appointment.time}
-                  </Text>
-                  {appointment.doctor?.address && (
-                    <Text style={styles.location}>
-                      📍 {appointment.doctor.address.line1}
-                    </Text>
-                  )}
-                  {appointment.amount && (
-                    <Text style={styles.amount}>
-                      💰 R$ {appointment.amount.toFixed(2)}
-                    </Text>
-                  )}
-                </View>
-
-                {appointment.status === 'scheduled' && (
-                  <View style={styles.actionsContainer}>
-                    <Button
-                      mode="outlined"
-                      onPress={() => {
-                        setAppointmentToCancel(appointment.id);
-                        setCancelDialogVisible(true);
-                      }}
-                      style={styles.cancelButton}
-                      textColor={COLORS.error}
+          filteredAppointments.map((appointment, index) => {
+            return (
+              <Card key={appointment.id} style={styles.appointmentCard}>
+                <Card.Content>
+                  <View style={styles.appointmentHeader}>
+                    <View style={styles.doctorSection}>
+                      <DoctorImage
+                        imageUrl={appointment.doctor?.image}
+                        doctorName={appointment.doctor?.name}
+                        size={50}
+                        index={index}
+                      />
+                      <View style={styles.doctorInfo}>
+                        <Text style={styles.doctorName}>
+                          Dr. {appointment.doctor?.name || 'Médico não informado'}
+                        </Text>
+                        <Text style={styles.specialty}>
+                          {appointment.doctor?.specialty || 'Especialidade não informada'}
+                        </Text>
+                      </View>
+                    </View>
+                    <Chip
+                      style={[styles.statusChip, { backgroundColor: getStatusColor(appointment.status) }]}
+                      textStyle={styles.statusChipText}
                     >
-                      Cancelar
-                    </Button>
+                      {getStatusLabel(appointment.status)}
+                    </Chip>
                   </View>
-                )}
-              </Card.Content>
-            </Card>
-          ))
+                  
+                  <View style={styles.appointmentDetails}>
+                    <Text style={styles.dateTime}>
+                      📅 {appointment.date} às {appointment.time}
+                    </Text>
+                    {appointment.doctor?.address && (
+                      <Text style={styles.location}>
+                        📍 {appointment.doctor.address.line1}
+                      </Text>
+                    )}
+                    {appointment.amount && (
+                      <Text style={styles.amount}>
+                        💰 R$ {appointment.amount.toFixed(2)}
+                      </Text>
+                    )}
+                  </View>
+
+                  {appointment.status === 'scheduled' && (
+                    <View style={styles.actionsContainer}>
+                      <Button
+                        mode="outlined"
+                        onPress={() => {
+                          setAppointmentToCancel(appointment.id);
+                          setCancelDialogVisible(true);
+                        }}
+                        style={styles.cancelButton}
+                        textColor={COLORS.error}
+                      >
+                        Cancelar
+                      </Button>
+                    </View>
+                  )}
+                </Card.Content>
+              </Card>
+            );
+          })
         )}
       </ScrollView>
 
@@ -332,14 +344,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 8,
+    marginBottom: 12,
   },
-  doctorName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: COLORS.textPrimary,
+  doctorSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
     flex: 1,
     marginRight: 8,
+  },
+  doctorInfo: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  doctorName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: COLORS.textPrimary,
+    marginBottom: 2,
   },
   statusChip: {
     height: 28,

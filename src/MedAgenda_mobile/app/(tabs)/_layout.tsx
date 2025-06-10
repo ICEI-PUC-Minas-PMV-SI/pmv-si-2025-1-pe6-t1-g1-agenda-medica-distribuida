@@ -80,33 +80,28 @@ export default function TabLayout() {
       }
     ];
 
-    // VERIFICAÇÃO ESPECÍFICA PARA ADMIN
-    const userEmail = user?.email?.toLowerCase()?.trim() || '';
+    // VERIFICAÇÃO SIMPLES PARA ADMIN
+    // Apenas usuários com isAdmin === true verão o tab de administração
+    const isAdmin = user?.isAdmin === true;
     
-    // Email específico do administrador
-    const adminEmail = 'medagendaapi@gmail.com';
-    
-    // Verificar se é o usuário admin específico E tem flag isAdmin
-    const isSpecificAdmin = userEmail === adminEmail && user?.isAdmin === true;
-    
-    console.log('🔒 VERIFICAÇÃO DE ADMIN ESPECÍFICO:', {
-      userEmail: userEmail,
-      adminEmail: adminEmail,
-      isEmailMatch: userEmail === adminEmail,
+    console.log('🔒 VERIFICAÇÃO DE ADMIN:', {
+      userId: user?.id,
+      userName: user?.name,
+      userEmail: user?.email,
       hasAdminFlag: user?.isAdmin === true,
-      isSpecificAdmin: isSpecificAdmin
+      isAdmin: isAdmin
     });
 
-    // Adicionar tab admin apenas para o usuário específico
-    if (isSpecificAdmin) {
-      console.log('✅ ADMIN TAB SERÁ ADICIONADA para usuário admin:', user?.name);
+    // Adicionar tab admin apenas para usuários administradores
+    if (isAdmin) {
+      console.log('✅ TAB ADMIN será adicionada para usuário admin:', user?.name);
       screens.push({
         name: "admin-doctors",
         title: 'Admin Médicos',
         icon: 'account-cog'
       });
     } else {
-      console.log('❌ ADMIN TAB NÃO SERÁ ADICIONADA para usuário:', user?.name, 'email:', userEmail);
+      console.log('❌ TAB ADMIN não será adicionada para usuário comum:', user?.name);
     }
 
     // Adicionar tab de perfil por último

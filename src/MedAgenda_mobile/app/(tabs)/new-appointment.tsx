@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ScrollView, View, Alert } from 'react-native';
+import { ScrollView, View, Alert, StyleSheet } from 'react-native';
 import { Button, Card, HelperText, TextInput, Text, ActivityIndicator, Snackbar } from 'react-native-paper';
 import { COLORS } from '../../constants/theme';
 import { router } from 'expo-router';
@@ -7,6 +7,7 @@ import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/dat
 import { doctors, appointments } from '../../services/api';
 import { AppointmentType, Doctor } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import DoctorImage from '../../components/DoctorImage';
 
 interface FormErrors {
   specialty?: string;
@@ -259,20 +260,75 @@ export default function NewAppointmentScreen() {
                 Nenhum médico encontrado para esta especialidade
               </Text>
             )}
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-              {filteredDoctors.map((item) => (
-                <Button
-                  key={item.id}
-                  mode={selectedDoctor?.id === item.id ? 'contained' : 'outlined'}
-                  onPress={() => {
-                    setSelectedDoctor(item);
-                    setErrors(prev => ({ ...prev, doctor: undefined }));
-                  }}
-                  style={{ marginBottom: 8 }}
-                >
-                  {item.name}
-                </Button>
-              ))}
+            <View style={{ gap: 12 }}>
+              {filteredDoctors.map((item, index) => {
+                const isSelected = selectedDoctor?.id === item.id;
+                
+                return (
+                  <View
+                    key={item.id}
+                    style={[
+                      styles.doctorCard,
+                      isSelected && styles.doctorCardSelected
+                    ]}
+                  >
+                    <Button
+                      mode={isSelected ? 'contained' : 'outlined'}
+                      onPress={() => {
+                        setSelectedDoctor(item);
+                        setErrors(prev => ({ ...prev, doctor: undefined }));
+                      }}
+                      style={[
+                        styles.doctorButton,
+                        isSelected && styles.doctorButtonSelected
+                      ]}
+                      contentStyle={styles.doctorButtonContent}
+                    >
+                      <View style={styles.doctorInfo}>
+                        <DoctorImage
+                          imageUrl={item.image}
+                          doctorName={item.name}
+                          size={60}
+                          index={index}
+                        />
+                        <View style={styles.doctorTextInfo}>
+                          <Text 
+                            variant="titleMedium" 
+                            style={[
+                              styles.doctorName,
+                              isSelected && styles.doctorNameSelected
+                            ]}
+                          >
+                            Dr. {item.name}
+                          </Text>
+                          {item.crm && (
+                            <Text 
+                              variant="bodySmall" 
+                              style={[
+                                styles.doctorCrm,
+                                isSelected && styles.doctorCrmSelected
+                              ]}
+                            >
+                              CRM: {item.crm}
+                            </Text>
+                          )}
+                          {item.experience && (
+                            <Text 
+                              variant="bodySmall" 
+                              style={[
+                                styles.doctorExperience,
+                                isSelected && styles.doctorExperienceSelected
+                              ]}
+                            >
+                              {item.experience}
+                            </Text>
+                          )}
+                        </View>
+                      </View>
+                    </Button>
+                  </View>
+                );
+              })}
             </View>
           </Card.Content>
         </Card>
@@ -362,4 +418,64 @@ export default function NewAppointmentScreen() {
       </Snackbar>
     </ScrollView>
   );
-} 
+}
+
+const styles = StyleSheet.create({
+  doctorCard: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    overflow: 'hidden',
+  },
+  doctorCardSelected: {
+    borderColor: COLORS.primary,
+    borderWidth: 2,
+  },
+  doctorButton: {
+    borderRadius: 12,
+    marginBottom: 0,
+  },
+  doctorButtonSelected: {
+    backgroundColor: COLORS.primary,
+  },
+  doctorButtonContent: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    justifyContent: 'flex-start',
+  },
+  doctorInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+  },
+  doctorTextInfo: {
+    flex: 1,
+    alignItems: 'flex-start',
+    marginLeft: 12,
+  },
+  doctorName: {
+    color: COLORS.textPrimary,
+    fontWeight: 'bold',
+    marginBottom: 2,
+  },
+  doctorNameSelected: {
+    color: COLORS.white,
+  },
+  doctorCrm: {
+    color: COLORS.textSecondary,
+    fontSize: 12,
+    marginBottom: 2,
+  },
+  doctorCrmSelected: {
+    color: COLORS.white,
+    opacity: 0.9,
+  },
+  doctorExperience: {
+    color: COLORS.textSecondary,
+    fontSize: 12,
+  },
+  doctorExperienceSelected: {
+    color: COLORS.white,
+    opacity: 0.9,
+  },
+}); 

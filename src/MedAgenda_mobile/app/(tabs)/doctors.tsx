@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import { doctors } from '../../services/api';
 import { Doctor } from '../../services/api';
 import { COLORS } from '../../constants/theme';
+import DoctorImage from '../../components/DoctorImage';
 
 export default function DoctorsScreen() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -122,42 +123,62 @@ export default function DoctorsScreen() {
               </Text>
             </View>
           ) : (
-            filteredDoctors.map((doctor) => (
-              <Card
-                key={doctor.id}
-                style={styles.card}
-                onPress={() => {
-                  router.push({
-                    pathname: '/(tabs)/new-appointment',
-                    params: { doctorId: doctor.id }
-                  });
-                }}
-              >
-                <Card.Content>
-                  <Text variant="titleMedium" style={styles.doctorName}>
-                    {doctor.name}
-                  </Text>
-                  <Text variant="bodyMedium" style={styles.specialty}>
-                    {doctor.specialty || 'Especialidade não informada'}
-                  </Text>
-                  {doctor.crm && (
-                    <Text variant="bodySmall" style={styles.info}>
-                      CRM: {doctor.crm}
-                    </Text>
-                  )}
-                  {doctor.experience && (
-                    <Text variant="bodySmall" style={styles.info}>
-                      Experiência: {doctor.experience}
-                    </Text>
-                  )}
-                  {doctor.fees && (
-                    <Text variant="bodySmall" style={styles.fees}>
-                      Consulta: R$ {doctor.fees.toFixed(2)}
-                    </Text>
-                  )}
-                </Card.Content>
-              </Card>
-            ))
+            filteredDoctors.map((doctor, index) => {
+              return (
+                <Card
+                  key={doctor.id}
+                  style={styles.card}
+                  onPress={() => {
+                    router.push({
+                      pathname: '/(tabs)/new-appointment',
+                      params: { doctorId: doctor.id }
+                    });
+                  }}
+                >
+                  <Card.Content>
+                    <View style={styles.doctorHeader}>
+                      <DoctorImage
+                        imageUrl={doctor.image}
+                        doctorName={doctor.name}
+                        size={60}
+                        index={index}
+                      />
+                      <View style={styles.doctorInfo}>
+                        <Text variant="titleMedium" style={styles.doctorName}>
+                          Dr. {doctor.name}
+                        </Text>
+                        <Text variant="bodyMedium" style={styles.specialty}>
+                          {doctor.specialty || 'Especialidade não informada'}
+                        </Text>
+                        {doctor.crm && (
+                          <Text variant="bodySmall" style={styles.info}>
+                            CRM: {doctor.crm}
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+                    
+                    <View style={styles.doctorDetails}>
+                      {doctor.experience && (
+                        <Text variant="bodySmall" style={styles.info}>
+                          Experiência: {doctor.experience}
+                        </Text>
+                      )}
+                      {doctor.about && (
+                        <Text variant="bodySmall" style={styles.about} numberOfLines={2}>
+                          {doctor.about}
+                        </Text>
+                      )}
+                      {doctor.fees && (
+                        <Text variant="bodySmall" style={styles.fees}>
+                          Consulta: R$ {doctor.fees.toFixed(2)}
+                        </Text>
+                      )}
+                    </View>
+                  </Card.Content>
+                </Card>
+              );
+            })
           )}
         </View>
       </ScrollView>
@@ -197,10 +218,27 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: 16,
     backgroundColor: COLORS.surface,
+    elevation: 2,
+  },
+  doctorHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  doctorInfo: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  doctorDetails: {
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
   },
   doctorName: {
     color: COLORS.textPrimary,
     fontWeight: 'bold',
+    marginBottom: 4,
   },
   specialty: {
     color: COLORS.primary,
@@ -209,6 +247,11 @@ const styles = StyleSheet.create({
   info: {
     color: COLORS.textSecondary,
     marginBottom: 2,
+  },
+  about: {
+    color: COLORS.textSecondary,
+    marginBottom: 4,
+    fontStyle: 'italic',
   },
   fees: {
     color: COLORS.success,
