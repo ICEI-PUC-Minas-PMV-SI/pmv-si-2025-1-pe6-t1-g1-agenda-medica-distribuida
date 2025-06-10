@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert, Image } from 'react-native';
 import { 
   Card, 
   Text, 
@@ -115,7 +115,18 @@ export default function AdminDoctorsScreen() {
       setLoading(true);
       setError('');
       
+      console.log('🔄 [Admin] Carregando médicos...');
       const data = await doctors.getAll();
+      
+      console.log('📋 [Admin] Médicos recebidos:', data);
+      console.log('🖼️ [Admin] Debug de imagens:');
+      data.forEach((doctor, index) => {
+        console.log(`${index + 1}. ${doctor.name}: ${doctor.image ? '✅ Tem imagem' : '❌ Sem imagem'}`);
+        if (doctor.image) {
+          console.log(`   🔗 URL: ${doctor.image}`);
+        }
+      });
+      
       setDoctorsList(data);
       
     } catch (err: any) {
@@ -306,10 +317,40 @@ export default function AdminDoctorsScreen() {
         </View>
 
         <View style={styles.doctorsList}>
-          {doctorsList.map((doctor) => (
-            <Card key={doctor.id} style={styles.card}>
-              <Card.Content>
+          {doctorsList.map((doctor) => {
+            console.log(`🔍 [Render] Renderizando médico: ${doctor.name}`, {
+              hasImage: !!doctor.image,
+              imageUrl: doctor.image,
+              imageLength: doctor.image?.length || 0
+            });
+            
+            return (
+              <Card key={doctor.id} style={styles.card}>
+                <Card.Content>
                 <View style={styles.cardHeader}>
+                  {/* Imagem do médico */}
+                  <View style={styles.doctorImageContainer}>
+                    {doctor.image ? (
+                      <Image 
+                        source={{ uri: doctor.image }} 
+                        style={styles.doctorImage}
+                        onLoad={() => console.log('✅ Imagem carregada com sucesso:', doctor.name, doctor.image)}
+                        onError={(error) => {
+                          console.log('❌ Erro ao carregar imagem do médico:', doctor.name);
+                          console.log('🔗 URL da imagem:', doctor.image);
+                          console.log('📋 Erro detalhado:', error);
+                        }}
+                        onLoadStart={() => console.log('🔄 Iniciando carregamento da imagem:', doctor.name)}
+                        onLoadEnd={() => console.log('🏁 Carregamento finalizado:', doctor.name)}
+                      />
+                    ) : (
+                      <View style={styles.placeholderImage}>
+                        <Text style={styles.placeholderText}>👨‍⚕️</Text>
+                      </View>
+                    )}
+                  </View>
+                  
+                  {/* Informações do médico */}
                   <View style={styles.doctorInfo}>
                     <Text variant="titleMedium" style={styles.doctorName}>
                       {doctor.name}
@@ -318,6 +359,8 @@ export default function AdminDoctorsScreen() {
                       {doctor.specialty || 'Especialidade não informada'}
                     </Chip>
                   </View>
+                  
+                  {/* Ações */}
                   <View style={styles.cardActions}>
                     <IconButton
                       icon="pencil"
@@ -350,7 +393,8 @@ export default function AdminDoctorsScreen() {
                 )}
               </Card.Content>
             </Card>
-          ))}
+            );
+          })}
         </View>
       </ScrollView>
 
@@ -530,9 +574,32 @@ const styles = StyleSheet.create({
   },
   cardHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     marginBottom: 8,
+  },
+  doctorImageContainer: {
+    marginRight: 12,
+    alignItems: 'center',
+  },
+  doctorImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+  },
+  placeholderImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: COLORS.background,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  placeholderText: {
+    fontSize: 24,
   },
   doctorInfo: {
     flex: 1,
@@ -547,6 +614,7 @@ const styles = StyleSheet.create({
   },
   cardActions: {
     flexDirection: 'row',
+    marginLeft: 'auto',
   },
   info: {
     color: COLORS.textSecondary,

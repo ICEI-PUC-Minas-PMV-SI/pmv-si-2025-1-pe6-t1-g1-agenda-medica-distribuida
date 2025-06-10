@@ -167,22 +167,42 @@ const transformUser = (backendUser: BackendUser): User => ({
 });
 
 // Transform backend doctor to frontend doctor
-const transformDoctor = (backendDoctor: BackendDoctor): Doctor => ({
-  id: backendDoctor._id,
-  name: backendDoctor.name,
-  email: backendDoctor.email,
-  image: backendDoctor.image,
-  specialty: backendDoctor.speciality, // Map speciality to specialty
-  degree: backendDoctor.degree,
-  experience: backendDoctor.experience,
-  about: backendDoctor.about,
-  fees: backendDoctor.fees,
-  address: backendDoctor.address,
-  available: backendDoctor.available,
-  crm: backendDoctor.crm,
-  education: [], // Backend doesn't have education array, so provide empty array
-  slotsBooked: backendDoctor.slots_booked || {},
-});
+const transformDoctor = (backendDoctor: any): Doctor => {
+  // Debug do médico antes da transformação
+  console.log('🔧 [Transform] Transformando médico:', {
+    _id: backendDoctor._id,
+    name: backendDoctor.name,
+    image: backendDoctor.image,
+    doctorImage: backendDoctor.doctorImage,
+    hasImage: !!backendDoctor.image,
+    hasDoctorImage: !!backendDoctor.doctorImage
+  });
+
+  // Priorizar doctorImage se existir, senão usar image
+  const imageUrl = backendDoctor.doctorImage || backendDoctor.image || '';
+  
+  console.log('🖼️ [Transform] URL da imagem final:', imageUrl);
+
+  const transformedDoctor: Doctor = {
+    id: backendDoctor._id,
+    name: backendDoctor.name,
+    email: backendDoctor.email,
+    image: imageUrl,
+    specialty: backendDoctor.speciality, // Map speciality to specialty
+    degree: backendDoctor.degree,
+    experience: backendDoctor.experience,
+    about: backendDoctor.about,
+    fees: backendDoctor.fees,
+    address: backendDoctor.address,
+    available: backendDoctor.available,
+    crm: backendDoctor.crm,
+    education: [], // Backend doesn't have education array, so provide empty array
+    slotsBooked: backendDoctor.slots_booked || {},
+  };
+
+  console.log('✅ [Transform] Médico transformado:', transformedDoctor);
+  return transformedDoctor;
+};
 
 // Transform backend appointment to frontend appointment
 const transformAppointment = (backendAppointment: BackendAppointment): Appointment => {
@@ -416,10 +436,31 @@ export const auth = {
 export const doctors = {
   async getAll(): Promise<Doctor[]> {
     try {
+      console.log('🔍 [API] Buscando todos os médicos...');
       const response = await api.get('/doctors');
       const doctorsData = response.data.doctors || response.data;
-      return doctorsData.map(transformDoctor);
+      
+      console.log('📋 [API] Dados brutos do backend:', doctorsData);
+      console.log(`📊 [API] Total de médicos encontrados: ${doctorsData.length}`);
+      
+      // Debug específico para imagens
+      doctorsData.forEach((doctor: any, index: number) => {
+        console.log(`👨‍⚕️ [API] Médico ${index + 1}:`, {
+          name: doctor.name,
+          image: doctor.image,
+          doctorImage: doctor.doctorImage,
+          hasImage: !!doctor.image,
+          hasDoctorImage: !!doctor.doctorImage
+        });
+      });
+      
+      const transformedDoctors = doctorsData.map(transformDoctor);
+      
+      console.log('🎯 [API] Médicos transformados:', transformedDoctors);
+      
+      return transformedDoctors;
     } catch (error) {
+      console.error('❌ [API] Erro ao buscar médicos:', error);
       throw handleApiError(error as AxiosError<ErrorResponse>);
     }
   },
