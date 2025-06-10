@@ -480,10 +480,48 @@ export const doctors = {
     about: string;
   }): Promise<Doctor> {
     try {
-      const response = await api.post('/doctors', doctorData);
+      console.log('🚀 [API] Iniciando criação de médico:', doctorData);
+      
+      // Mapear campos conforme esperado pelo backend
+      const backendData = {
+        name: doctorData.name,
+        speciality: doctorData.speciality,
+        crm: doctorData.crm,
+        pricePerAppointment: doctorData.pricePerAppointment,
+        doctorImage: doctorData.doctorImage || '',
+        about: doctorData.about,
+        // Campos opcionais com valores padrão
+        email: `${doctorData.crm}@medagenda.com`,
+        password: 'temp123',
+        degree: 'Medicina',
+        experience: '5 anos',
+        address: {
+          line1: 'Endereço não informado',
+          line2: ''
+        },
+        available: true,
+        date: Date.now(),
+        slots_booked: {}
+      };
+
+      console.log('📤 [API] Dados a serem enviados:', backendData);
+      
+      const response = await api.post('/doctors', backendData);
+      console.log('✅ [API] Resposta do backend:', response.data);
+      
       const newDoctor = response.data.result || response.data.doctor || response.data;
-      return transformDoctor(newDoctor);
-    } catch (error) {
+      const transformedDoctor = transformDoctor(newDoctor);
+      
+      console.log('🎯 [API] Médico transformado:', transformedDoctor);
+      return transformedDoctor;
+    } catch (error: any) {
+      console.error('❌ [API] Erro ao criar médico:', error);
+      console.error('📋 [API] Detalhes do erro:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        config: error.config
+      });
       throw handleApiError(error as AxiosError<ErrorResponse>);
     }
   },
@@ -496,7 +534,16 @@ export const doctors = {
     about?: string;
   }): Promise<Doctor> {
     try {
-      const response = await api.patch(`/doctors/${crm}`, doctorData);
+      // Mapear campos para o formato que o backend espera
+      const backendData: any = {};
+      
+      if (doctorData.name !== undefined) backendData.name = doctorData.name;
+      if (doctorData.speciality !== undefined) backendData.speciality = doctorData.speciality;
+      if (doctorData.pricePerAppointment !== undefined) backendData.pricePerAppointment = doctorData.pricePerAppointment;
+      if (doctorData.doctorImage !== undefined) backendData.doctorImage = doctorData.doctorImage;
+      if (doctorData.about !== undefined) backendData.about = doctorData.about;
+
+      const response = await api.patch(`/doctors/${crm}`, backendData);
       const updatedDoctor = response.data.doctor || response.data;
       return transformDoctor(updatedDoctor);
     } catch (error) {

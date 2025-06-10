@@ -5,7 +5,7 @@ export const UPLOAD_CONFIG = {
     cloudName: 'dmwhqs5ak', // Substituir pela sua configuração
     uploadPreset: 'medagenda_doctors', // Substituir pela sua configuração
     apiKey: '194188398449739', // Opcional, para uploads assinados
-    apiSecret: 'QLywGbHzrRSGUNx0848PnaABRgc', // API Secret para uploads assinados
+    apiSecret: 'QLywGbHzrRSGUNx0848PnaABRgc', 
   },
   
   // AWS S3 (Alternativa)
