@@ -1,17 +1,14 @@
 # Front-end Móvel
 
-[Inclua uma breve descrição do projeto e seus objetivos.]
 
 Aplicativo desenvolvido em Flutter com o objetivo de disponibilizar uma agenda médica distribuída, permitindo que pacientes e profissionais da saúde realizem agendamentos, visualizem consultas e gerenciem compromissos médicos de forma prática e segura, diretamente pelo dispositivo móvel.
 
 ## Projeto da Interface
-[Descreva o projeto da interface móvel da aplicação, incluindo o design visual, layout das páginas, interações do usuário e outros aspectos relevantes.]
 
 O aplicativo apresenta uma interface moderna, responsiva e de fácil navegação. A navegação é feita por meio de telas sequenciais e menus que facilitam o acesso às principais funcionalidades como login, cadastro, agendamento, histórico de consultas e perfil do usuário.
 
 ### Wireframes
 
-[Inclua os wireframes das páginas principais da interface, mostrando a disposição dos elementos na página.]
 Os wireframes foram projetados para garantir uma experiência intuitiva. As principais telas incluem:
 
 Tela de Login
@@ -26,7 +23,7 @@ Tela de Perfil do Usuário
 
 ### Design Visual
 
-[Descreva o estilo visual da interface, incluindo paleta de cores, tipografia, ícones e outros elementos gráficos.]
+
 O design foi baseado nos princípios do Material Design, seguindo as diretrizes visuais do Flutter.
 
 Paleta de Cores: Tons de azul, branco e cinza, representando confiança e profissionalismo na área da saúde.
@@ -36,7 +33,6 @@ Tipografia: Fonte padrão do Flutter (Roboto), garantindo legibilidade e consist
 
 ## Fluxo de Dados
 
-[Diagrama ou descrição do fluxo de dados na aplicação.]
 
 O aplicativo se comunica diretamente com uma API REST hospedada externamente.
 
@@ -51,8 +47,6 @@ Login/Cadastro ➝ API ➝ Token JWT
 Token ➝ Agendamentos, Consultas, Perfil ➝ Respostas da API ➝ Renderização no App
 
 ## Tecnologias Utilizadas
-
-[Lista das tecnologias principais que serão utilizadas no projeto.]
 
 Linguagem: React-Native
 
@@ -70,9 +64,8 @@ Autenticação: JWT
 
 Controle de Versionamento: Git e GitHub
 
-## Considerações de Segurança
 
-[Discuta as considerações de segurança relevantes para a aplicação distribuída, como autenticação, autorização, proteção contra ataques, etc.]
+## Considerações de Segurança
 
 Autenticação e Autorização: Implementada via JWT. As requisições autenticadas incluem o token no cabeçalho Authorization.
 
@@ -86,7 +79,6 @@ Gestão de Sessão: O app realiza verificação da validade do token, garantindo
 
 ## Implantação
 
-[Instruções para implantar a aplicação distribuída em um ambiente de produção.]
 
 1. Requisitos de Hardware e Software
    
@@ -174,17 +166,7 @@ Performance: Avaliar tempo de resposta e estabilidade
 
 Cross-Plataforma: Verificar compatibilidade em diferentes versões de Android e iOS
 
-
-
-1. Defina os requisitos de hardware e software necessários para implantar a aplicação em um ambiente de produção.
-2. Escolha uma plataforma de hospedagem adequada, como um provedor de nuvem ou um servidor dedicado.
-3. Configure o ambiente de implantação, incluindo a instalação de dependências e configuração de variáveis de ambiente.
-4. Faça o deploy da aplicação no ambiente escolhido, seguindo as instruções específicas da plataforma de hospedagem.
-5. Realize testes para garantir que a aplicação esteja funcionando corretamente no ambiente de produção.
-
 ## Testes
-
-[Descreva a estratégia de teste, incluindo os tipos de teste a serem realizados (unitários, integração, carga, etc.) e as ferramentas a serem utilizadas.]
 
 Estratégia de Teste:
 
@@ -209,12 +191,6 @@ Plano de Teste:
 
 --------------------------------------------------------
    
-1. Crie casos de teste para cobrir todos os requisitos funcionais e não funcionais da aplicação.
-2. Implemente testes unitários para testar unidades individuais de código, como funções e classes.
-3. Realize testes de integração para verificar a interação correta entre os componentes da aplicação.
-4. Execute testes de carga para avaliar o desempenho da aplicação sob carga significativa.
-5. Utilize ferramentas de teste adequadas, como frameworks de teste e ferramentas de automação de teste, para agilizar o processo de teste.
-
 # Referências
 
 Inclua todas as referências (livros, artigos, sites, etc) utilizados no desenvolvimento do trabalho.
