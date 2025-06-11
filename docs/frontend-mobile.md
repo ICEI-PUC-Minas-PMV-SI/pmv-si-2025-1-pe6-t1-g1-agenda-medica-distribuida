@@ -11,35 +11,35 @@ O aplicativo apresenta uma interface moderna, responsiva e de fácil navegação
 
 Os wireframes foram projetados para garantir uma experiência intuitiva. As principais telas incluem:
 
-Tela de Login 
+* Tela de Login 
 
 ![Imagem do WhatsApp de 2025-06-10 à(s) 21 34 03_dac96d89](https://github.com/user-attachments/assets/f3ce6a7a-32d1-43ed-bb49-f01818427f1d)
 
 
-Tela de Cadastro
+* Tela de Cadastro
 
 ![Imagem do WhatsApp de 2025-06-10 à(s) 21 34 02_bccaf580](https://github.com/user-attachments/assets/04f5fed6-a143-405f-99d0-1476cbc20241)
 
 
-Tela de Agendamentos
+* Tela de Agendamentos
 
 ![Imagem do WhatsApp de 2025-06-10 à(s) 21 34 02_fbdbb591](https://github.com/user-attachments/assets/54412017-e9f7-455a-8d32-51747f966a15)
 
 
-Tela de Histórico de Consultas
+* Tela de Histórico de Consultas
 
 ![Imagem do WhatsApp de 2025-06-10 à(s) 21 34 02_33c67873](https://github.com/user-attachments/assets/e59a4110-7405-4a76-a7a2-204d2c6d4dfa)
 
 
-Tela de Perfil do Usuário
+* Tela de Perfil do Usuário
 
 ![Imagem do WhatsApp de 2025-06-10 à(s) 21 34 01_0e07e630](https://github.com/user-attachments/assets/733dd2c9-052f-41ff-85c6-70deee47994c)
 
-Tela de administração dos Médicos - Cadastro do Médico
+* Tela de administração dos Médicos - Cadastro do Médico
 
 ![Imagem do WhatsApp de 2025-06-10 à(s) 21 34 01_1af601c4](https://github.com/user-attachments/assets/a76ccf68-f6cc-4667-9094-6e2fc127d1d0)
 
-Tela de editar ou remover Medicos
+* Tela de cadastrar, editar ou remover Medicos
 
 ![Imagem do WhatsApp de 2025-06-10 à(s) 21 34 01_295cbbeb](https://github.com/user-attachments/assets/2e673ff0-bbd9-4416-bcf6-abe4d529d218)
 
@@ -234,22 +234,37 @@ Plano de Teste:
    
 # Referências
 
-Inclua todas as referências (livros, artigos, sites, etc) utilizados no desenvolvimento do trabalho.
+Expo
+EXPO. Expo Documentation. Disponível em: docs.expo.dev. Acesso em: maio/jun. 2025
 
 Flutter Docs
-
-React-Native Language
+FLUTTER. Flutter Documentation. Disponível em: docs.flutter.dev. Acesso em: maio/jun. 2025.
 
 HTTP Package Flutter
+FLUTTER. Fetch data from the internet - Flutter. Disponível em: docs.flutter.dev. Acesso em: maio/jun. 2025.
 
 JWT Decoder
+JWT.IO. JSON Web Tokens - jwt.io. Disponível em: jwt.io. Acesso em: maio/jun. 2025.
 
 Material Design Guidelines
+GOOGLE. Material Design Guidelines. Disponível em: m2.material.io. Acesso em: maio/jun. 2025.
 
 Node.js Documentation
+NODE.JS FOUNDATION. Node.js Documentation. Disponível em: nodejs.org. Acesso em: maio/jun. 2025.
 
 MongoDB Documentation
-
-Render Docs
+MONGODB INC. MongoDB Documentation. Disponível em: mongodb.com. Acesso em: maio/jun. 2025.
 
 Railway Docs
+RAILWAY. Railway Documentation. Disponível em: docs.railway.com. Acesso em: maio/jun. 2025.
+
+React-Native Language
+META PLATFORMS. React Native Documentation. Disponível em: reactnative.dev. Acesso em: maio/jun. 2025.
+
+Render Docs
+RENDER. Render Documentation. Disponível em: render.com. Acesso em: maio/jun. 2025.
+
+
+
+
+
