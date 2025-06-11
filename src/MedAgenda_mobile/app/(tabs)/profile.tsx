@@ -16,6 +16,7 @@ import { useAuth } from '../../context/AuthContext';
 import { auth, users } from '../../services/api';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { debugUserData, clearUserCache } from '../../utils/debugUser';
 
 export default function ProfileScreen() {
   const { user, signOut, updateUser } = useAuth();
@@ -371,6 +372,35 @@ export default function ProfileScreen() {
           />
         </Card.Content>
       </Card>
+
+      {/* Debug Section - APENAS PARA ADMINS */}
+      {user?.isAdmin === true && (
+        <Card style={styles.card}>
+          <Card.Title title="Debug - Admin Tab Issue" />
+          <Card.Content>
+            <Text variant="bodySmall" style={{ marginBottom: 16 }}>
+              isAdmin: {String(user?.isAdmin)} (tipo: {typeof user?.isAdmin})
+            </Text>
+            <Button
+              mode="outlined"
+              onPress={debugUserData}
+              style={{ marginBottom: 8 }}
+            >
+              Debug User Data
+            </Button>
+            <Button
+              mode="outlined"
+              onPress={async () => {
+                await clearUserCache();
+                Alert.alert('Cache limpo', 'Faça login novamente');
+              }}
+              style={{ marginBottom: 8 }}
+            >
+              Clear Cache & Re-login
+            </Button>
+          </Card.Content>
+        </Card>
+      )}
 
       {/* Ações */}
       <Card style={styles.card}>

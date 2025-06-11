@@ -1,6 +1,6 @@
 import { Tabs, useRouter, useSegments } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { COLORS } from '../../constants/theme';
 
@@ -48,80 +48,39 @@ export default function TabLayout() {
     }
   }, [loading]);
 
+  // Adicionar um delay para garantir que o contexto seja totalmente carregado
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setForceUpdate(prev => prev + 1);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [user?.isAdmin]);
+
   if (loading) {
+    console.log('🔄 TabLayout - Still loading...');
     return null;
   }
 
-  // Usar useMemo para garantir que as tabs sejam recalculadas quando o usuário mudar
-  const tabScreens = useMemo(() => {
-    console.log('🔄 Recalculando tabs para usuário:', user?.name, 'isAdmin:', user?.isAdmin);
-    
-    // TABS BASE QUE SEMPRE APARECEM
-    const screens = [
-      {
-        name: "index",
-        title: 'Início',
-        icon: 'home'
-      },
-      {
-        name: "appointments",
-        title: 'Consultas',
-        icon: 'calendar'
-      },
-      {
-        name: "doctors",
-        title: 'Médicos',
-        icon: 'doctor'
-      },
-      {
-        name: "new-appointment",
-        title: 'Nova Consulta',
-        icon: 'plus'
-      }
-    ];
+  // Debug logs simplificados
+  console.log('🔒 VERIFICAÇÃO DE ADMIN:', {
+    userName: user?.name,
+    userEmail: user?.email,
+    isAdminRaw: user?.isAdmin,
+    isAdminType: typeof user?.isAdmin,
+    isAdminStrictCheck: user?.isAdmin === true,
+  });
 
-    // VERIFICAÇÃO SIMPLES PARA ADMIN
-    // Apenas usuários com isAdmin === true verão o tab de administração
-    const isAdmin = user?.isAdmin === true;
-    
-    console.log('🔒 VERIFICAÇÃO DE ADMIN:', {
-      userId: user?.id,
-      userName: user?.name,
-      userEmail: user?.email,
-      hasAdminFlag: user?.isAdmin === true,
-      isAdmin: isAdmin
-    });
-
-    // Adicionar tab admin apenas para usuários administradores
-    if (isAdmin) {
-      console.log('✅ TAB ADMIN será adicionada para usuário admin:', user?.name);
-      screens.push({
-        name: "admin-doctors",
-        title: 'Admin Médicos',
-        icon: 'account-cog'
-      });
-    } else {
-      console.log('❌ TAB ADMIN não será adicionada para usuário comum:', user?.name);
-    }
-
-    // Adicionar tab de perfil por último
-    screens.push({
-      name: "profile",
-      title: 'Perfil',
-      icon: 'account'
-    });
-    
-    console.log('📋 Tabs finais:', screens.map(tab => tab.name));
-    
-    return screens;
-  }, [user, forceUpdate]);
-
-  console.log('🎬 Renderizando TabLayout com', tabScreens.length, 'tabs');
-  console.log('🎬 Tabs sendo renderizadas:', tabScreens.map(tab => tab.name));
+  const isAdmin = user?.isAdmin === true;
+  
+  if (isAdmin) {
+    console.log('✅ TAB ADMIN será exibida para usuário admin:', user?.name);
+  } else {
+    console.log('❌ TAB ADMIN será OCULTADA para usuário comum:', user?.name);
+  }
 
   return (
     <Tabs
-      key={`tabs-${forceUpdate}-${user?.email || 'no-user'}`}
+      key={`tabs-${forceUpdate}-${user?.id || 'no-user'}-${user?.isAdmin || 'no-admin'}`}
       screenOptions={{
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.textSecondary,
@@ -132,18 +91,77 @@ export default function TabLayout() {
         headerShown: false,
       }}
     >
-      {tabScreens.map((tab) => (
+      {/* Tabs que sempre aparecem */}
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Início',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="home" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="appointments"
+        options={{
+          title: 'Consultas',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="calendar" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="doctors"
+        options={{
+          title: 'Médicos',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="doctor" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="new-appointment"
+        options={{
+          title: 'Nova Consulta',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="plus" size={size} color={color} />
+          ),
+        }}
+      />
+      
+      {/* Tab Admin - só aparece para administradores */}
+      {user?.isAdmin === true && (
         <Tabs.Screen
-          key={tab.name}
-          name={tab.name}
+          name="admin-doctors"
           options={{
-            title: tab.title,
+            title: 'Admin Médicos',
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name={tab.icon as any} size={size} color={color} />
+              <MaterialCommunityIcons name="account-cog" size={size} color={color} />
             ),
           }}
         />
-      ))}
+      )}
+      
+      {/* Tab Admin - OCULTAR explicitamente se não for admin */}
+      {user?.isAdmin !== true && (
+        <Tabs.Screen
+          name="admin-doctors"
+          options={{
+            href: null, // Isso remove o tab da navegação
+            title: 'Admin Médicos',
+          }}
+        />
+      )}
+      
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Perfil',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="account" size={size} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 } 
