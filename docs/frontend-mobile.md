@@ -69,6 +69,188 @@ Login/Cadastro ➝ API ➝ Token JWT
 
 Token ➝ Agendamentos, Consultas, Perfil ➝ Respostas da API ➝ Renderização no App
 
+Arquitetura Geral do fluxo de dados
+
+A aplicação MedAgenda Mobile utiliza uma arquitetura baseada em React Native com Expo Router, organizando o fluxo de dados através de três camadas principais:
+
+- Camada de Apresentação (UI)
+Localização: src/MedAgenda_mobile/app/(tabs)/
+Componentes principais: profile.tsx, appointments.tsx, doctors.tsx, new-appointment.tsx
+Responsabilidade: Renderização da interface e interação com usuário
+
+- Camada de Estado Global
+Localização: src/MedAgenda_mobile/context/AuthContext.tsx
+Responsabilidade: Gerenciamento centralizado do estado de autenticação e dados do usuário
+
+- Camada de Serviços
+Localização: src/MedAgenda_mobile/services/api.ts
+Responsabilidade: Comunicação com backend, transformação de dados e cache local
+
+Fluxo Detalhado de Dados
+
+Inicialização da Aplicação
+
+  1. Carregamento do Context Provider:
+
+   // _layout.tsx
+   <AuthProvider>
+     <Stack screenOptions={{ headerShown: false }}>
+       <Stack.Screen name="(auth)" />
+       <Stack.Screen name="(tabs)" />
+     </Stack>
+   </AuthProvider>
+
+  2. Verificação de Dados Armazenados:
+  
+    O AuthContext verifica automaticamente dados no AsyncStorage
+    Recupera token de autenticação e dados do usuário
+    Sanitiza dados críticos como isAdmin e verified
+
+Fluxo de Autenticação
+
+  Login (signIn):
+    signIn(email, password) → 
+    auth.login(email, password) → 
+    Backend API → 
+    Transformação de dados (transformUser) → 
+    Armazenamento local (AsyncStorage) → 
+    Atualização do Context → 
+    Navegação automática
+
+Persistência de Dados:
+
+  Token: Armazenado em AsyncStorage com chave 'authToken'
+  Dados do usuário: Armazenados em AsyncStorage com chave 'user'
+  Interceptador de requisições: Adiciona automaticamente o token em todas as chamadas API
+
+Fluxo de Dados nas Telas
+
+  Tela de Perfil (profile.tsx):
+  
+    1.Inicialização:
+    const { user, updateUser } = useAuth(); // Obtém dados do context
+
+    2. Estratégias de Recuperação de Nome:
+    
+      - Prioridade 1: Dados do context (user.name)
+      - Prioridade 2: Dados do AsyncStorage
+      - Prioridade 3: Extração do token JWT
+      - Prioridade 4: Chamada à API (users.getProfile())
+      - Fallback: "Usuário" como padrão
+
+    3. Fluxo de Atualização:
+
+      Edição do perfil → 
+      handleSaveProfile() → 
+      Validação local → 
+      updateUser() → 
+      AsyncStorage.setItem() → 
+      Context atualizado → 
+      UI re-renderizada
+
+Tela de Agendamentos (appointments.tsx):
+
+  1. Carregamento de Dados:
+     
+      useEffect(() => {
+         if (user?.id) {
+           appointments.getByUserId(user.id) → 
+           Backend API → 
+           transformAppointment() → 
+           setAppointmentsList()
+         }
+       }, [user?.id]);
+
+  2. Transformação de Dados Backend:
+
+    - Backend Structure: BackendAppointment com referências populadas
+    - Frontend Structure: Appointment com objetos doctor e user completos
+    - Mapeamento: _id → id, slotDate → date, etc.
+
+  Gerenciamento de Estado
+
+  Estado Local vs Global:
+
+    Estado Global (AuthContext):
+    
+    - Dados do usuário logado
+    - Status de autenticação
+    - Funções de login/logout
+    
+    Estado Local (useState):
+    
+    - Listas de dados específicos da tela (agendamentos, médicos)
+    - Estados de loading e erro
+    - Formulários e inputs temporários
+
+    Estratégia de Cache:
+    
+    - Primeiro Nível: Context API (dados em memória)
+    - Segundo Nível: AsyncStorage (persistência local)
+    - Terceiro Nível: API Backend (fonte de verdade)
+
+Interceptadores e Middleware
+
+    Request Interceptor:
+
+      api.interceptors.request.use(async (config) => {
+        const token = await AsyncStorage.getItem('authToken');
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+      config.headers.client = 'not-browser'; // Identificação para backend
+      return config;
+      });
+
+  Response Interceptor:
+
+      api.interceptors.response.use(
+        (response) => response,
+        (error) => {
+          if (error.response?.status === 401) {
+            // Auto-logout em caso de token expirado
+            AsyncStorage.removeItem('authToken');
+            AsyncStorage.removeItem('user');
+           }
+          return Promise.reject(error);
+        }
+      );
+
+Transformação de Dados
+
+    Backend → Frontend:
+
+      const transformDoctor = (backendDoctor: BackendDoctor): Doctor => ({
+        id: backendDoctor._id,
+        name: backendDoctor.name,
+        specialty: backendDoctor.speciality, // Mapeamento de campo
+        image: backendDoctor.doctorImage || backendDoctor.image,
+        // ... outros campos
+      }); 
+ 
+Tratamento de Erros
+
+  - Nível de Serviço: handleApiError() padroniza erros da API
+  - Nível de Componente: Estados de loading e mensagens de erro
+  - Nível Global: Interceptadores para erros de autenticação
+
+
+Refresh e Sincronização
+
+  Pull-to-Refresh:
+  
+    const onRefresh = async () => {
+      setRefreshing(true);
+      await loadAppointments(); // Recarrega dados do backend
+      setRefreshing(false);
+    };
+
+
+Auto-Refresh:
+
+  - Dados são recarregados quando o usuário navega entre telas
+  - useEffect com dependências monitora mudanças no context
+
 ## Tecnologias Utilizadas
 
 Linguagem: React-Native
