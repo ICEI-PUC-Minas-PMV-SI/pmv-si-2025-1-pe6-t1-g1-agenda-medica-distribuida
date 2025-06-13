@@ -16,7 +16,7 @@ exports.signupSchema = joi.object({
     .pattern(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$")),
   gender: joi.string().valid("Male", "Female"),
   birthdate: joi.date(),
-  userImage: joi.string().base64(),
+  userImage: joi.string(),
 });
 
 exports.signinSchema = joi.object({
@@ -78,14 +78,14 @@ exports.newDoctorSchema = joi.object({
   speciality: joi.string().required(),
   crm: joi.string().required(),
   pricePerAppointment: joi.number().required(),
-  doctorImage: joi.string().base64(),
+  doctorImage: joi.string(),
   about: joi.string(),
 });
 
 exports.updateDoctorSchema = joi.object({
   speciality: joi.string().required(),
   pricePerAppointment: joi.number().required(),
-  doctorImage: joi.string().base64(),
+  doctorImage: joi.string(),
   about: joi.string(),
 });
 
