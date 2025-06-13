@@ -1,44 +1,43 @@
 # Instruções de utilização
 
-1. Pré-requisitos
+### Backend (Node.js)
 
-- Ferramentas necessárias:
+1. Navegue até a pasta do backend:
+```bash
+cd src/MedAgenda_backend
+```
 
-    - Node.js.
-    - MongoDB (utilizado como banco de dados).
+2. Instale as dependências:
+```bash
+npm install
+```
 
-2. Configuração de Variáveis de Ambiente
+3. Crie um arquivo `.env` baseado no `.env.example` e configure suas variáveis de ambiente:
+```
+PORT=5000
+MONGODB_URI=sua_uri_do_mongodb
+JWT_SECRET=sua_chave_secreta
+JWT_EXPIRES_IN=7d
+```
 
-- Crie um arquivo .env na raiz do projeto com as seguintes variáveis:
+4. Inicie o servidor:
+```bash
+npm start
+```
 
-    PORT: Porta de execução do backend na máquina local (ex: 3000).
+### Frontend (React Native)
 
-    MONGO_URI : String para conexão com o MongoDB.
-  
-    TOKEN_SECRET : Chave secreta do JWT utilizada para assinar e verificar a autenticidade dos tokens.
-  
-    NODE_CODE_SENDING_EMAIL_ADDRESS: Endereço do remetente para envio de emails.
-  
-    NODE_CODE_SENDING_EMAIL_PASSWORD: Senha ou chave do email remetente.
-  
-    HMAC_VERIFICATION_CODE_SECRET: Chave secreta para criação dos códigos de verificação.  
-  
-3. Configuração e Execução do Banco de Dados
+1. Navegue até a pasta do frontend:
+```bash
+cd src/MedAgenda_mobile
+```
 
-- Configure e execute o MongoDB usando o npm:
+2. Instale as dependências:
+```bash
+npm install
+```
 
-    ```console
-        npm install
-    ```
-
-4. Execução do Backend
-
-- No diretório do backend:
-  
-    ```console
-        npm run start
-    ```
-   
-7. Verificação
-   
-- Acesse o sistema na URL http://localhost:3000 (ou outra porta que foi configurada no .env) para garantir que o sistema foi implantado corretamente com o banco MongoDB.
+3. Inicie o aplicativo:
+```bash
+npx expo start
+```

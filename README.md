@@ -1,6 +1,36 @@
-# MedAgenda - Sistema de Agendamento Médico
+# Agenda Médica Distribuída
 
-## Configuração do Ambiente
+`CURSO: Sistemas de Informação`
+
+`DISCIPLINA: Projeto - Arquitetura de Sistemas Distribuídos`
+
+`SEMESTRE: 6º`
+
+Agenda Médica Distribuída – Sistema que permite o agendamento de consultas médicas de diferentes clínicas e profissionais de saúde, garantindo sincronização e disponibilidade.
+
+## Integrantes
+
+* Breno de Oliveira Pereira
+* Diego Calado Freitas
+* Maurício Martins dos Santos
+* Rodrigo Pena Furtado
+* Samara Mariah dos Santos
+* Sílvia de Oliveira Cunha
+
+## Orientador
+
+* Kleber Jacques Ferreira de Souza
+
+# Planejamento
+
+| Etapa         | Atividades |
+|  :----:   | ----------- |
+| ETAPA 1         |[Documentação de Contexto](docs/contexto.md) <br> |
+| ETAPA 2         |[Planejar, desenvolver e gerenciar APIs e Web Services](docs/backend-apis.md) <br> |
+| ETAPA 3         |[Planejar, desenvolver e gerenciar uma aplicação Web](docs/frontend-web.md) |
+| ETAPA 4        |[Planejar, desenvolver e gerenciar uma aplicação Móvel](docs/frontend-mobile.md) <br>  |
+| ETAPA 5         | [Apresentação](presentation/README.md) |
+## Instruções de utilização
 
 ### Backend (Node.js)
 
@@ -43,58 +73,12 @@ npm install
 ```bash
 npx expo start
 ```
+# Código
 
-## Funcionalidades
+<li><a href="src/README.md"> Código Fonte</a></li>
 
-### Médicos
-- Lista de médicos por especialidade
-- Detalhes do médico
-- Gerenciamento de disponibilidade
-- Perfil com foto, especialidade e experiência
+# Apresentação
 
-### Agendamentos
-- Criação de novos agendamentos
-- Listagem de agendamentos
-- Cancelamento de agendamentos
-- Filtro por status
+<li><a href="presentation/README.md"> Apresentação da solução</a></li>
 
-### Usuários
-- Cadastro
-- Login
-- Atualização de perfil
 
-## Dados Iniciais
-
-O sistema já vem com alguns dados pré-cadastrados:
-
-### Especialidades
-- Cardiologia
-- Clínico Geral
-- Dermatologia
-- Ortopedia
-- Pediatria
-- Ginecologia
-- Oftalmologia
-- Neurologia
-
-### Médicos
-- Dra. Maria Silva (Cardiologia)
-- Dr. João Santos (Clínico Geral)
-- Dra. Ana Oliveira (Dermatologia)
-- Dr. Pedro Costa (Ortopedia)
-
-## Tecnologias Utilizadas
-
-### Backend
-- Node.js
-- Express
-- MongoDB
-- JWT para autenticação
-- Joi para validação
-
-### Frontend
-- React Native
-- Expo
-- Axios
-- AsyncStorage
-- React Navigation
