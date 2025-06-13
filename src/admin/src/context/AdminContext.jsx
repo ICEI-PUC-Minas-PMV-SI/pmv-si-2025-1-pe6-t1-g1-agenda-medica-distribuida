@@ -28,13 +28,27 @@ const AdminContextProvider = (props) => {
         }
     }
 
-    
+    const deleteDoctor = async (crm) => {
+        try {
+            const { data } = await axios.delete(`${backendUrl}/api/doctors/${crm}`, {
+                headers: { "client": "not-browser", "Authorization": `Bearer ${aToken}` }
+            });
+            if (data.success) {
+                toast.success('Médico removido com sucesso!');
+                getAllDoctors();
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || error.message);
+        }
+    }
 
     const value = {
         aToken, setAToken,
         backendUrl, doctors,
-        getAllDoctors
-
+        getAllDoctors,
+        deleteDoctor
     }
 
     return (
