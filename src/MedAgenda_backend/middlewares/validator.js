@@ -14,9 +14,9 @@ exports.signupSchema = joi.object({
     .string()
     .required()
     .pattern(new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$")),
-  gender: joi.string().valid("Male", "Female"),
-  birthdate: joi.date(),
-  userImage: joi.string(),
+  gender: joi.string().valid("Male", "Female").optional(),
+  birthdate: joi.string().optional(),
+  userImage: joi.string().optional(),
 });
 
 exports.signinSchema = joi.object({

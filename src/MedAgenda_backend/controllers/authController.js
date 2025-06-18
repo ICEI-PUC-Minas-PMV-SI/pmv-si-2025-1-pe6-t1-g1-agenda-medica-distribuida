@@ -36,12 +36,21 @@ exports.signup = async (req, res) => {
     }
 
     const hashedPassword = await doHash(password, 12);
-    const newUser = new User({
+    
+    // Preparar dados do usuário
+    const userData = {
       name,
       email,
       password: hashedPassword,
       isAdmin: false,
-    });
+    };
+
+    // Adicionar campos opcionais apenas se fornecidos
+    if (gender) userData.gender = gender;
+    if (birthdate) userData.birthdate = new Date(birthdate);
+    if (userImage) userData.userImage = userImage;
+
+    const newUser = new User(userData);
 
     const result = await newUser.save();
     result.password = undefined;
@@ -52,6 +61,10 @@ exports.signup = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };
 
@@ -105,6 +118,10 @@ exports.signin = async (req, res) => {
       });
   } catch (error) {
     console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };
 

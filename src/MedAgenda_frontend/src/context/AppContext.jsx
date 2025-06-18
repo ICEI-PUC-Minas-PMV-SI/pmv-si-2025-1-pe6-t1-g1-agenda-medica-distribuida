@@ -7,7 +7,7 @@ export const AppContext = createContext()
 const AppContextProvider = (props) => {
 
     const currencySymbol = 'R$'
-    const backendUrl = import.meta.env.VITE_BACKEND_URL
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://med-agenda-backend.vercel.app'
     const [doctors, setDoctors] = useState([])
 
     const [token, setToken] = useState(localStorage.getItem('token') ? localStorage.getItem('token') : '')
@@ -18,6 +18,7 @@ const AppContextProvider = (props) => {
     const value = {
         doctors,
         currencySymbol,
+        backendUrl,
         token, setToken,
     }
 

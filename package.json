@@ -11,7 +11,7 @@
   "dependencies": {
     "@expo/metro-config": "^0.20.14",
     "@react-native-async-storage/async-storage": "^2.1.2",
-    "axios": "^1.9.0",
+    "axios": "^1.10.0",
     "expo": "~53.0.0",
     "expo-splash-screen": "^0.20.5",
     "expo-status-bar": "~1.6.0",
