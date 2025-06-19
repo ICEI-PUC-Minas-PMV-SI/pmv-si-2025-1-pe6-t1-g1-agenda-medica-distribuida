@@ -15,10 +15,36 @@ const AddDoctor = () => {
     const [speciality, setSpeciality] = useState('Clínico Geral')
     const [pricePerAppointment, setPrice] = useState('')
     const [about, setAbout] = useState('')
+    const [imageUrl, setImageUrl] = useState('')
 
    
     const {backendUrl, aToken } = useContext(AdminContext)
 
+    const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dxjzekvs3/image/upload';
+    const CLOUDINARY_UPLOAD_PRESET = 'medagenda_unsigned';
+
+    // Função para upload direto para o Cloudinary
+    const uploadToCloudinary = async (file) => {
+        const data = new FormData();
+        data.append('file', file);
+        data.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        const res = await fetch(CLOUDINARY_URL, {
+            method: 'POST',
+            body: data,
+        });
+        const json = await res.json();
+        return json.secure_url;
+    };
+
+    // Ao selecionar a imagem, faz upload para o Cloudinary
+    const handleImageChange = async (e) => {
+        const file = e.target.files[0];
+        setDocImg(file);
+        if (file) {
+            const url = await uploadToCloudinary(file);
+            setImageUrl(url);
+        }
+    };
 
     const onSubmitHandler = async (event) => {
         event.preventDefault()
@@ -26,28 +52,26 @@ const AddDoctor = () => {
 
         try {
 
-            if (!docImg) {
-                return toast.error('Imagem não selecionada')
+            if (!imageUrl) {
+                return toast.error('Imagem não selecionada ou não enviada')
             }
 
-            const formData = new FormData();
-
-            formData.append('image', docImg)
-            formData.append('name', name)
-            formData.append('crm', crm)
-            formData.append('speciality', speciality)
-            formData.append('pricePerAppointment', pricePerAppointment)
-            formData.append('about', about)
-
-            // console log formdata 
-            formData.forEach((value, key) => {
-                console.log(`${key}: ${value}`);
-            });
-
-            const { data } = await axios.post(backendUrl + '/api/doctors',Object.fromEntries(formData), { headers: {"client": "not-browser", "Authorization": `Bearer ${aToken}`}})
+            const { data } = await axios.post(
+                backendUrl + '/api/doctors',
+                {
+                    name,
+                    crm,
+                    speciality,
+                    pricePerAppointment,
+                    about,
+                    doctorImage: imageUrl,
+                },
+                { headers: {"client": "not-browser", "Authorization": `Bearer ${aToken}`}}
+            )
             if (data.success) {                
                 toast.success(data.message)
                 setDocImg(false)
+                setImageUrl('')
                 setName('')
                 setCRM('')
                 setSpeciality('')
@@ -89,7 +113,7 @@ const AddDoctor = () => {
                     <label htmlFor="doc-img">
                         <img className='w-16 bg-gray-100 rounded-full cursor-pointer' src={docImg ? URL.createObjectURL(docImg) : assets.upload_area} alt="" />
                     </label>
-                    <input onChange={(e) => setDocImg(e.target.files[0])} type="file" id="doc-img" hidden />
+                    <input onChange={handleImageChange} type="file" id="doc-img" hidden />
                     <p>Foto do Doutor</p>
                 </div>
 
