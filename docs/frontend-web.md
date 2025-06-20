@@ -140,4 +140,13 @@ Resposta ao Cliente: O back-end envia dados de confirmação ou resposta de erro
 
 # Referências
 
-Inclua todas as referências (livros, artigos, sites, etc) utilizados no desenvolvimento do trabalho.
+## Referências Web
+
+- **TAILWIND CSS**. *Introduction to Tailwind CSS*. GeeksforGeeks, 2024. Disponível em: [https://www.geeksforgeeks.org/css/introduction-to-tailwind-css/](https://www.geeksforgeeks.org/css/introduction-to-tailwind-css/). Acesso em: 4 jun. 2025, 14:22.
+
+- **TAILWIND LABS**. *Framework guides – Get started with Tailwind CSS*. 2025. Disponível em: [https://tailwindcss.com/docs/installation/framework-guides](https://tailwindcss.com/docs/installation/framework-guides). Acesso em: 4 jun. 2025, 14:25.
+
+- **REACT.DEV**. *Getting Started with React*. 2025. Disponível em: [https://react.dev/docs/getting-started](https://react.dev/docs/getting-started). Acesso em: 20 jun. 2025, 15:30.
+
+- **VITE.DEV**. *Introduction to Vite – Guide*. 2025. Disponível em: [https://vite.dev/guide](https://vite.dev/guide). Acesso em: 20 jun. 2025, 15:35.
+
