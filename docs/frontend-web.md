@@ -140,8 +140,6 @@ Resposta ao Cliente: O back-end envia dados de confirmação ou resposta de erro
 
 # Referências
 
-## Referências Web
-
 - **TAILWIND CSS**. *Introduction to Tailwind CSS*. GeeksforGeeks, 2024. Disponível em: [https://www.geeksforgeeks.org/css/introduction-to-tailwind-css/](https://www.geeksforgeeks.org/css/introduction-to-tailwind-css/). Acesso em: 4 jun. 2025, 14:22.
 
 - **TAILWIND LABS**. *Framework guides – Get started with Tailwind CSS*. 2025. Disponível em: [https://tailwindcss.com/docs/installation/framework-guides](https://tailwindcss.com/docs/installation/framework-guides). Acesso em: 4 jun. 2025, 14:25.
