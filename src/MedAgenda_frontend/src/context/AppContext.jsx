@@ -32,7 +32,11 @@ const AppContextProvider = (props) => {
             const { data } = await axios.get(backendUrl + '/api/doctors', { headers: {"client": "not-browser", "Authorization": `Bearer ${token}`}})
            
             if (data.success) {
-                setDoctors(data.doctors)
+                const doctorsWithImage = data.doctors.map(doc => ({
+                    ...doc,
+                    image: doc.image || doc.doctorImage || '',
+                }));
+                setDoctors(doctorsWithImage)
             } else {
                 toast.error(data.message)
             }
