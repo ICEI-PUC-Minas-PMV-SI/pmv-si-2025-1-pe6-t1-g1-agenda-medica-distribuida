@@ -102,7 +102,7 @@ const Appointment = () => {
               <p className='flex items-center gap-1 text-sm font-medium text-gray-900 mt-3'>
                 Sobre <img src={assets.info_icon} alt="" />
               </p>
-              <p className='text-sm text-gray-500 max-w-[700px] mt-1 text-justify'>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Enim voluptatibus quidem magnam molestiae pariatur officia iusto ipsam fuga corrupti maxime nemo quod consectetur aliquid, quo porro minima suscipit itaque corporis. Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum suscipit harum alias laudantium magnam.  </p>
+              <p className='text-sm text-gray-500 max-w-[700px] mt-1 text-justify'>{docInfo.about || 'Informação não cadastrada.'}</p>
             </div>
             <p className='text-gray-500 font-medium mt-4'>
               Valor da consulta: <span className='text-gray-600'>{currencySymbol}{docInfo.fees}</span>

@@ -35,6 +35,8 @@ const AppContextProvider = (props) => {
                 const doctorsWithImage = data.doctors.map(doc => ({
                     ...doc,
                     image: doc.image || doc.doctorImage || '',
+                    about: doc.about || '',
+                    fees: doc.fees || doc.pricePerAppointment || '',
                 }));
                 setDoctors(doctorsWithImage)
             } else {
