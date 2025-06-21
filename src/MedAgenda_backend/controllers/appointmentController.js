@@ -11,13 +11,16 @@ exports.viewAppointments = async (req, res) => {
   const {_id} = req.query;
   try {
     if (isAdmin) {
-      const appointments = await appointmentModel.find({});
+      const appointments = await appointmentModel.find({}).populate('user').populate('doctor');
+      console.log("--- DADOS NO BACKEND ---");
+      console.log(JSON.stringify(appointments, null, 2));
+      console.log("--- FIM DOS DADOS ---");
       res.status(200).json({success: true, appointments});
     } else {
       if (_id !== userId) {
         return res.status(401).json({success: false, message: "Unauthorized"});
       }
-      const appointments = await appointmentModel.find({user: _id});
+      const appointments = await appointmentModel.find({user: _id}).populate('user').populate('doctor');
       res.status(200).json({success: true, appointments});
     }
   } catch (error) {

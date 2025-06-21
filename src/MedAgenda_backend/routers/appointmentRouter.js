@@ -13,15 +13,34 @@ const router = express.Router();
  * @swagger
  * components:
  *   schemas:
+ *     PopulatedUser:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: ID do usuário
+ *         name:
+ *           type: string
+ *           description: Nome do usuário
+ *     PopulatedDoctor:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *           description: ID do médico
+ *         name:
+ *           type: string
+ *           description: Nome do médico
+ *         speciality:
+ *           type: string
+ *           description: Especialidade do médico
  *     Appointment:
  *       type: object
  *       properties:
  *         user:
- *           type: string
- *           description: ID do usuário
+ *           $ref: '#/components/schemas/PopulatedUser'
  *         doctor:
- *           type: string
- *           description: ID do médico
+ *           $ref: '#/components/schemas/PopulatedDoctor'
  *         amount:
  *           type: number
  *           description: Valor da consulta
