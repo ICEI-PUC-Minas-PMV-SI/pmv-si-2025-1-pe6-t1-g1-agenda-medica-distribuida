@@ -12,7 +12,8 @@ const Footer = () => {
             {/* ------   esquerda ------- */}
             <div>
                 <img className='mb-5 w-40' src={assets.logo} alt="" />
-                <p className='w-full md:w-2/3 text-gray-600 leading-6'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur, et doloremque quas obcaecati, repudiandae placeat excepturi veniam sit possimus, molestiae nisi unde. Quo explicabo quibusdam maiores doloribus. Quaerat, corrupti commodi.</p>
+                <p className='w-full md:w-2/3 text-gray-600 leading-6'>A MedAgenda conecta pacientes e profissionais de saúde de forma prática e segura.
+                Nossa plataforma foi desenvolvida para facilitar o agendamento de consultas, oferecendo uma experiência simples, eficiente e acessível para todos. Com poucos cliques, você encontra o especialista que precisa, no horário que preferir.</p>
             </div>
 
             {/* -------- centro --------- */}
