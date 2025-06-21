@@ -15,9 +15,23 @@ const AppContextProvider = (props) => {
 
     const getUserData = async () => {
         console.log('🔍 getUserData chamada, token:', token ? 'existe' : 'não existe');
-        if (!token) return;
+        if (!token) {
+            // Se não há token, limpar dados do localStorage
+            localStorage.removeItem('userData');
+            setUserData(null);
+            return;
+        }
         
         try {
+            // Primeiro, tentar carregar dados salvos do localStorage
+            const savedUserData = localStorage.getItem('userData');
+            if (savedUserData) {
+                const parsedData = JSON.parse(savedUserData);
+                setUserData(parsedData);
+                console.log('📦 Dados carregados do localStorage:', parsedData);
+                return;
+            }
+            
             // Decodificar o token JWT para obter informações básicas
             const tokenParts = token.split('.');
             if (tokenParts.length === 3) {
@@ -37,6 +51,8 @@ const AppContextProvider = (props) => {
                 };
                 
                 setUserData(basicUserData);
+                // Salvar no localStorage
+                localStorage.setItem('userData', JSON.stringify(basicUserData));
                 console.log('✅ Dados básicos do usuário definidos:', basicUserData);
             }
         } catch (error) {
@@ -45,13 +61,19 @@ const AppContextProvider = (props) => {
         }
     }
 
+    const clearUserData = () => {
+        localStorage.removeItem('userData');
+        setUserData(null);
+    }
+
     const value = {
         doctors,
         currencySymbol,
         backendUrl,
         token, setToken,
         userData, setUserData,
-        getUserData
+        getUserData,
+        clearUserData
     }
 
     const getDoctorsData = async () => {

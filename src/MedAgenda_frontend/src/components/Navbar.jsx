@@ -9,10 +9,11 @@ const Navbar = () => {
     const navigate = useNavigate()
 
     const [showMenu, setShowMenu] = useState(false)
-    const {token, setToken, userData} = useContext(AppContext)
+    const {token, setToken, userData, clearUserData} = useContext(AppContext)
 
     const onLogout = () => {
         localStorage.removeItem("token")
+        clearUserData()
         setToken("")
         navigate('/')
     }

@@ -29,16 +29,27 @@ useEffect(() => {
         setEditData({
             name: userData.name || '',
             gender: userData.gender || '',
-            birthdate: userData.birthdate ? new Date(userData.birthdate).toISOString().split('T')[0] : ''
+            birthdate: userData.birthdate ? formatDateForInput(userData.birthdate) : ''
         });
     }
 }, [userData])
 
-// Função para formatar a data
+// Função para formatar a data para exibição
 const formatDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
     return date.toLocaleDateString('pt-BR');
+}
+
+// Função para formatar a data para input (YYYY-MM-DD)
+const formatDateForInput = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    // Ajustar para timezone local
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
 
 // Função para formatar o gênero
@@ -57,12 +68,23 @@ const formatGender = (gender) => {
 const handleSave = async () => {
     setIsLoading(true);
     try {
+        // Preparar dados para salvar
+        const dataToSave = {
+            ...editData,
+            // Garantir que a data seja salva no formato correto
+            birthdate: editData.birthdate ? new Date(editData.birthdate + 'T00:00:00').toISOString() : null
+        };
+        
         // Atualizar dados localmente
         const updatedUserData = {
             ...userData,
-            ...editData
+            ...dataToSave
         };
         setUserData(updatedUserData);
+        
+        // Salvar no localStorage para persistir entre recarregamentos
+        localStorage.setItem('userData', JSON.stringify(updatedUserData));
+        
         setIsEdit(false);
         
         // Aqui você pode adicionar uma chamada para a API quando estiver disponível
@@ -84,7 +106,7 @@ const handleCancel = () => {
     setEditData({
         name: userData?.name || '',
         gender: userData?.gender || '',
-        birthdate: userData?.birthdate ? new Date(userData.birthdate).toISOString().split('T')[0] : ''
+        birthdate: userData?.birthdate ? formatDateForInput(userData.birthdate) : ''
     });
     setIsEdit(false);
 }
