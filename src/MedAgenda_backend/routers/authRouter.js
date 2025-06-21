@@ -368,4 +368,31 @@ router.patch(
   authController.verifyForgotPasswordCode
 );
 
+/**
+ * @swagger
+ * /api/auth/profile:
+ *   get:
+ *     summary: Busca dados do usuário logado
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Dados do usuário retornados com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Não autorizado
+ *       404:
+ *         description: Usuário não encontrado
+ */
+router.get("/profile", identifier, authController.getUserProfile);
+
 module.exports = router;
