@@ -130,10 +130,24 @@ Resposta ao Cliente: O back-end envia dados de confirmação ou resposta de erro
 
 ## Testes
 
-[Descreva a estratégia de teste, incluindo os tipos de teste a serem realizados (unitários, integração, carga, etc.) e as ferramentas a serem utilizadas.]
+Nesta seção, apresentamos os testes funcionais realizados nas principais funcionalidades do projeto **MedAgenda**, contemplando tanto o sistema administrativo (**Admin**) quanto o sistema de usuários finais (**MedAgenda Frontend**).
 
-1. Crie casos de teste para cobrir todos os requisitos funcionais e não funcionais da aplicação.
-2. Implemente testes unitários para testar unidades individuais de código, como funções e classes.
+- Criar um novo médico (Admin)
+
+  ![adicionar doutor](https://github.com/user-attachments/assets/a5757290-644a-4298-99e6-943ce7ef5ab3)
+
+- Remover um médico (Admin)
+ 
+![del doutor](https://github.com/user-attachments/assets/6ef9974f-b2a0-4b87-8d01-5c559cf6806d)
+
+- Cadastro e login do usuário (usuário/paciente)
+  
+![cad e log](https://github.com/user-attachments/assets/1b9e65e1-b1f1-4d1b-aef4-ea272862e8d1)
+
+- Agendamento e remoção de consulta (usuário cadastrado)
+
+  
+![agendamento](https://github.com/user-attachments/assets/dda312df-8b6a-4480-9120-0d77386938b0)
 
 
 ## Instalação de Dependências
@@ -204,8 +218,6 @@ Dentro da pasta admin, execute:
 
 Importante: sempre inicie o backend antes de iniciar o frontend e o painel admin.
 
-4. Execute testes de carga para avaliar o desempenho da aplicação sob carga significativa.
-5. Utilize ferramentas de teste adequadas, como frameworks de teste e ferramentas de automação de teste, para agilizar o processo de teste.
 
 # Referências
 
@@ -216,4 +228,7 @@ Importante: sempre inicie o backend antes de iniciar o frontend e o painel admin
 - **REACT.DEV**. *Getting Started with React*. 2025. Disponível em: [https://react.dev/docs/getting-started](https://react.dev/docs/getting-started). Acesso em: 20 jun. 2025, 15:30.
 
 - **VITE.DEV**. *Introduction to Vite – Guide*. 2025. Disponível em: [https://vite.dev/guide](https://vite.dev/guide). Acesso em: 20 jun. 2025, 15:35.
+
+- **CLOUDINARY.** *Cloudinary API Documentation*. 2025. Disponível em: [https://cloudinary.com/documentation](https://cloudinary.com/documentation). Acesso em: 18 jun. 2025, 14:45.
+
 
