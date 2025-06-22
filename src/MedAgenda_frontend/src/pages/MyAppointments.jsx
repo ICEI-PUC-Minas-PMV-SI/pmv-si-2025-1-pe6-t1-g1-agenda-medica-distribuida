@@ -48,6 +48,43 @@ const MyAppointments = () => {
     return doctorInfo && doctorInfo.name && doctorInfo.name !== 'Médico não encontrado';
   }
 
+  // Função para obter o status do agendamento baseado no campo 'cancelled'
+  const getAppointmentStatus = (appointment) => {
+    if (appointment.cancelled) {
+      return 'cancelled';
+    }
+    if (appointment.isCompleted) {
+      return 'completed';
+    }
+    return 'scheduled';
+  }
+
+  // Função para obter o label do status
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'cancelled':
+        return 'Cancelado';
+      case 'completed':
+        return 'Realizado';
+      case 'scheduled':
+      default:
+        return 'Agendado';
+    }
+  }
+
+  // Função para obter a classe CSS do status
+  const getStatusClass = (status) => {
+    switch (status) {
+      case 'cancelled':
+        return 'bg-red-100 text-red-800';
+      case 'completed':
+        return 'bg-green-100 text-green-800';
+      case 'scheduled':
+      default:
+        return 'bg-blue-100 text-blue-800';
+    }
+  }
+
   // Filtrar agendamentos válidos (com médicos existentes)
   const validAppointments = appointments.filter(isDoctorValid);
 
@@ -94,12 +131,15 @@ const MyAppointments = () => {
         <div>
           {validAppointments.map((appointment, index) => {
             const doctorInfo = getDoctorInfo(appointment);
+            const status = getAppointmentStatus(appointment);
             
             // DEBUG: Log específico para cada agendamento
             console.log(`Agendamento ${index + 1}:`, {
               appointmentId: appointment._id,
               doctorField: appointment.doctor,
-              doctorInfo: doctorInfo
+              doctorInfo: doctorInfo,
+              cancelled: appointment.cancelled,
+              status: status
             });
             
             return (
@@ -125,18 +165,13 @@ const MyAppointments = () => {
                   </p>
                   <p className='text-xs mt-1'>
                     <span className='text-sm text-neutral-700 font-medium'>Status: </span> 
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      appointment.status === 'confirmed' ? 'bg-green-100 text-green-800' :
-                      appointment.status === 'cancelled' ? 'bg-red-100 text-red-800' :
-                      'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {appointment.status === 'confirmed' ? 'Confirmado' :
-                       appointment.status === 'cancelled' ? 'Cancelado' : 'Pendente'}
+                    <span className={`px-2 py-1 rounded-full text-xs ${getStatusClass(status)}`}>
+                      {getStatusLabel(status)}
                     </span>
                   </p>
                 </div>
                 <div className='flex flex-col justify-end py-1.5'>
-                  {appointment.status !== 'cancelled' && (
+                  {!appointment.cancelled && (
                     <button 
                       onClick={() => handleCancelAppointment(appointment._id)}
                       className='text-sm text-red-600 text-center sm:min-w-48 py-2 border border-red-300 rounded hover:bg-red-50 transition-all duration-300 cursor-pointer'
