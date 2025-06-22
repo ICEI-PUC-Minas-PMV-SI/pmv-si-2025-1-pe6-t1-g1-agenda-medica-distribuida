@@ -11,20 +11,84 @@ exports.viewAppointments = async (req, res) => {
   const {_id} = req.query;
   try {
     if (isAdmin) {
-      const appointments = await appointmentModel.find({}).populate('user').populate('doctor');
+      const appointments = await appointmentModel.find({});
+      
+      // Populate manual para agendamentos salvos como arrays
+      const populatedAppointments = await Promise.all(appointments.map(async (appointment) => {
+        const appointmentObj = appointment.toObject();
+        
+        console.log("Processando agendamento:", appointmentObj._id);
+        console.log("User array:", appointmentObj.user);
+        console.log("Doctor array:", appointmentObj.doctor);
+        
+        // Populate user
+        if (Array.isArray(appointmentObj.user) && appointmentObj.user.length > 0) {
+          const userId = appointmentObj.user[0];
+          console.log("Buscando usuário com ID:", userId);
+          const user = await userModel.findById(userId).select('name email');
+          console.log("Usuário encontrado:", user);
+          appointmentObj.user = user;
+        }
+        
+        // Populate doctor
+        if (Array.isArray(appointmentObj.doctor) && appointmentObj.doctor.length > 0) {
+          const doctorId = appointmentObj.doctor[0];
+          console.log("Buscando médico com ID:", doctorId);
+          const doctor = await doctorModel.findById(doctorId).select('name speciality');
+          console.log("Médico encontrado:", doctor);
+          appointmentObj.doctor = doctor;
+        }
+        
+        console.log("Agendamento final:", {
+          id: appointmentObj._id,
+          user: appointmentObj.user,
+          doctor: appointmentObj.doctor
+        });
+        
+        return appointmentObj;
+      }));
+      
       console.log("--- DADOS NO BACKEND ---");
-      console.log(JSON.stringify(appointments, null, 2));
+      console.log("Número de agendamentos:", populatedAppointments.length);
+      if (populatedAppointments.length > 0) {
+        console.log("Primeiro agendamento:", {
+          id: populatedAppointments[0]._id,
+          user: populatedAppointments[0].user,
+          doctor: populatedAppointments[0].doctor,
+          slotDate: populatedAppointments[0].slotDate,
+          slotTime: populatedAppointments[0].slotTime
+        });
+      }
       console.log("--- FIM DOS DADOS ---");
-      res.status(200).json({success: true, appointments});
+      res.status(200).json({success: true, appointments: populatedAppointments});
     } else {
       if (_id !== userId) {
         return res.status(401).json({success: false, message: "Unauthorized"});
       }
-      const appointments = await appointmentModel.find({user: _id}).populate('user').populate('doctor');
-      res.status(200).json({success: true, appointments});
+      const appointments = await appointmentModel.find({user: _id});
+      
+      // Populate manual para usuários comuns
+      const populatedAppointments = await Promise.all(appointments.map(async (appointment) => {
+        const appointmentObj = appointment.toObject();
+        
+        if (Array.isArray(appointmentObj.user) && appointmentObj.user.length > 0) {
+          const user = await userModel.findById(appointmentObj.user[0]).select('name email');
+          appointmentObj.user = user;
+        }
+        
+        if (Array.isArray(appointmentObj.doctor) && appointmentObj.doctor.length > 0) {
+          const doctor = await doctorModel.findById(appointmentObj.doctor[0]).select('name speciality');
+          appointmentObj.doctor = doctor;
+        }
+        
+        return appointmentObj;
+      }));
+      
+      res.status(200).json({success: true, appointments: populatedAppointments});
     }
   } catch (error) {
     console.log(error);
+    res.status(500).json({success: false, message: "Erro interno do servidor"});
   }
 };
 

@@ -5,10 +5,6 @@ const MyAppointments = () => {
 
   const { appointments, doctors, cancelAppointment, userData } = useContext(AppContext)
 
-  // DEBUG: Exibir no console os dados recebidos
-  console.log('appointments:', appointments);
-  console.log('doctors:', doctors);
-
   // Função para formatar data e hora
   const formatDateTime = (dateStr, timeStr) => {
     if (!dateStr) return `Data não informada às ${timeStr || ''}`;
@@ -46,6 +42,20 @@ const MyAppointments = () => {
     }
   }
 
+  // Função para verificar se o médico existe
+  const isDoctorValid = (appointment) => {
+    const doctorInfo = getDoctorInfo(appointment);
+    return doctorInfo && doctorInfo.name && doctorInfo.name !== 'Médico não encontrado';
+  }
+
+  // Filtrar agendamentos válidos (com médicos existentes)
+  const validAppointments = appointments.filter(isDoctorValid);
+
+  // DEBUG: Exibir no console os dados recebidos
+  console.log('appointments:', appointments);
+  console.log('doctors:', doctors);
+  console.log(`Agendamentos filtrados: ${appointments.length - validAppointments.length} removidos, ${validAppointments.length} válidos restantes`);
+
   // Carregar agendamentos quando a página for montada
   useEffect(() => {
     // Os agendamentos já são carregados automaticamente pelo contexto
@@ -65,14 +75,24 @@ const MyAppointments = () => {
     <div>
       <p className='pb-3 mt-12 font-medium text-zinc-600 border-b border-zinc-300 border-b-[1px]'>Meus Agendamentos</p>
       
-      {appointments.length === 0 ? (
+      {validAppointments.length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-gray-500">Você ainda não possui agendamentos.</p>
-          <p className="text-gray-400 text-sm mt-2">Marque sua primeira consulta!</p>
+          <p className="text-gray-500">
+            {appointments.length === 0 ? 
+              "Você ainda não possui agendamentos." : 
+              "Todos os seus agendamentos foram removidos pois os médicos foram deletados."
+            }
+          </p>
+          <p className="text-gray-400 text-sm mt-2">
+            {appointments.length === 0 ? 
+              "Marque sua primeira consulta!" : 
+              "Marque uma nova consulta com médicos disponíveis!"
+            }
+          </p>
         </div>
       ) : (
         <div>
-          {appointments.map((appointment, index) => {
+          {validAppointments.map((appointment, index) => {
             const doctorInfo = getDoctorInfo(appointment);
             
             // DEBUG: Log específico para cada agendamento

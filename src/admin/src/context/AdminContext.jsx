@@ -1,5 +1,5 @@
 import axios from "axios";
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 export const AdminContext = createContext()
@@ -19,15 +19,23 @@ const AdminContextProvider = (props) => {
             const {data} = await axios.get(backendUrl + '/api/doctors', { headers: {"client": "not-browser", "Authorization": `Bearer ${aToken}`}})
             if (data.success) {
                 setDoctors(data.doctors)
-                console.log(data.doctors)
+                console.log('Médicos carregados no admin:', data.doctors)
             } else  {
                 toast.error(data.message)
             }
 
         } catch (error) {
+            console.log('Erro ao carregar médicos:', error)
             toast.error(error.message)
         }
     }
+
+    // Carregar médicos quando o token estiver disponível
+    useEffect(() => {
+        if (aToken) {
+            getAllDoctors()
+        }
+    }, [aToken])
 
     const getAllAppointments = async () => {
         try {
@@ -39,6 +47,21 @@ const AdminContextProvider = (props) => {
             }
         } catch (error) {
             toast.error(error.message)
+        }
+    }
+
+    const getAllUsers = async () => {
+        try {
+            const { data } = await axios.get(backendUrl + '/api/users', { headers: { "client": "not-browser", "Authorization": `Bearer ${aToken}` } })
+            if (data.success) {
+                return data.users
+            } else {
+                toast.error(data.message)
+                return []
+            }
+        } catch (error) {
+            console.log('Erro ao buscar usuários:', error)
+            return []
         }
     }
 
@@ -65,7 +88,8 @@ const AdminContextProvider = (props) => {
         getAllDoctors,
         deleteDoctor,
         appointments,
-        getAllAppointments
+        getAllAppointments,
+        getAllUsers
     }
 
     return (
