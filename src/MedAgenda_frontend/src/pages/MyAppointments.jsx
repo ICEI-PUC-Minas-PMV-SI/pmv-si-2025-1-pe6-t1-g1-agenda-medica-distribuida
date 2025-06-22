@@ -1,32 +1,135 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { AppContext } from '../context/AppContext'
 
 const MyAppointments = () => {
 
-  const { doctors } = useContext(AppContext)
+  const { appointments, doctors, cancelAppointment, userData } = useContext(AppContext)
+
+  // DEBUG: Exibir no console os dados recebidos
+  console.log('appointments:', appointments);
+  console.log('doctors:', doctors);
+
+  // Função para formatar data e hora
+  const formatDateTime = (dateStr, timeStr) => {
+    if (!dateStr) return `Data não informada às ${timeStr || ''}`;
+    let date;
+    if (dateStr.includes('/')) {
+      const [day, month, year] = dateStr.split('/');
+      date = new Date(`${year}-${month}-${day}`);
+    } else {
+      date = new Date(dateStr);
+    }
+    if (isNaN(date.getTime())) return `Data inválida às ${timeStr || ''}`;
+    const formattedDate = date.toLocaleDateString('pt-BR');
+    return `${formattedDate} às ${timeStr}`;
+  }
+
+  // Função para encontrar informações do médico
+  const getDoctorInfo = (appointment) => {
+    // Se vier populado do backend como objeto
+    if (appointment.doctor && typeof appointment.doctor === 'object' && !Array.isArray(appointment.doctor)) {
+      return appointment.doctor;
+    }
+    // Se vier como array (schema antigo), pega o primeiro elemento
+    if (Array.isArray(appointment.doctor) && appointment.doctor.length > 0) {
+      const doctorId = appointment.doctor[0];
+      return doctors.find(doc => doc._id === doctorId) || null;
+    }
+    // Se vier apenas o ID, tenta buscar na lista de médicos
+    return doctors.find(doc => doc._id === appointment.doctor) || null;
+  }
+
+  // Função para cancelar agendamento
+  const handleCancelAppointment = async (appointmentId) => {
+    if (window.confirm('Tem certeza que deseja cancelar este agendamento?')) {
+      await cancelAppointment(appointmentId);
+    }
+  }
+
+  // Carregar agendamentos quando a página for montada
+  useEffect(() => {
+    // Os agendamentos já são carregados automaticamente pelo contexto
+  }, []);
+
+  if (!userData) {
+    return (
+      <div>
+        <div className="mt-12 text-center">
+          <p className="text-gray-600">Você precisa estar logado para ver seus agendamentos.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
-        <p className='pb-3 mt-12 font-medium text-zinc-600 border-b border-zinc-300 border-b-[1px]'>Meus Agendamentos</p>
-        <div>
-          {doctors.slice(0,3).map((item,index)=>(
-            <div className='grid grid-cols-[1fr_2fr] gap-4 sm:flex sm:gap-6 py-2 border-b border-zinc-200 border-b-[1px]' key={index}>
-              <div>
-                <img className='w-32 rounded-4xl bg-indigo-50' src={item.image} alt=""/>
-              </div>
-              <div className='flex-1 text-sm text-zinc-600'>
-                <p className='text-neutral-800 font-semibold'>{item.name}</p>
-                <p>{item.speciality}</p>
-                <p className='text-xs mt-10'><span className='text-sm text-neutral-700 font-medium'>Data e Horário</span> 09/10/2025 10:00am</p>
-              </div>
-              <div></div>
-              <div className='flex flex-col justify-end py-1.5'>
-                {/* <button>Confirmar Agendamento</button> */}
-                <button className='text-sm  text-stone-500 text-center sm:min-w-48 py-2 border border-zinc-300 rounded hover:bg-gray-800 hover:text-white transition-all duration-300 cursor-pointer'>Cancelar Agendamento</button>
-              </div>
-            </div>
-          ))}
+      <p className='pb-3 mt-12 font-medium text-zinc-600 border-b border-zinc-300 border-b-[1px]'>Meus Agendamentos</p>
+      
+      {appointments.length === 0 ? (
+        <div className="text-center py-8">
+          <p className="text-gray-500">Você ainda não possui agendamentos.</p>
+          <p className="text-gray-400 text-sm mt-2">Marque sua primeira consulta!</p>
         </div>
+      ) : (
+        <div>
+          {appointments.map((appointment, index) => {
+            const doctorInfo = getDoctorInfo(appointment);
+            
+            // DEBUG: Log específico para cada agendamento
+            console.log(`Agendamento ${index + 1}:`, {
+              appointmentId: appointment._id,
+              doctorField: appointment.doctor,
+              doctorInfo: doctorInfo
+            });
+            
+            return (
+              <div className='grid grid-cols-[1fr_2fr] gap-4 sm:flex sm:gap-6 py-4 border-b border-zinc-200 border-b-[1px]' key={appointment._id || index}>
+                <div>
+                  <img 
+                    className='w-32 h-32 object-cover rounded-4xl bg-indigo-50' 
+                    src={doctorInfo?.image || doctorInfo?.doctorImage || '/placeholder-doctor.jpg'} 
+                    alt=""
+                    onError={(e) => {
+                      e.target.src = '/placeholder-doctor.jpg';
+                    }}
+                  />
+                </div>
+                <div className='flex-1 text-sm text-zinc-600'>
+                  <p className='text-neutral-800 font-semibold text-lg'>
+                    {doctorInfo?.name || 'Médico não encontrado'}
+                  </p>
+                  <p className='text-gray-600'>{doctorInfo?.speciality || 'Especialidade não informada'}</p>
+                  <p className='text-xs mt-2'>
+                    <span className='text-sm text-neutral-700 font-medium'>Data e Horário: </span> 
+                    {formatDateTime(appointment.slotDate, appointment.slotTime)}
+                  </p>
+                  <p className='text-xs mt-1'>
+                    <span className='text-sm text-neutral-700 font-medium'>Status: </span> 
+                    <span className={`px-2 py-1 rounded-full text-xs ${
+                      appointment.status === 'confirmed' ? 'bg-green-100 text-green-800' :
+                      appointment.status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                      'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {appointment.status === 'confirmed' ? 'Confirmado' :
+                       appointment.status === 'cancelled' ? 'Cancelado' : 'Pendente'}
+                    </span>
+                  </p>
+                </div>
+                <div className='flex flex-col justify-end py-1.5'>
+                  {appointment.status !== 'cancelled' && (
+                    <button 
+                      onClick={() => handleCancelAppointment(appointment._id)}
+                      className='text-sm text-red-600 text-center sm:min-w-48 py-2 border border-red-300 rounded hover:bg-red-50 transition-all duration-300 cursor-pointer'
+                    >
+                      Cancelar Agendamento
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   )
 }

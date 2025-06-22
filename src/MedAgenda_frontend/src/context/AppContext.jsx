@@ -10,6 +10,7 @@ const AppContextProvider = (props) => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://med-agenda-backend.vercel.app'
     const [doctors, setDoctors] = useState([])
     const [userData, setUserData] = useState(null)
+    const [appointments, setAppointments] = useState([])
 
     const [token, setToken] = useState(localStorage.getItem('token') ? localStorage.getItem('token') : '')
 
@@ -66,6 +67,103 @@ const AppContextProvider = (props) => {
         setUserData(null);
     }
 
+    // Função para buscar agendamentos do usuário
+    const getUserAppointments = async () => {
+        if (!token || !userData) {
+            console.log('❌ Token ou userData não disponível');
+            return;
+        }
+        
+        console.log('🔍 Buscando agendamentos para userId:', userData.userId);
+        
+        try {
+            const { data } = await axios.get(backendUrl + '/api/appointment', { 
+                headers: {"client": "not-browser", "Authorization": `Bearer ${token}`},
+                params: { _id: userData.userId }
+            });
+            
+            console.log('📡 Resposta da API:', data);
+            
+            if (data.success) {
+                setAppointments(data.appointments);
+                console.log('📅 Agendamentos carregados:', data.appointments);
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            if (error.response && error.response.data && error.response.data.message) {
+                toast.error('Erro ao carregar agendamentos: ' + error.response.data.message);
+            } else {
+                toast.error('Erro ao carregar agendamentos');
+            }
+            console.log('Detalhe do erro:', error.response ? error.response.data : error);
+        }
+    }
+
+    // Função para criar novo agendamento
+    const createAppointment = async (docId, slotDate, slotTime) => {
+        if (!token || !userData) {
+            toast.error('Usuário não autenticado');
+            return false;
+        }
+        
+        try {
+            const { data } = await axios.post(backendUrl + '/api/appointment', {
+                userId: userData.userId,
+                docId: docId,
+                slotDate: slotDate,
+                slotTime: slotTime
+            }, {
+                headers: {"client": "not-browser", "Authorization": `Bearer ${token}`}
+            });
+            
+            if (data.success) {
+                toast.success('Agendamento criado com sucesso!');
+                // Recarregar agendamentos
+                getUserAppointments();
+                return true;
+            } else {
+                toast.error(data.message);
+                return false;
+            }
+        } catch (error) {
+            console.log('❌ Erro ao criar agendamento:', error);
+            toast.error(error.response?.data?.message || 'Erro ao criar agendamento');
+            return false;
+        }
+    }
+
+    // Função para cancelar agendamento
+    const cancelAppointment = async (appointmentId) => {
+        if (!token || !userData) {
+            toast.error('Usuário não autenticado');
+            return false;
+        }
+        
+        try {
+            const { data } = await axios.post(backendUrl + '/api/appointment/cancel', {
+                userId: userData.userId,
+                appointmentId: appointmentId
+            }, {
+                headers: {"client": "not-browser", "Authorization": `Bearer ${token}`}
+            });
+            
+            if (data.success) {
+                toast.success('Agendamento cancelado com sucesso!');
+                // Recarregar agendamentos
+                getUserAppointments();
+                return true;
+            } else {
+                toast.error(data.message);
+                return false;
+            }
+        } catch (error) {
+            console.log('❌ Erro ao cancelar agendamento:', error);
+            toast.error(error.response?.data?.message || 'Erro ao cancelar agendamento');
+            return false;
+        }
+    }
+
     const value = {
         doctors,
         currencySymbol,
@@ -73,7 +171,11 @@ const AppContextProvider = (props) => {
         token, setToken,
         userData, setUserData,
         getUserData,
-        clearUserData
+        clearUserData,
+        appointments,
+        getUserAppointments,
+        createAppointment,
+        cancelAppointment
     }
 
     const getDoctorsData = async () => {
@@ -107,8 +209,15 @@ const AppContextProvider = (props) => {
     useEffect(() => {
         getDoctorsData()
         getUserData()
+        // getUserAppointments() será chamada após getUserData() ser executada
     }, [token])
 
+    // Novo useEffect para chamar getUserAppointments quando userData estiver disponível
+    useEffect(() => {
+        if (userData && token) {
+            getUserAppointments()
+        }
+    }, [userData, token])
 
     return (
         <AppContext.Provider value={value}>

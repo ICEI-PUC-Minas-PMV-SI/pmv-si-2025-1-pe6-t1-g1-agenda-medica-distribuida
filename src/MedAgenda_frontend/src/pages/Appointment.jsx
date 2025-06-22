@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import Navbar from '../components/Navbar'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { AppContext } from '../context/AppContext'
 import { assets } from '../assets/assets'
 import RelatedDoctors from '../components/RelatedDoctors'
@@ -8,13 +7,15 @@ import RelatedDoctors from '../components/RelatedDoctors'
 const Appointment = () => {
 
   const {docId} = useParams()
-  const {doctors, currencySymbol} = useContext(AppContext)
+  const navigate = useNavigate()
+  const {doctors, currencySymbol, createAppointment, userData} = useContext(AppContext)
   const daysOfWeek = ['DOM','SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SAB']
 
   const [docInfo,SetDocInfo] = useState(null)
   const [docSlots, setDocSlots] = useState([])
   const [slotIndex, setSlotIndex] = useState(0)
   const [slotTime, setSlotTime] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
   const fetchDocInfo = async () => {
     const docInfo = doctors.find(doc => doc._id === docId)
@@ -63,6 +64,51 @@ const Appointment = () => {
 
       setDocSlots(prev => ([...prev,timeSlots]))
 
+    }
+  }
+
+  // Função para formatar data para a API (DD/MM/YYYY)
+  const formatDateForAPI = (date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  // Função para marcar consulta
+  const handleBookAppointment = async () => {
+    if (!userData) {
+      alert('Você precisa estar logado para marcar uma consulta');
+      navigate('/login');
+      return;
+    }
+
+    if (!slotTime) {
+      alert('Por favor, selecione um horário');
+      return;
+    }
+
+    if (!docSlots[slotIndex] || !docSlots[slotIndex][0]) {
+      alert('Por favor, selecione uma data válida');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const selectedDate = docSlots[slotIndex][0].datetime;
+      const formattedDate = formatDateForAPI(selectedDate);
+      
+      const success = await createAppointment(docId, formattedDate, slotTime);
+      
+      if (success) {
+        // Redirecionar para meus agendamentos
+        navigate('/my-appointments');
+      }
+    } catch (error) {
+      console.error('Erro ao marcar consulta:', error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -131,7 +177,27 @@ const Appointment = () => {
             </p>
           ))}
         </div>
-        <button className='bg-gray-800 text-white text-sm font-light px-18 py-4 rounded-full my-6 cursor-pointer'>Marque a consulta</button>
+        
+        {/* Informações da consulta selecionada */}
+        {slotTime && docSlots[slotIndex] && docSlots[slotIndex][0] && (
+          <div className='mt-4 p-4 bg-blue-50 rounded-lg'>
+            <p className='text-sm text-blue-800'>
+              <strong>Consulta selecionada:</strong><br/>
+              Data: {formatDateForAPI(docSlots[slotIndex][0].datetime)}<br/>
+              Horário: {slotTime}<br/>
+              Médico: {docInfo.name}<br/>
+              Valor: {currencySymbol}{docInfo.fees}
+            </p>
+          </div>
+        )}
+        
+        <button 
+          onClick={handleBookAppointment}
+          disabled={!slotTime || isLoading}
+          className='bg-gray-800 text-white text-sm font-light px-18 py-4 rounded-full my-6 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-700 transition-colors'
+        >
+          {isLoading ? 'Marcando consulta...' : 'Marque a consulta'}
+        </button>
         </div>
 
         {/* lista de médicos relacionados */}
