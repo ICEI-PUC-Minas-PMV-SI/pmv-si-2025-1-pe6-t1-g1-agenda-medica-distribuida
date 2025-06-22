@@ -134,7 +134,76 @@ Resposta ao Cliente: O back-end envia dados de confirmação ou resposta de erro
 
 1. Crie casos de teste para cobrir todos os requisitos funcionais e não funcionais da aplicação.
 2. Implemente testes unitários para testar unidades individuais de código, como funções e classes.
-3. Realize testes de integração para verificar a interação correta entre os componentes da aplicação.
+
+
+## Instalação de Dependências
+Esta seção descreve como configurar o ambiente de implantação do projeto MedAgenda, incluindo a instalação de dependências e a configuração das variáveis de ambiente. Antes de começar, certifique-se de ter o Node.js instalado. Você pode baixar o instalador oficial no site: https://nodejs.org/en/download/
+
+### Backend
+
+- Abra o terminal
+- Acesse a pasta backend:  
+`cd src/MedAgenda_backend`
+- Instale as dependências:  
+`npm install`
+
+### Frontend
+
+- Abra o terminal
+- Acesse a pasta frontend:  
+`cd src/MedAgenda_frontend`
+- Instale as dependências:  
+`npm install`
+
+### Admin Panel
+
+- Abra o terminal
+- Acesse a pasta admin:  
+`cd src/admin`
+- Instale as dependências:  
+`npm install`
+
+## Configuração das Variáveis de Ambiente
+
+Dentro da pasta backend, crie um arquivo chamado `.env` com o seguinte conteúdo:
+
+VITE_BACKEND_URL = https://med-agenda-backend.vercel.app
+
+MONGODB_URI = "sua_URI_de_conexao_com_o_MongoDB"
+
+CLOUDINARY_NAME = "nome_do_seu_cloudinary"
+
+CLOUDINARY_API_KEY = "sua_api_key_do_cloudinary"
+
+CLOUDINARY_SECRET_KEY = "sua_secret_key_do_cloudinary"
+
+
+### Explicação das Variáveis:
+
+- VITE_BACKEND_URL: URL onde o backend está hospedado.
+- MONGODB_URI: String de conexão com o MongoDB. Exemplo de formato:  
+mongodb+srv://usuario:senha@cluster0.mongodb.net/nomedobanco?retryWrites=true&w=majority
+- CLOUDINARY_NAME, CLOUDINARY_API_KEY e CLOUDINARY_SECRET_KEY: Obtidos após criar uma conta gratuita no site https://cloudinary.com/
+
+## Inicialização dos Servidores
+
+### Rodar o Backend
+
+Antes de iniciar o frontend ou o painel admin, certifique-se de que o backend está rodando. Execute o comando abaixo dentro da pasta backend:  
+`npm run dev`
+
+### Rodar o Frontend
+
+Dentro da pasta frontend, execute:  
+`npm run dev`
+
+### Rodar o Admin Panel
+
+Dentro da pasta admin, execute:  
+`npm run dev`
+
+Importante: sempre inicie o backend antes de iniciar o frontend e o painel admin.
+
 4. Execute testes de carga para avaliar o desempenho da aplicação sob carga significativa.
 5. Utilize ferramentas de teste adequadas, como frameworks de teste e ferramentas de automação de teste, para agilizar o processo de teste.
 
