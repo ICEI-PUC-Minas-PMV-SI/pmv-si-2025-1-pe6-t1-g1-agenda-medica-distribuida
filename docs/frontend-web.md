@@ -137,7 +137,7 @@ Resposta ao Cliente: O back-end envia dados de confirmação ou resposta de erro
 
 
 ## Instalação de Dependências
-Esta seção descreve como configurar o ambiente de implantação do projeto MedAgenda, incluindo a instalação de dependências e a configuração das variáveis de ambiente. Antes de começar, certifique-se de ter o Node.js instalado. Você pode baixar o instalador oficial no site: https://nodejs.org/en/download/
+Esta seção descreve como configurar o ambiente de implantação do projeto MedAgenda, incluindo a instalação de dependências e a configuração das variáveis de ambiente. Antes de começar, certifique-se de ter a branch **front-sh** selecionada e o Node.js instalado. Você pode baixar o instalador oficial no site: https://nodejs.org/en/download/
 
 ### Backend
 
